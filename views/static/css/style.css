@@ -1,0 +1,361 @@
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --hijau:    #1D9E75;
+  --hijau-2:  #0F6E56;
+  --hijau-bg: #E1F5EE;
+  --ungu:     #7F77DD;
+  --ungu-bg:  #EEEDFE;
+  --abu:      #f5f5f3;
+  --teks:     #1a1a1a;
+  --teks-2:   #555;
+  --border:   #e0e0e0;
+  --putih:    #ffffff;
+  --kuning:   #EF9F27;
+  --merah:    #D85A30;
+  --shadow:   0 2px 8px rgba(0,0,0,0.08);
+  --radius:   12px;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--abu);
+  color: var(--teks);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--hijau);
+  color: white;
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.header-content { display: flex; align-items: center; justify-content: space-between; }
+
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon { font-size: 32px; }
+.logo h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+.logo p  { font-size: 13px; opacity: 0.85; margin-top: 1px; }
+
+/* ── Bahan Bar ── */
+.bahan-bar {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+  position: sticky;
+  top: 73px;
+  z-index: 90;
+  box-shadow: var(--shadow);
+}
+
+.bahan-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bahan-bar-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teks-2);
+  white-space: nowrap;
+}
+
+.bahan-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1;
+}
+
+.bahan-tag-empty { font-size: 13px; color: #aaa; font-style: italic; }
+
+.bahan-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--hijau-bg);
+  color: var(--hijau-2);
+  border: 1px solid var(--hijau);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  animation: fadeIn 0.2s ease;
+}
+
+.bahan-tag button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--hijau-2);
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  margin-left: 2px;
+}
+
+.bahan-tag button:hover { color: var(--merah); }
+
+.bahan-bar-actions { display: flex; gap: 8px; }
+
+/* ── Tombol ── */
+.btn {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.btn-reset {
+  background: white;
+  color: var(--teks-2);
+  border: 1px solid var(--border);
+}
+
+.btn-reset:hover { background: #f0f0f0; }
+
+.btn-cari {
+  background: var(--hijau);
+  color: white;
+}
+
+.btn-cari:hover:not(:disabled) { background: var(--hijau-2); }
+.btn-cari:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Layout Utama ── */
+.main { padding: 24px 0 40px; }
+
+.main .container {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Panel Bahan ── */
+.panel-bahan {
+  background: white;
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.panel-title { margin-bottom: 20px; }
+.panel-title h2 { font-size: 18px; font-weight: 700; }
+.panel-title p  { font-size: 13px; color: var(--teks-2); margin-top: 3px; }
+
+/* Kategori bahan */
+.kategori-section { margin-bottom: 20px; }
+
+.kategori-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--hijau-bg);
+}
+
+.kategori-nama {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--hijau-2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bahan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+}
+
+/* Kartu bahan */
+.bahan-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 6px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  user-select: none;
+}
+
+.bahan-card:hover {
+  border-color: var(--hijau);
+  background: var(--hijau-bg);
+  transform: translateY(-2px);
+}
+
+.bahan-card.aktif {
+  border-color: var(--hijau);
+  background: var(--hijau-bg);
+  box-shadow: 0 0 0 2px var(--hijau);
+}
+
+.bahan-card .ikon { font-size: 26px; line-height: 1; }
+.bahan-card .nama { font-size: 11px; font-weight: 500; color: var(--teks); line-height: 1.2; }
+.bahan-card.aktif .nama { color: var(--hijau-2); font-weight: 700; }
+
+/* ── Panel Hasil ── */
+.panel-hasil {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 140px;
+}
+
+.hasil-placeholder {
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.placeholder-icon { font-size: 48px; margin-bottom: 12px; }
+.hasil-placeholder h3 { font-size: 18px; color: var(--teks); }
+.hasil-placeholder p  { font-size: 14px; color: var(--teks-2); margin-top: 8px; }
+
+.hasil-konten { padding: 20px; }
+
+/* Kartu resep hasil */
+.resep-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.resep-card:hover { border-color: var(--ungu); box-shadow: 0 2px 10px rgba(127,119,221,0.15); }
+
+.resep-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+
+.resep-nama { font-size: 15px; font-weight: 700; color: var(--teks); }
+.resep-kategori {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--ungu-bg);
+  color: var(--ungu);
+  white-space: nowrap;
+}
+
+.resep-deskripsi { font-size: 12px; color: var(--teks-2); margin: 6px 0 8px; }
+
+.resep-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.skor-bar-wrap { flex: 1; min-width: 80px; }
+.skor-label { font-size: 11px; color: var(--teks-2); margin-bottom: 3px; }
+.skor-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.skor-bar-fill { height: 100%; border-radius: 3px; background: var(--hijau); transition: width 0.5s ease; }
+
+.skor-persen {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--hijau-2);
+}
+
+.bahan-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.badge {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+.badge-ada    { background: var(--hijau-bg); color: var(--hijau-2); }
+.badge-kurang { background: #FEF3C7; color: #92400E; border: 1px dashed #F59E0B; }
+
+.resep-ranking {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  background: var(--hijau);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.resep-ranking.rank-1 { background: var(--kuning); color: #7c4a00; }
+.resep-ranking.rank-2 { background: #aaa; color: white; }
+.resep-ranking.rank-3 { background: #c07850; color: white; }
+
+/* Judul hasil */
+.hasil-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--hijau-bg);
+}
+
+/* Loading spinner */
+.loading {
+  text-align: center;
+  padding: 30px;
+  color: var(--teks-2);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--hijau);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 12px;
+  color: var(--teks-2);
+  border-top: 1px solid var(--border);
+  background: white;
+}
+
+/* ── Loading skeleton ── */
+.loading-bahan { color: var(--teks-2); font-size: 14px; padding: 20px; }
+
+/* ── Animasi ── */
+@keyframes spin    { to { transform: rotate(360deg); } }
+@keyframes fadeIn  { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+/* ── Responsif ── */
+@media (max-width: 900px) {
+  .main .container { grid-template-columns: 1fr; }
+  .panel-hasil { position: static; }
+}
+
+@media (max-width: 500px) {
+  .bahan-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
+  .logo h1 { font-size: 18px; }
+}

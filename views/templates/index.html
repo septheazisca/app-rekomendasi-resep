@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Kitchen AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- =============== HEADER =============== -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon">🍳</span>
+          <div>
+            <h1>Smart Kitchen</h1>
+            <p>Rekomendasi Resep Berbasis AI</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- =============== HEADER ─ END =============== -->
+
+
+  <!-- =============== NAVBAR BAHAN DIPILIH =============== -->
+  <div class="bahan-bar" id="bahanBar">
+    <div class="container">
+      <div class="bahan-bar-inner">
+        <div class="bahan-bar-label">Bahan dipilih:</div>
+        <div class="bahan-tags" id="bahanTags">
+          <span class="bahan-tag-empty">Belum ada bahan dipilih — klik ikon di bawah</span>
+        </div>
+        <div class="bahan-bar-actions">
+          <button class="btn btn-reset" id="btnReset" onclick="resetBahan()">Reset</button>
+          <button class="btn btn-cari" id="btnCari" onclick="cariResep()" disabled>
+            🔍 Cari Resep
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- =============== NAVBAR BAHAN DIPILIH ─ END =============== -->
+
+
+  <!-- =============== KONTEN UTAMA =============== -->
+  <main class="main">
+    <div class="container">
+
+      <!-- =============== KONTEN LIST BAHAN =============== -->
+      <div class="panel-bahan" id="panelBahan">
+        <div class="panel-title">
+          <h2>Pilih Bahan yang Tersedia</h2>
+          <p>Klik bahan yang ada di dapur kamu</p>
+        </div>
+        <div id="daftarBahan">
+          <div class="loading-bahan">Memuat bahan...</div>
+        </div>
+      </div>
+
+      <!-- =============== KONTEN LIST RESEP =============== -->
+      <div class="panel-hasil" id="panelHasil">
+        <div class="hasil-placeholder" id="hasilPlaceholder">
+          <div class="placeholder-icon">🍽️</div>
+          <h3>Pilih bahan dulu!</h3>
+          <p>Klik bahan-bahan yang kamu punya, lalu tekan tombol <strong>Cari Resep</strong></p>
+        </div>
+        <div class="hasil-konten" id="hasilKonten" style="display:none"></div>
+      </div>
+
+    </div>
+  </main>
+  <!-- =============== KONTEN UTAMA ─ END =============== -->
+
+
+  <!-- =============== FOOTER =============== -->
+  <footer class="footer">
+    <p>Smart Kitchen AI — Proyek Data Science &nbsp;|&nbsp; Rekomendasi berbasis TF-IDF & Cosine Similarity</p>
+  </footer>
+  <!-- =============== FOOTER ─ END =============== -->
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

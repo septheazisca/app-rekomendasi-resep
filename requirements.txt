@@ -2,5 +2,4 @@ flask
 pandas
 scikit-learn
 
-# jalankan ini di terminal:
-# pip install -r requirements.txt 
+# jalankan ini di terminal: pip install -r requirements.txt 
