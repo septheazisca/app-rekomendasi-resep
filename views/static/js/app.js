@@ -139,7 +139,7 @@ function tampilkanHasil(resepList) {
   document.getElementById("hasilKonten").innerHTML =
     `<div class="hasil-title"><i class="bi bi-stars" style="color: orange;"></i> ${resepList.length} Resep Direkomendasikan</div>` +
     resepList.map((resep, i) => `
-      <div class="resep-card" onclick="this.classList.toggle('expanded')">
+      <a href="/resep/${resep.id_resep}" class="resep-card" onclick="this.classList.toggle('expanded')">
         <span class="resep-ranking ${rankClass[i] ?? ""}">${rankLabel[i] ?? `#${i+1}`}</span>
         <div class="resep-header">
           <span class="resep-nama">${resep.nama_resep}</span>
@@ -160,6 +160,6 @@ function tampilkanHasil(resepList) {
           ${resep.bahan_kurang.slice(0,4).map(b => `<span class="badge badge-kurang">+ ${b}</span>`).join("")}
           ${resep.bahan_kurang.length > 4 ? `<span class="badge badge-kurang">+${resep.bahan_kurang.length-4} lagi</span>` : ""}
         </div>
-      </div>
+      </a>
     `).join("");
 }

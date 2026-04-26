@@ -4,7 +4,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 # ============ Data Loader — Baca & gabungkan dataset CSV ============
-df_resep = pd.read_csv("data/resep.csv")
+df_resep = pd.read_csv("data/resep.csv", sep=";")
 df_bahan = pd.read_csv("data/resep_bahan.csv")
 df       = pd.merge(df_resep, df_bahan, on=["id_resep", "nama_resep"])
 

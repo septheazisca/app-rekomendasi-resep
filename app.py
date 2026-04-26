@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 import sys
 import os
+import pandas as pd
 
 # Tambahkan folder backend ke path agar bisa import recommender
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "services"))
@@ -83,6 +84,36 @@ def get_rekomendasi():
         "data": hasil
     })
 
+@app.route("/resep/<int:id_resep>")
+def detail_resep(id_resep):
+    df = pd.read_csv("data/resep.csv", sep=";")
+    df_bahan = pd.read_csv("data/resep_bahan.csv")
+
+
+    resep = df[df["id_resep"] == id_resep]
+
+    if resep.empty:
+        return "Resep tidak ditemukan", 404
+
+    resep = resep.iloc[0]
+
+    langkah_list = [l.strip() for l in resep["langkah"].split("|")]
+    
+    bahan_baris = df_bahan[df_bahan["id_resep"] == id_resep]
+
+    if not bahan_baris.empty:
+        bahan_list = [b.strip() for b in bahan_baris.iloc[0]["bahan_utama"].split(",")]
+    else:
+        bahan_list = []
+
+    return render_template("detail.html",
+        id_resep   = int(resep["id_resep"]),
+        nama_resep = resep["nama_resep"],
+        kategori   = resep["kategori"],
+        deskripsi  = resep["deskripsi"],
+        bahan      = bahan_list,
+        langkah    = langkah_list,
+    )
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
