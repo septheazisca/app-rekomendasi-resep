@@ -9,25 +9,50 @@ async function muatBahan() {
     const kontainer = document.getElementById("daftarBahan");
     kontainer.innerHTML = "";
 
-    ["Protein","Karbohidrat","Sayuran","Bumbu","Protein Nabati","Buah"]
+    const kategoriList = ["Protein","Karbohidrat","Sayuran","Bumbu","Protein Nabati","Buah"];
+
+    kategoriList
       .filter(kat => data[kat])
-      .forEach(kat => {
-        const section = document.createElement("div");
-        section.className = "kategori-section";
-        section.innerHTML = `
-          <div class="kategori-header">
-            <span class="kategori-nama">${kat}</span>
-          </div>
-          <div class="bahan-grid">
-            ${data[kat].map(b => `
-              <div class="bahan-card" id="bahan-${b.id}" onclick="toggleBahan('${b.nama}', this)">
-                <span class="ikon">${b.emoji}</span>
-                <span class="nama">${b.nama}</span>
+      .forEach((kat, index) => {
+        const id = kat.replace(/\s+/g, "-").toLowerCase();
+        const isFirst = index === 0;
+
+        const item = document.createElement("div");
+        item.className = "accordion-item border-0 mb-2";
+        item.innerHTML = `
+          <h2 class="accordion-header" id="heading-${id}">
+            <button
+              class="accordion-button ${isFirst ? '' : 'collapsed'} rounded-3 fw-semibold d-flex justify-content-between align-items-center"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#collapse-${id}"
+              aria-expanded="${isFirst ? 'true' : 'false'}"
+              aria-controls="collapse-${id}"
+              style="background-color: #80F6A3; color: #1a1a1a; box-shadow: none; padding: 12px 16px;">
+
+              <span class="judul-kategori">${kat}</span>
+              <i class="bi bi-chevron-down icon-panah"></i>
+
+            </button>
+          </h2>
+          <div
+            id="collapse-${id}"
+            class="accordion-collapse collapse ${isFirst ? 'show' : ''}"
+            aria-labelledby="heading-${id}"
+            data-bs-parent="#daftarBahan">
+            <div class="accordion-body pt-2 px-1">
+              <div class="bahan-grid">
+                ${data[kat].map(b => `
+                  <div class="bahan-card" id="bahan-${b.id}" onclick="toggleBahan('${b.nama}', this)">
+                    <span class="ikon">${b.emoji}</span>
+                    <span class="nama">${b.nama}</span>
+                  </div>
+                `).join("")}
               </div>
-            `).join("")}
+            </div>
           </div>
         `;
-        kontainer.appendChild(section);
+        kontainer.appendChild(item);
       });
 
   } catch (err) {

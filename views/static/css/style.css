@@ -72,6 +72,27 @@ body {
 .logo h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
 .logo p  { font-size: 13px; opacity: 0.85; margin-top: 1px; }
 
+
+.icon-panah {
+  transition: transform 0.3s ease;
+}
+
+/* Saat accordion terbuka */
+.accordion-button:not(.collapsed) .icon-panah {
+  transform: rotate(180deg);
+}
+
+.accordion-button::after {
+  display: none !important;
+}
+
+.accordion-button {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center;
+  width: 100%;
+}
+
 /* ── Bahan Bar ── */
 .bahan-bar {
   background: white;
@@ -219,7 +240,7 @@ body {
 
 .bahan-card.aktif {
   border-color: var(--hijau);
-  background: var(--hijau-bg);
+  background: #f6fff9;
   box-shadow: 0 0 0 2px var(--hijau);
 }
 
