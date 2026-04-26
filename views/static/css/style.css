@@ -110,7 +110,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: var(--hijau-bg);
+  background: #f6fff9;
   color: var(--hijau-2);
   border: 1px solid var(--hijau);
   border-radius: 20px;
