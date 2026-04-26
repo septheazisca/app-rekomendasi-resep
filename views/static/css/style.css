@@ -138,26 +138,11 @@ body {
 /* ── Tombol ── */
 .btn {
   padding: 8px 18px;
-  border: none;
-  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;
-  transition: all 0.15s;
-}
-
-.btn-reset {
-  background: white;
-  color: var(--teks-2);
-  border: 1px solid var(--border);
 }
 
 .btn-reset:hover { background: #f0f0f0; }
-
-.btn-cari {
-  background: var(--hijau);
-  color: white;
-}
 
 .btn-cari:hover:not(:disabled) { background: var(--hijau-2); }
 .btn-cari:disabled { opacity: 0.45; cursor: not-allowed; }
