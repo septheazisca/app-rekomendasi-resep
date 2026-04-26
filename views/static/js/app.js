@@ -1,54 +1,34 @@
-// ============  State aplikasi ============ 
-let bahanDipilih = new Set();   // Menyimpan nama bahan yang sudah diklik
+let bahanDipilih = new Set();
 
+document.addEventListener("DOMContentLoaded", muatBahan);
 
-// ============  Saat halaman selesai dimuat, ambil data bahan dari API ============ 
-document.addEventListener("DOMContentLoaded", () => {
-  muatBahan();
-});
-
-
-// ============ Muat semua bahan dari API backend ============
+// Ambil & render semua bahan dari API
 async function muatBahan() {
   try {
-    const res = await fetch("/api/bahan");
-    const json = await res.json();
-
+    const { data } = await fetch("/api/bahan").then(r => r.json());
     const kontainer = document.getElementById("daftarBahan");
     kontainer.innerHTML = "";
 
-    const urutanKategori = ["Protein", "Karbohidrat", "Sayuran", "Bumbu", "Protein Nabati", "Buah"];
-    const data = json.data;
-
-    urutanKategori.forEach(kat => {
-      if (!data[kat]) return;
-
-      const section = document.createElement("div");
-      section.className = "kategori-section";
-
-      const header = document.createElement("div");
-      header.className = "kategori-header";
-      header.innerHTML = `<span class="kategori-nama">${kat}</span>`;
-      section.appendChild(header);
-
-      const grid = document.createElement("div");
-      grid.className = "bahan-grid";
-
-      data[kat].forEach(bahan => {
-        const card = document.createElement("div");
-        card.className = "bahan-card";
-        card.id = `bahan-${bahan.id}`;
-        card.innerHTML = `
-          <span class="ikon">${bahan.emoji}</span>
-          <span class="nama">${bahan.nama}</span>
+    ["Protein","Karbohidrat","Sayuran","Bumbu","Protein Nabati","Buah"]
+      .filter(kat => data[kat])
+      .forEach(kat => {
+        const section = document.createElement("div");
+        section.className = "kategori-section";
+        section.innerHTML = `
+          <div class="kategori-header">
+            <span class="kategori-nama">${kat}</span>
+          </div>
+          <div class="bahan-grid">
+            ${data[kat].map(b => `
+              <div class="bahan-card" id="bahan-${b.id}" onclick="toggleBahan('${b.nama}', this)">
+                <span class="ikon">${b.emoji}</span>
+                <span class="nama">${b.nama}</span>
+              </div>
+            `).join("")}
+          </div>
         `;
-        card.onclick = () => toggleBahan(bahan.nama, card);
-        grid.appendChild(card);
+        kontainer.appendChild(section);
       });
-
-      section.appendChild(grid);
-      kontainer.appendChild(section);
-    });
 
   } catch (err) {
     document.getElementById("daftarBahan").innerHTML =
@@ -56,146 +36,86 @@ async function muatBahan() {
   }
 }
 
-
-// ============ Toggle pilih/hapus bahan ============
-function toggleBahan(namaBahan, cardEl) {
-  if (bahanDipilih.has(namaBahan)) {
-    bahanDipilih.delete(namaBahan);
-    cardEl.classList.remove("aktif");
-  } else {
-    bahanDipilih.add(namaBahan);
-    cardEl.classList.add("aktif");
-  }
+//  Pilih/batalkan bahan saat diklik
+function toggleBahan(nama, card) {
+  bahanDipilih[bahanDipilih.has(nama) ? "delete" : "add"](nama);
+  card.classList.toggle("aktif");
   updateBarBahan();
 }
 
-
-// ============ Perbarui tampilan bar bahan yang dipilih ============
-function updateBarBahan() {
-  const tagsEl  = document.getElementById("bahanTags");
-  const btnCari = document.getElementById("btnCari");
-
-  tagsEl.innerHTML = "";
-
-  if (bahanDipilih.size === 0) {
-    tagsEl.innerHTML = `<span class="bahan-tag-empty">Belum ada bahan dipilih — klik ikon di bawah</span>`;
-    btnCari.disabled = true;
-    return;
-  }
-
-  btnCari.disabled = false;
-
-  bahanDipilih.forEach(nama => {
-    const tag = document.createElement("span");
-    tag.className = "bahan-tag";
-    tag.innerHTML = `
-      ${nama}
-      <button onclick="hapusBahan('${nama}')" title="Hapus">✕</button>
-    `;
-    tagsEl.appendChild(tag);
-  });
-}
-
-
-// ── Hapus bahan dari pilihan ──
-function hapusBahan(namaBahan) {
-  bahanDipilih.delete(namaBahan);
-
-  // Hilangkan highlight dari card
-  document.querySelectorAll(".bahan-card").forEach(card => {
-    const namaEl = card.querySelector(".nama");
-    if (namaEl && namaEl.textContent === namaBahan) {
-      card.classList.remove("aktif");
-    }
-  });
-
+// Hapus 1 bahan dari pilihan via tag
+function hapusBahan(nama) {
+  bahanDipilih.delete(nama);
+  document.querySelectorAll(".bahan-card .nama")
+    .forEach(el => el.textContent === nama && el.closest(".bahan-card").classList.remove("aktif"));
   updateBarBahan();
 }
 
-
-// ============ Reset semua pilihan ============
+// Bersihkan semua pilihan & tampilan
 function resetBahan() {
   bahanDipilih.clear();
   document.querySelectorAll(".bahan-card.aktif").forEach(c => c.classList.remove("aktif"));
   updateBarBahan();
-
-  // Sembunyikan hasil
   document.getElementById("hasilKonten").style.display = "none";
   document.getElementById("hasilPlaceholder").style.display = "block";
 }
 
+// Sinkronkan bar tags dengan state terkini
+function updateBarBahan() {
+  const tagsEl  = document.getElementById("bahanTags");
+  const btnCari = document.getElementById("btnCari");
+  btnCari.disabled = bahanDipilih.size === 0;
 
-// ============ Kirim request ke API dan tampilkan hasil ============
+  tagsEl.innerHTML = bahanDipilih.size === 0
+    ? `<span class="bahan-tag-empty">Belum ada bahan dipilih — klik ikon di bawah</span>`
+    : [...bahanDipilih].map(nama => `
+        <span class="bahan-tag">
+          ${nama}
+          <button onclick="hapusBahan('${nama}')" title="Hapus">✕</button>
+        </span>
+      `).join("");
+}
+
+// Kirim bahan ke backend, tunggu hasil
 async function cariResep() {
-  const placeholder = document.getElementById("hasilPlaceholder");
-  const konten      = document.getElementById("hasilKonten");
-
-  placeholder.style.display = "none";
+  const konten = document.getElementById("hasilKonten");
+  document.getElementById("hasilPlaceholder").style.display = "none";
   konten.style.display = "block";
-  konten.innerHTML = `
-    <div class="loading">
-      <div class="spinner"></div>
-      <p>Mencari resep terbaik untukmu...</p>
-    </div>
-  `;
+  konten.innerHTML = `<div class="loading"><div class="spinner"></div><p>Mencari resep terbaik untukmu...</p></div>`;
 
   try {
-    const res = await fetch("/api/rekomendasi", {
+    const { status, data } = await fetch("/api/rekomendasi", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bahan: Array.from(bahanDipilih) })
-    });
+      body: JSON.stringify({ bahan: [...bahanDipilih] })
+    }).then(r => r.json());
 
-    const json = await res.json();
-
-    if (json.status !== "ok" || json.data.length === 0) {
+    if (status !== "ok" || !data.length) {
       konten.innerHTML = `
         <div class="hasil-placeholder">
           <div class="placeholder-icon">😕</div>
           <h3>Resep tidak ditemukan</h3>
           <p>Coba tambah lebih banyak bahan</p>
-        </div>
-      `;
+        </div>`;
       return;
     }
-
-    tampilkanHasil(json.data);
+    tampilkanHasil(data);
 
   } catch (err) {
     konten.innerHTML = `<p style="color:red;padding:20px">Error: ${err.message}</p>`;
   }
 }
 
-
-// ============ Render kartu resep ============
+// Render kartu resep dari response
 function tampilkanHasil(resepList) {
-  const konten = document.getElementById("hasilKonten");
+  const rankLabel = ["🥇 Terbaik","🥈 Kedua","🥉 Ketiga"];
+  const rankClass = ["rank-1","rank-2","rank-3"];
 
-  const rankLabel = ["🥇 Terbaik", "🥈 Kedua", "🥉 Ketiga"];
-  const rankClass = ["rank-1", "rank-2", "rank-3"];
-
-  let html = `<div class="hasil-title">✨ ${resepList.length} Resep Direkomendasikan</div>`;
-
-  resepList.forEach((resep, i) => {
-    const rankText  = i < 3 ? rankLabel[i] : `#${i + 1}`;
-    const rankCls   = i < 3 ? rankClass[i] : "";
-    const persenBar = resep.persen_cocok;
-
-    const badgeAda = resep.bahan_cocok
-      .map(b => `<span class="badge badge-ada">✓ ${b}</span>`)
-      .join("");
-
-    const badgeKurang = resep.bahan_kurang.slice(0, 4)
-      .map(b => `<span class="badge badge-kurang">+ ${b}</span>`)
-      .join("");
-
-    const lebih = resep.bahan_kurang.length > 4
-      ? `<span class="badge badge-kurang">+${resep.bahan_kurang.length - 4} lagi</span>`
-      : "";
-
-    html += `
+  document.getElementById("hasilKonten").innerHTML =
+    `<div class="hasil-title">✨ ${resepList.length} Resep Direkomendasikan</div>` +
+    resepList.map((resep, i) => `
       <div class="resep-card" onclick="this.classList.toggle('expanded')">
-        <span class="resep-ranking ${rankCls}">${rankText}</span>
+        <span class="resep-ranking ${rankClass[i] ?? ""}">${rankLabel[i] ?? `#${i+1}`}</span>
         <div class="resep-header">
           <span class="resep-nama">${resep.nama_resep}</span>
           <span class="resep-kategori">${resep.kategori}</span>
@@ -205,26 +125,16 @@ function tampilkanHasil(resepList) {
           <div class="skor-bar-wrap">
             <div class="skor-label">Kecocokan bahan</div>
             <div class="skor-bar">
-              <div class="skor-bar-fill" style="width:${persenBar}%"></div>
+              <div class="skor-bar-fill" style="width:${resep.persen_cocok}%"></div>
             </div>
           </div>
-          <span class="skor-persen">${persenBar}%</span>
+          <span class="skor-persen">${resep.persen_cocok}%</span>
         </div>
         <div class="bahan-badges">
-          ${badgeAda}
-          ${badgeKurang}
-          ${lebih}
+          ${resep.bahan_cocok.map(b => `<span class="badge badge-ada">✓ ${b}</span>`).join("")}
+          ${resep.bahan_kurang.slice(0,4).map(b => `<span class="badge badge-kurang">+ ${b}</span>`).join("")}
+          ${resep.bahan_kurang.length > 4 ? `<span class="badge badge-kurang">+${resep.bahan_kurang.length-4} lagi</span>` : ""}
         </div>
       </div>
-    `;
-  });
-
-  konten.innerHTML = html;
-
-  // Animasi bar setelah render
-  setTimeout(() => {
-    document.querySelectorAll(".skor-bar-fill").forEach(el => {
-      el.style.width = el.style.width;
-    });
-  }, 50);
+    `).join("");
 }
