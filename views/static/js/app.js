@@ -137,7 +137,7 @@ function tampilkanHasil(resepList) {
   const rankClass = ["rank-1","rank-2","rank-3"];
 
   document.getElementById("hasilKonten").innerHTML =
-    `<div class="hasil-title">✨ ${resepList.length} Resep Direkomendasikan</div>` +
+    `<div class="hasil-title"><i class="bi bi-stars" style="color: orange;"></i> ${resepList.length} Resep Direkomendasikan</div>` +
     resepList.map((resep, i) => `
       <div class="resep-card" onclick="this.classList.toggle('expanded')">
         <span class="resep-ranking ${rankClass[i] ?? ""}">${rankLabel[i] ?? `#${i+1}`}</span>

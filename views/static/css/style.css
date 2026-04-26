@@ -279,7 +279,7 @@ body {
   position: relative;
 }
 
-.resep-card:hover { border-color: var(--ungu); box-shadow: 0 2px 10px rgba(127,119,221,0.15); }
+.resep-card:hover { border-color: var(--hijau-2); box-shadow: 0 2px 10px rgba(127,119,221,0.15); }
 
 .resep-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 
@@ -289,8 +289,8 @@ body {
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 10px;
-  background: var(--ungu-bg);
-  color: var(--ungu);
+  background: var(--hijau-2);
+  color: var(--putih);
   white-space: nowrap;
 }
 
@@ -341,7 +341,7 @@ body {
   font-weight: 700;
   margin-bottom: 14px;
   padding-bottom: 10px;
-  border-bottom: 2px solid var(--hijau-bg);
+  border-bottom: 2px solid var(--abu);
 }
 
 /* Loading spinner */
