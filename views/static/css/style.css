@@ -42,6 +42,29 @@ body {
   box-shadow: 0 2px 12px rgba(0,0,0,0.15);
 }
 
+
+/*head 1*/
+.rk-hero-title { color: #0C3318; }
+
+/*teks kecil*/
+.rk-hero-sub   { color: #0C3318; }
+
+/*border bahan dipilih*/
+/* .rk-bahan-bar-border { border: 3px solid #80F6A3 !important; } */
+
+/*side bar*/
+.rk-sidebar-btn {
+  position: fixed;
+  top: 0 !important;
+  right: 0;
+  height: 100vh;
+  width: 36px;
+  border-radius: 8px 0 0 8px !important;
+  z-index: 1050;
+}
+
+
+
 .header-content { display: flex; align-items: center; justify-content: space-between; }
 
 .logo { display: flex; align-items: center; gap: 12px; }
