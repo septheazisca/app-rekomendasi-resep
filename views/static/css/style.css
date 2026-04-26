@@ -2,9 +2,9 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --hijau:    #1D9E75;
-  --hijau-2:  #0F6E56;
-  --hijau-bg: #E1F5EE;
+  --hijau:    #80F6A3;
+  --hijau-2:  #009B2E;
+  --hijau-bg: #9FFFBB;
   --ungu:     #7F77DD;
   --ungu-bg:  #EEEDFE;
   --abu:      #f5f5f3;
