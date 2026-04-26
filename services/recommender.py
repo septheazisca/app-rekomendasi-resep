@@ -1,61 +1,74 @@
-import pandas as pd # Membaca file CSV
-from sklearn.feature_extraction.text import TfidfVectorizer # Tools scikit-learn, mengubah teks bahan menjadi angka (vector)
-from sklearn.metrics.pairwise import cosine_similarity # Tools scikit-learn, menghitung kemiripan antara bahan pilihan user dengan resep
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
-# ============ Membaca dataset CVS ============ #
-# Baca fiel resep.csv & resep.cvs
+# ============ Data Loader — Baca & gabungkan dataset CSV ============
 df_resep = pd.read_csv("data/resep.csv")
 df_bahan = pd.read_csv("data/resep_bahan.csv")
-# Gabungkan kedua tabel menjadi satu tabel berdasarkan id_resep dan nama_resep
-df = pd.merge(df_resep, df_bahan, on=["id_resep", "nama_resep"])
+df       = pd.merge(df_resep, df_bahan, on=["id_resep", "nama_resep"])
 
 
-# ============ Buat model TF-IDF ============ #
-# TF-IDF mengubah teks bahan menjadi angka agar bisa dihitung kemiripannya
-vectorizer = TfidfVectorizer(tokenizer=lambda x: [b.strip() for b in x.split(",")])
+# ============ Model Builder — Buat model TF-IDF dari kolom bahan_utama ============
+vectorizer  = TfidfVectorizer(tokenizer=lambda x: [b.strip() for b in x.split(",")])
 tfidf_matrix = vectorizer.fit_transform(df["bahan_utama"])
 
 
-# ============ Fungsi rekomendasi ============ #
+# ============ Score Calculator — Hitung skor gabungan cosine + persen cocok ============
+def _hitung_skor_gabungan(cosine: float, persen_cocok: float,
+                           bobot_cosine: float = 0.4,
+                           bobot_persen: float  = 0.6) -> float:
+    return round((cosine * bobot_cosine) + (persen_cocok / 100 * bobot_persen), 4)
+
+
+# ============ Result Builder — Susun dict hasil untuk satu resep ============
+def _bangun_hasil(resep, cosine: float, bahan_dipilih: list) -> dict:
+    bahan_dipilih_lower = [b.lower() for b in bahan_dipilih]
+    bahan_list  = [b.strip() for b in resep["bahan_utama"].split(",")]
+
+    bahan_cocok  = [b for b in bahan_list if b.lower() in bahan_dipilih_lower]
+    bahan_kurang = [b for b in bahan_list if b.lower() not in bahan_dipilih_lower]
+
+    persen_cocok = round(len(bahan_cocok) / len(bahan_list) * 100)
+    skor_gabungan = _hitung_skor_gabungan(cosine, persen_cocok)
+
+    return {
+        "id_resep"      : int(resep["id_resep"]),
+        "nama_resep"    : resep["nama_resep"],
+        "kategori"      : resep["kategori"],
+        "deskripsi"     : resep["deskripsi"],
+        "skor_cosine"   : round(float(cosine), 4),
+        "persen_cocok"  : persen_cocok,
+        "skor_gabungan" : skor_gabungan,          # skor final untuk sorting
+        "bahan_cocok"   : bahan_cocok,
+        "bahan_kurang"  : bahan_kurang,
+        "total_bahan"   : len(bahan_list),
+    }
+
+
+# ============ Main Recommender — Fungsi utama yang dipanggil oleh API ============
 def rekomendasikan(bahan_dipilih: list, top_n: int = 5) -> list:
     if not bahan_dipilih:
         return []
 
-    # Ubah bahan pilihan user menjadi satu string
-    query = ", ".join([b.lower().strip() for b in bahan_dipilih])
-
-    # Ubah query ke vektor TF-IDF yang sama dengan dataset
+    # 1. Query → vektor TF-IDF
+    query     = ", ".join([b.lower().strip() for b in bahan_dipilih])
     query_vec = vectorizer.transform([query])
 
-    # Hitung cosine similarity antara query dan semua resep
-    skor = cosine_similarity(query_vec, tfidf_matrix).flatten()
+    # 2. Cosine similarity semua resep
+    skor_cosine = cosine_similarity(query_vec, tfidf_matrix).flatten()
 
-    # Ambil indeks resep dengan skor tertinggi
-    indeks_terbaik = skor.argsort()[::-1][:top_n]
+    # 3. Kandidat awal (pool 2× top_n, buang skor 0)
+    pool_size      = min(top_n * 2, len(df))
+    indeks_kandidat = skor_cosine.argsort()[::-1][:pool_size]
+    indeks_valid    = [i for i in indeks_kandidat if skor_cosine[i] > 0]
 
-    hasil = []
-    for idx in indeks_terbaik:
-        if skor[idx] == 0:
-            continue # Lewati resep yang sama sekali tidak cocok
+    # 4. Bangun hasil & hitung skor gabungan
+    kandidat = [
+        _bangun_hasil(df.iloc[i], skor_cosine[i], bahan_dipilih)
+        for i in indeks_valid
+    ]
 
-        resep = df.iloc[idx]
-        bahan_list = [b.strip() for b in resep["bahan_utama"].split(",")]
-        
-        # Hitung berapa bahan yang dimiliki user cocok dengan resep ini
-        bahan_cocok  = [b for b in bahan_list if b.lower() in [x.lower() for x in bahan_dipilih]]
-        bahan_kurang = [b for b in bahan_list if b.lower() not in [x.lower() for x in bahan_dipilih]]
-
-        hasil.append({
-            "id_resep"     : int(resep["id_resep"]),
-            "nama_resep"   : resep["nama_resep"],
-            "kategori"     : resep["kategori"],
-            "deskripsi"    : resep["deskripsi"],
-            "skor"         : round(float(skor[idx]), 4),
-            "persen_cocok" : round(len(bahan_cocok) / len(bahan_list) * 100),
-            "bahan_cocok"  : bahan_cocok,
-            "bahan_kurang" : bahan_kurang,
-            "total_bahan"  : len(bahan_list),
-        })
-
-    return hasil
+    # 5. Sort ulang berdasarkan skor_gabungan, ambil top_n
+    kandidat.sort(key=lambda x: x["skor_gabungan"], reverse=True)
+    return kandidat[:top_n]
