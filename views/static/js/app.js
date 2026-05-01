@@ -1,7 +1,25 @@
 let bahanDipilih = new Set();
 
-document.addEventListener("DOMContentLoaded", muatBahan);
+document.addEventListener("DOMContentLoaded", () => {
+  muatBahan();
 
+  const hasil = JSON.parse(localStorage.getItem("hasilScan"));
+  if (hasil && hasil.length > 0) {
+  console.log("Hasil scan:", hasil);
+
+  setTimeout(() => {
+    hasil.forEach(item => {
+      bahanDipilih.add(item.toLowerCase());
+    });
+
+    updateBarBahan();
+    cariResep();
+  }, 500);
+
+  localStorage.removeItem("hasilScan");
+  
+  }
+});
 // Ambil & render semua bahan dari API
 async function muatBahan() {
   try {
