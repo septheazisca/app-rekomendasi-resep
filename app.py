@@ -18,6 +18,10 @@ app = Flask(
 @app.route("/")
 def index():
     return render_template("index.html")
+# ── Tambahan agar scan bisa dibuka ──
+@app.route("/scan")
+def scan():
+    return render_template("scan.html")
 
 
 # ── API: Ambil semua bahan berdasarkan kategori ──
