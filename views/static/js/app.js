@@ -185,3 +185,40 @@ function tampilkanHasil(resepList) {
       </a>
     `).join("");
 }
+
+
+function filterBahan() {
+  const input = document.getElementById("inputCariBahan").value.toLowerCase();
+  const accordionItems = document.querySelectorAll(".accordion-item");
+
+  accordionItems.forEach(item => {
+    const cards = item.querySelectorAll(".bahan-card");
+    let adaYangCocok = false;
+
+    cards.forEach(card => {
+      const namaBahan = card.querySelector(".nama").textContent.toLowerCase();
+      if (namaBahan.includes(input)) {
+        card.style.display = "flex"; // Tampilkan card
+        adaYangCocok = true;
+      } else {
+        card.style.display = "none"; // Sembunyikan card
+      }
+    });
+
+    // Logika Accordion: Tampilkan kategori hanya jika ada bahan yang cocok
+    if (adaYangCocok) {
+      item.style.display = "block";
+      // Opsional: Otomatis buka accordion kalau lagi nyari
+      if (input.length > 0) {
+        const collapse = item.querySelector(".accordion-collapse");
+        if (!collapse.classList.contains("show")) {
+          const btn = item.querySelector(".accordion-button");
+          btn.classList.remove("collapsed");
+          collapse.classList.add("show");
+        }
+      }
+    } else {
+      item.style.display = "none";
+    }
+  });
+}
