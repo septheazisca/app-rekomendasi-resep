@@ -91,7 +91,8 @@ def get_rekomendasi():
 @app.route("/resep/<int:id_resep>")
 def detail_resep(id_resep):
     df = pd.read_csv("data/resep.csv", sep=";")
-    df_bahan = pd.read_csv("data/resep_bahan.csv", sep=";")
+    df_bahan = pd.read_csv("data/resep_bahan.csv")
+    # df_bahan = pd.read_csv("data/resep_bahan.csv", sep=";")
 
 
     resep = df[df["id_resep"] == id_resep]
