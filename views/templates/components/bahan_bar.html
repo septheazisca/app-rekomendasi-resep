@@ -1,21 +1,45 @@
 <!-- ── Bahan Bar ── -->
- <div class="container mt-3">
-<div class="bg-white shadow-sm rounded-4 rk-bahan-bar-border" style="box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;">
-  <div class="container py-3">
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-      <span class="small fw-semibold" style="color:#0C3318;">Bahan dipilih:</span>
-      <div id="bahanTags" class="d-flex flex-wrap gap-2 flex-grow-1">
-        <span class="text-muted fst-italic small">Pilih bahan di bawah</span>
-      </div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-md fw-bold btn-reset" onclick="resetBahan()"  style="border: 1px solid #00C53B; color: #00C53B;">Batal</button>
-        <!-- 🔥 KAMERA DI SINI -->
-      <button onclick="window.location.href='/scan'" class="btn btn-md fw-bold btn-success">
-  📷 Scan Bahan
-</button>
-        <button class="btn btn-md fw-bold btn-cari" id="btnCari" onclick="cariResep()" disabled style="background-color: #00C53B; color: white; border: none;">Cari</button>
+<div class="container mt-3">
+  <div
+    class="bg-white shadow-sm rounded-4 rk-bahan-bar-border"
+    style="box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px"
+  >
+    <div class="container py-3">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <span class="small fw-semibold" style="color: #0c3318"
+          >Bahan dipilih:</span
+        >
+        <div id="bahanTags" class="d-flex flex-wrap gap-2 flex-grow-1">
+          <span class="text-muted fst-italic small">Pilih bahan di bawah</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button
+            class="btn btn-md fw-bold btn-reset"
+            onclick="resetBahan()"
+            style="border: 1px solid #00c53b; color: #00c53b"
+          >
+            Batal
+          </button>
+          <!-- 🔥 KAMERA DI SINI -->
+          <button
+            data-bs-toggle="modal"
+            data-bs-target="#modalScan"
+            class="btn btn-md fw-bold btn-cari"
+            style="background-color: #00c53b; color: white; border: none"
+          >
+            Scan Bahan
+          </button>
+          <button
+            class="btn btn-md fw-bold btn-cari"
+            id="btnCari"
+            onclick="cariResep()"
+            disabled
+            style="background-color: #00c53b; color: white; border: none"
+          >
+            Cari
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </div>

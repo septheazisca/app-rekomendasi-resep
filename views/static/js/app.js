@@ -222,3 +222,129 @@ function filterBahan() {
     }
   });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const URL_MODEL = "https://teachablemachine.withgoogle.com/models/4GCdHJwhO/";
+let model, webcam, labelContainer, maxPredictions;
+let hasilScanLocal = [];
+let counterScan = {};
+
+// Fungsi untuk memulai kamera di dalam modal
+async function initScan() {
+    const btnStart = document.getElementById("btnStartWebcam");
+    btnStart.disabled = true;
+    btnStart.innerHTML = "Memuat Model...";
+
+    const modelURL = URL_MODEL + "model.json";
+    const metadataURL = URL_MODEL + "metadata.json";
+
+    model = await tmImage.load(modelURL, metadataURL);
+    maxPredictions = model.getTotalClasses();
+
+    webcam = new tmImage.Webcam(250, 250, true); // flip: true
+    await webcam.setup();
+    await webcam.play();
+    
+    btnStart.style.display = "none"; // Sembunyikan tombol setelah kamera aktif
+    window.requestAnimationFrame(loopScan);
+
+    document.getElementById("webcam-container").innerHTML = "";
+    document.getElementById("webcam-container").appendChild(webcam.canvas);
+}
+
+async function loopScan() {
+    if (webcam && webcam.canvas) {
+        webcam.update();
+        await predictScan();
+        window.requestAnimationFrame(loopScan);
+    }
+}
+
+async function predictScan() {
+    const prediction = await model.predict(webcam.canvas);
+    let tertinggi = prediction.reduce((a, b) => a.probability > b.probability ? a : b);
+    let nama = tertinggi.className.toLowerCase();
+
+    if (tertinggi.probability > 0.97) {
+        if (!counterScan[nama]) counterScan[nama] = 0;
+        counterScan[nama]++;
+
+        if (counterScan[nama] >= 10 && !hasilScanLocal.includes(nama)) {
+            hasilScanLocal.push(nama);
+            document.getElementById("list-bahan-scan").innerText = hasilScanLocal.join(", ");
+        }
+    }
+
+    document.getElementById("label-container").innerHTML = 
+        `${tertinggi.className} (${(tertinggi.probability * 100).toFixed(0)}%)`;
+}
+
+// Fungsi memindahkan hasil scan ke list utama
+function terapkanHasilScan() {
+  if (hasilScanLocal.length > 0) {
+      hasilScanLocal.forEach(item => {
+          bahanDipilih.add(item.toLowerCase());
+      });
+
+      updateBarBahan();
+      cariResep();
+      
+      // Ambil instance modal lalu tutup
+      const modalEl = document.getElementById('modalScan');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+      
+      // PENTING: Panggil stopWebcam di sini untuk refresh state
+      stopWebcam();
+  } else {
+      alert("Belum ada bahan yang terdeteksi secara valid.");
+  }
+}
+
+// Fungsi menghentikan kamera agar tidak memakan resource
+
+function stopWebcam() {
+  // 1. Hentikan aliran video kamera
+  if (webcam) {
+      webcam.stop();
+      webcam = null;
+  }
+
+  // 2. Kosongkan container webcam di UI agar tidak sisa gambar terakhir
+  const container = document.getElementById("webcam-container");
+  if (container) container.innerHTML = "";
+
+  // 3. Reset semua data deteksi (REFRESH STATE)
+  hasilScanLocal = [];
+  counterScan = {};
+
+  // 4. Reset teks petunjuk di modal
+  const labelContainer = document.getElementById("label-container");
+  const listScan = document.getElementById("list-bahan-scan");
+  if (labelContainer) labelContainer.innerHTML = "";
+  if (listScan) listScan.innerText = "-";
+
+  // 5. Munculkan kembali tombol "Aktifkan Kamera" untuk penggunaan berikutnya
+  const btnStart = document.getElementById("btnStartWebcam");
+  if (btnStart) {
+      btnStart.style.display = "block";
+      btnStart.disabled = false;
+      btnStart.innerHTML = "📷 Aktifkan Kamera";
+  }
+}
+
+
