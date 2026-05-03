@@ -27,7 +27,7 @@ async function muatBahan() {
     const kontainer = document.getElementById("daftarBahan");
     kontainer.innerHTML = "";
 
-    const kategoriList = ["Protein","Karbohidrat","Sayuran","Bumbu","Protein Nabati","Buah"];
+    const kategoriList = ["Karbohidrat", 'Protein Hewani', "Protein Nabati", "Sayuran", "Bumbu", 'Minyak & Lemak', "Produk Susu", "Kacang & Biji", "Cairan", "Makanan Manis", "Minuman"];
 
     kategoriList
       .filter(kat => data[kat])
@@ -62,7 +62,6 @@ async function muatBahan() {
               <div class="bahan-grid">
                 ${data[kat].map(b => `
                   <div class="bahan-card" id="bahan-${b.id}" onclick="toggleBahan('${b.nama}', this)">
-                    <span class="ikon">${b.emoji}</span>
                     <span class="nama">${b.nama}</span>
                   </div>
                 `).join("")}

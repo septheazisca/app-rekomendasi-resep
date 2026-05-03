@@ -1,0 +1,62 @@
+id,nama,kategori,emoji
+1,Apel,Buah,🍎
+2,Pisang,Buah,🍌
+3,Jeruk,Buah,🍊
+4,Mangga,Buah,🥭
+5,Nanas,Buah,🍍
+8,Pepaya,Buah,🍈
+13,Kelapa,Buah,🥥
+17,Jeruk Nipis,Buah,🍋
+21,Bayam,Sayuran,🥬
+22,Kangkung,Sayuran,🥬
+23,Wortel,Sayuran,🥕
+24,Kentang,Sayuran,🥔
+25,Tomat,Sayuran,🍅
+26,Brokoli,Sayuran,🥦
+27,Kol,Sayuran,🥬
+28,Kacang Panjang,Sayuran,🫘
+29,Buncis,Sayuran,🫘
+30,Terong,Sayuran,🍆
+31,Labu Siam,Sayuran,🎃
+32,Timun,Sayuran,🥒
+33,Jagung,Sayuran,🌽
+34,Tauge,Sayuran,🌱
+35,Daun Bawang,Sayuran,🌿
+37,Cabai Merah,Sayuran,🌶️
+38,Cabai Rawit,Sayuran,🌶️
+48,Bawang Merah,Bumbu,🧅
+49,Bawang Putih,Bumbu,🧄
+50,Bawang Bombay,Bumbu,🧅
+51,Jahe,Bumbu,🫚
+52,Kunyit,Bumbu,🟡
+53,Lengkuas,Bumbu,🌿
+54,Serai,Bumbu,🌿
+56,Kemiri,Bumbu,🌰
+57,Ketumbar,Bumbu,🌿
+59,Merica,Bumbu,⚫
+63,Daun Salam,Bumbu,🍃
+64,Daun Jeruk,Bumbu,🍃
+65,Asam Jawa,Bumbu,🟤
+66,Terasi,Bumbu,🟫
+67,Gula Merah,Bumbu,🍯
+69,Garam,Bumbu,🧂
+70,Kecap Manis,Bumbu,🍶
+71,Kecap Asin,Bumbu,🍶
+72,Saus Tiram,Bumbu,🫙
+76,Ayam,Protein,🍗
+77,Daging Sapi,Protein,🥩
+78,Daging Kambing,Protein,🥩
+79,Ikan,Protein,🐟
+80,Ikan Lele,Protein,🐠
+81,Ikan Gurame,Protein,🐟
+84,Udang,Protein,🦐
+85,Cumi,Protein,🦑
+86,Kepiting,Protein,🦀
+87,Telur,Protein,🥚
+88,Tahu,Protein Nabati,⬜
+89,Tempe,Protein Nabati,🟫
+91,Kacang Tanah,Protein Nabati,🥜
+92,Kacang Hijau,Protein Nabati,🫘
+96,Beras,Karbohidrat,🍚
+97,Mie,Karbohidrat,🍜
+98,Bihun,Karbohidrat,🍜
