@@ -80,8 +80,13 @@ async function muatBahan() {
 
 //  Pilih/batalkan bahan saat diklik
 function toggleBahan(nama, card) {
-  bahanDipilih[bahanDipilih.has(nama) ? "delete" : "add"](nama);
-  card.classList.toggle("aktif");
+  if (bahanDipilih.has(nama)) {
+    bahanDipilih.delete(nama);
+    card.classList.remove("aktif");
+  } else {
+    bahanDipilih.add(nama);
+    card.classList.add("aktif");
+  }
   updateBarBahan();
 }
 

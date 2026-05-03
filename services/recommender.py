@@ -5,12 +5,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 # ============ Data Loader — Baca & gabungkan dataset CSV ============
 df_resep = pd.read_csv("data/resep.csv", sep=";")
-df_bahan = pd.read_csv("data/resep_bahan.csv")
+df_bahan = pd.read_csv("data/resep_bahan.csv", sep=";")
 df       = pd.merge(df_resep, df_bahan, on=["id_resep", "nama_resep"])
 
 
 # ============ Model Builder — Buat model TF-IDF dari kolom bahan_utama ============
-vectorizer  = TfidfVectorizer(tokenizer=lambda x: [b.strip() for b in x.split(",")])
+vectorizer = TfidfVectorizer(
+    tokenizer=lambda x: [b.strip().lower() for b in x.split(",")],
+    lowercase=True
+)
 tfidf_matrix = vectorizer.fit_transform(df["bahan_utama"])
 
 
@@ -52,7 +55,7 @@ def rekomendasikan(bahan_dipilih: list, top_n: int = 5) -> list:
         return []
 
     # 1. Query → vektor TF-IDF
-    query     = ", ".join([b.lower().strip() for b in bahan_dipilih])
+    query     = ", ".join([b.lower() for b in bahan_dipilih])
     query_vec = vectorizer.transform([query])
 
     # 2. Cosine similarity semua resep
