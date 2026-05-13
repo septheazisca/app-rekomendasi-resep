@@ -27,7 +27,8 @@ async function muatBahan() {
     const kontainer = document.getElementById("daftarBahan");
     kontainer.innerHTML = "";
 
-    const kategoriList = ["Protein","Karbohidrat","Sayuran","Bumbu","Protein Nabati","Buah"];
+    const kategoriList = [ "Karbohidrat", "Protein Hewani", "Protein Nabati", "Sayuran", "Buah", "Bumbu", "Minyak & Lemak", "Produk Susu", "Kacang & Biji", "Cairan", "Makanan Manis", "Minuman", "Rempah & Bumbu"];
+    // const kategoriList = ["Protein","Karbohidrat","Sayuran","Bumbu","Protein Nabati","Buah"];
     // const kategoriList = ["Karbohidrat", 'Protein Hewani', "Protein Nabati", "Sayuran", "Bumbu", 'Minyak & Lemak', "Produk Susu", "Kacang & Biji", "Cairan", "Makanan Manis", "Minuman"];
 
     kategoriList
