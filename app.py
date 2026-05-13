@@ -35,13 +35,13 @@ def get_bahan():
 
     bahan_list = []
     with open("data/bahan.csv", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
+        # reader = csv.DictReader(f)
+        reader = csv.DictReader(f, delimiter=";")
         for row in reader:
             bahan_list.append({
                 "id"      : int(row["id"]),
                 "nama"    : row["nama"],
                 "kategori": row["kategori"],
-                "emoji"   : row["emoji"],
             })
 
     # Kelompokkan berdasarkan kategori
@@ -92,7 +92,7 @@ def get_rekomendasi():
 def detail_resep(id_resep):
     df = pd.read_csv("data/resep.csv", sep=";")
     df_bahan = pd.read_csv("data/resep_bahan.csv")
-    # df_bahan = pd.read_csv("data/resep_bahan.csv", sep=";")
+    # df_bahan = pd.read_csv("data/resep_bahan.csv")
 
 
     resep = df[df["id_resep"] == id_resep]
