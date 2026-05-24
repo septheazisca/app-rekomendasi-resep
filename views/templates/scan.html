@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scan Bahan — Reseep</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght=400;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <link
@@ -29,30 +29,7 @@
 
       body {
         font-family: "Nunito", sans-serif;
-        background: #f4faf5;
-      }
-
-      /* ── Navbar mini ── */
-      .scan-navbar {
-        background: var(--hijau-tua);
-        padding: 14px 24px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .scan-navbar a {
-        color: white;
-        text-decoration: none;
-        font-size: 14px;
-        opacity: 0.7;
-      }
-      .scan-navbar a:hover {
-        opacity: 1;
-      }
-      .scan-navbar .brand {
-        font-size: 18px;
-        font-weight: 800;
-        color: var(--hijau-muda);
+        background: #fcfffc;
       }
 
       /* ── Layout ── */
@@ -70,8 +47,8 @@
         overflow: hidden;
       }
       .kamera-header {
-        background: var(--hijau-tua);
-        color: white;
+        background: #9FFFBB;
+        color: #1a1a1a;
         padding: 16px 24px;
         display: flex;
         align-items: center;
@@ -95,13 +72,8 @@
         animation: pulse 1.2s infinite;
       }
       @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.4;
-        }
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.4; }
       }
 
       /* ── Canvas area ── */
@@ -122,10 +94,7 @@
       }
       #canvasOverlay {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0; width: 100%; height: 100%;
         pointer-events: none;
       }
       #placeholder-kamera {
@@ -153,14 +122,11 @@
       }
       #canvasBbox {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0; width: 100%; height: 100%;
         pointer-events: none;
       }
 
-      /* ── Tombol ── */
+      /* ── Tombol Kontrol Kamera ── */
       .kamera-controls {
         padding: 20px 24px;
         display: flex;
@@ -182,11 +148,6 @@
         background: #00a832;
         transform: translateY(-1px);
       }
-      .btn-ambil:disabled {
-        background: #ccc;
-        transform: none;
-        cursor: not-allowed;
-      }
       .btn-ulang {
         background: white;
         color: var(--hijau-tua);
@@ -206,7 +167,7 @@
         display: none;
         position: absolute;
         inset: 0;
-        background: rgba(12, 51, 24, 0.75);
+        background: rgba(12, 51, 24, 0.85);
         align-items: center;
         justify-content: center;
         flex-direction: column;
@@ -214,9 +175,7 @@
         gap: 14px;
         z-index: 10;
       }
-      #loading-overlay.show {
-        display: flex;
-      }
+      #loading-overlay.show { display: flex; }
       .spinner-scan {
         width: 48px;
         height: 48px;
@@ -225,11 +184,7 @@
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
+      @keyframes spin { to { transform: rotate(360deg); } }
 
       /* ── Hasil deteksi ── */
       .hasil-box {
@@ -239,7 +194,7 @@
         overflow: hidden;
       }
       .hasil-header {
-        background: var(--hijau-bg);
+        background: #9FFFBB;
         padding: 16px 24px;
         border-bottom: 1px solid #c8e6c9;
       }
@@ -248,8 +203,52 @@
         font-weight: 700;
         color: var(--hijau-tua);
       }
-      .hasil-body {
-        padding: 20px 24px;
+      .hasil-body { padding: 20px 24px; }
+      
+      .seksi-header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+      .label-seksi {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        margin: 0;
+        color: #555;
+      }
+
+      /* Tombol Aksi Massal (Pilih Semua) */
+      .bulk-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-bulk-setuju {
+        background: none;
+        border: none;
+        color: #2e7d32;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: background 0.2s;
+      }
+      .btn-bulk-setuju:hover {
+        background: #e8f5e9;
+      }
+      .btn-bulk-batal {
+        background: none;
+        border: none;
+        color: #c62828;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: background 0.2s;
+      }
+      .btn-bulk-batal:hover {
+        background: #ffebee;
       }
 
       /* Badge bahan */
@@ -264,33 +263,63 @@
         font-size: 14px;
       }
       .bahan-item.valid {
-        background: #e8f5e9;
-        color: #1b5e20;
-        border: 1px solid #a5d6a7;
+        background: #ebfff1;
+        color: #1a1a1a;
+        border: 1px solid #00c53b;
       }
       .bahan-item.ragu {
         background: #fff8e1;
         color: #f57f17;
         border: 1px solid #ffe082;
       }
-      .bahan-item.gemini {
-        background: #e3f2fd;
-        color: #0d47a1;
-        border: 1px solid #90caf9;
-      }
 
       .badge-conf {
         margin-left: auto;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
-        padding: 3px 10px;
+        padding: 2px 8px;
         border-radius: 20px;
-        background: rgba(0, 0, 0, 0.08);
+        background: rgba(0, 0, 0, 0.05);
+        color: inherit;
       }
 
-      /* Tombol konfirmasi */
+      /* Styling Aksi Tombol di Dalam List Bahan */
+      .aksi-ragu {
+        display: flex;
+        gap: 6px;
+        margin-left: auto;
+      }
+      .btn-yakin {
+        background: #00c53b;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 4px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        transition: background 0.2s;
+      }
+      .btn-yakin:hover { background: #05a134; }
+      
+      .btn-hapus-bahan {
+        background: #c50000;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+      .btn-hapus-bahan:hover { background: #9a0000; }
+      .valid .btn-hapus-bahan { margin-left: 10px; }
+
+      /* Tombol konfirmasi bawah */
       .btn-konfirmasi {
-        background: var(--hijau-tua);
+        background: #00c53b;
         color: white;
         border: none;
         border-radius: 50px;
@@ -303,14 +332,11 @@
         display: none;
       }
       .btn-konfirmasi:hover {
-        background: #0a2812;
+        background: #00a231;
         transform: translateY(-2px);
       }
-      .btn-konfirmasi.show {
-        display: block;
-      }
+      .btn-konfirmasi.show { display: block; }
 
-      /* Tips */
       .tips-box {
         background: var(--hijau-bg);
         border-radius: 14px;
@@ -318,20 +344,11 @@
         font-size: 13px;
         color: #2e7d32;
       }
-      .tips-box i {
-        margin-right: 6px;
-      }
+      .tips-box i { margin-right: 6px; }
     </style>
   </head>
   <body>
-    <!-- Navbar -->
-    <nav class="scan-navbar">
-      <a href="/"><i class="bi bi-arrow-left"></i> Kembali</a>
-      <span class="brand">Reseep</span>
-      <span style="color: white; font-size: 13px; margin-left: auto">
-        <i class="bi bi-camera-fill"></i> Scan Bahan
-      </span>
-    </nav>
+  {% include 'components/navbar.html' %}
 
     <div class="scan-wrapper">
       <div class="row g-4">
@@ -342,56 +359,34 @@
               <h5><i class="bi bi-camera-fill me-2"></i>Kamera</h5>
               <div>
                 <span class="status-dot" id="statusDot"></span>
-                <span id="statusTeks" style="font-size: 13px"
-                  >Kamera belum aktif</span
-                >
+                <span id="statusTeks" style="font-size: 13px">Kamera belum aktif</span>
               </div>
             </div>
 
-            <!-- Area kamera / preview foto -->
             <div id="canvas-wrapper">
-              <!-- Placeholder sebelum kamera aktif -->
               <div id="placeholder-kamera">
                 <i class="bi bi-camera"></i>
                 <p>Klik tombol di bawah untuk aktifkan kamera</p>
               </div>
-              <!-- Video live -->
-              <video
-                id="videoEl"
-                autoplay
-                playsinline
-                style="display: none"
-              ></video>
-              <!-- Preview setelah foto diambil -->
+              <video id="videoEl" autoplay playsinline style="display: none"></video>
+              
               <div id="preview-wrapper">
                 <img id="imgPreview" alt="preview foto" />
                 <canvas id="canvasBbox"></canvas>
               </div>
-              <!-- Loading overlay -->
+
               <div id="loading-overlay">
                 <div class="spinner-scan"></div>
                 <span style="font-weight: 700">Menganalisa bahan...</span>
-                <span style="font-size: 13px; opacity: 0.8"
-                  >Layer 1: Gemini Vision → Layer 2: CNN</span
-                >
+                <span style="font-size: 13px; opacity: 0.8">Layer 1: Object Detection → Layer 2: Filter</span>
               </div>
             </div>
 
-            <!-- Kontrol -->
             <div class="kamera-controls">
-              <button
-                id="btnAktifkan"
-                class="btn-ambil"
-                onclick="aktifkanKamera()"
-              >
+              <button id="btnAktifkan" class="btn-ambil" onclick="aktifkanKamera()">
                 <i class="bi bi-camera me-2"></i>Aktifkan Kamera
               </button>
-              <button
-                id="btnAmbil"
-                class="btn-ambil"
-                onclick="ambilFoto()"
-                style="display: none"
-              >
+              <button id="btnAmbil" class="btn-ambil" onclick="ambilFoto()" style="display: none">
                 <i class="bi bi-camera-fill me-2"></i>Ambil Foto
               </button>
               <button id="btnUlang" class="btn-ulang" onclick="ulangi()">
@@ -400,12 +395,9 @@
             </div>
           </div>
 
-          <!-- Tips -->
           <div class="tips-box mt-3">
             <i class="bi bi-lightbulb-fill"></i>
-            <strong>Tips foto yang baik:</strong> Letakkan semua bahan di
-            permukaan datar, pastikan pencahayaan cukup, dan ambil foto dari
-            atas.
+            <strong>Tips foto yang baik:</strong> Letakkan semua bahan di permukaan datar, pastikan pencahayaan cukup, dan ambil foto lurus dari atas.
           </div>
         </div>
 
@@ -416,29 +408,33 @@
               <h6><i class="bi bi-list-check me-2"></i>Hasil Deteksi Bahan</h6>
             </div>
             <div class="hasil-body">
-              <!-- Placeholder sebelum scan -->
-              <div
-                id="hasilPlaceholder"
-                style="text-align: center; padding: 40px 20px; color: #aaa"
-              >
-                <i
-                  class="bi bi-image"
-                  style="font-size: 48px; display: block; margin-bottom: 12px"
-                ></i>
-                <p style="font-size: 14px">
-                  Foto bahan makanan untuk<br />mulai deteksi otomatis
-                </p>
+              <div id="hasilPlaceholder" style="text-align: center; padding: 40px 20px; color: #aaa">
+                <i class="bi bi-image" style="font-size: 48px; display: block; margin-bottom: 12px"></i>
+                <p style="font-size: 14px">Foto bahan makanan untuk<br />mulai deteksi otomatis</p>
               </div>
 
-              <!-- Hasil setelah scan -->
               <div id="hasilKonten" style="display: none">
-                <div id="listBahanValid"></div>
-                <div id="listBahanRagu"></div>
-                <button
-                  class="btn-konfirmasi"
-                  id="btnKonfirmasi"
-                  onclick="konfirmasiDanCariResep()"
-                >
+                <!-- Kontainer Bahan Terdeteksi (Valid) -->
+                <div id="wrapperValid">
+                  <div class="seksi-header-container" id="headerValid" style="display: none;">
+                    <p class="label-seksi" id="titleValid">✅ TERDETEKSI (0)</p>
+                  </div>
+                  <div id="listBahanValid"></div>
+                </div>
+
+                <!-- Kontainer Bahan Diragukan (Ragu) -->
+                <div id="wrapperRagu" class="mt-3">
+                  <div class="seksi-header-container" id="headerRagu" style="display: none;">
+                    <p class="label-seksi" id="titleRagu">⚠️ TIDAK YAKIN (0)</p>
+                    <div class="bulk-actions">
+                      <button class="btn-bulk-setuju" onclick="setujuiSemuaRagu()"><i class="bi bi-check-all"></i> Setuju Semua</button>
+                      <button class="btn-bulk-batal" onclick="batalSemuaRagu()"><i class="bi bi-trash"></i> Hapus Semua</button>
+                    </div>
+                  </div>
+                  <div id="listBahanRagu"></div>
+                </div>
+
+                <button class="btn-konfirmasi" id="btnKonfirmasi" onclick="konfirmasiDanCariResep()">
                   <i class="bi bi-search me-2"></i>Konfirmasi & Cari Resep
                 </button>
               </div>
@@ -448,7 +444,6 @@
       </div>
     </div>
 
-    <!-- Canvas tersembunyi untuk capture foto -->
     <canvas id="canvasCapture" style="display: none"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -461,10 +456,8 @@
       const PREVIEW = document.getElementById("imgPreview");
       const OVERLAY = document.getElementById("loading-overlay");
 
-      // ── Aktifkan kamera ──
       async function aktifkanKamera() {
         try {
-          // Coba kamera belakang dulu (mobile), fallback ke depan
           const constraints = {
             video: {
               facingMode: { ideal: "environment" },
@@ -477,7 +470,6 @@
           stream = await navigator.mediaDevices.getUserMedia(constraints);
           VIDEO.srcObject = stream;
 
-          // Tunggu video benar-benar siap
           await new Promise((resolve) => (VIDEO.onloadedmetadata = resolve));
           await VIDEO.play();
 
@@ -488,86 +480,44 @@
           document.getElementById("statusDot").classList.add("aktif");
           document.getElementById("statusTeks").textContent = "Kamera aktif";
         } catch (err) {
-          // Tampilkan error spesifik
           let pesan = "Tidak bisa akses kamera.";
-          if (err.name === "NotAllowedError")
-            pesan = "Izin kamera ditolak. Izinkan akses kamera di browser.";
-          if (err.name === "NotFoundError")
-            pesan = "Kamera tidak ditemukan di perangkat ini.";
-          if (err.name === "NotSupportedError")
-            pesan = "Browser tidak support kamera. Coba Chrome/Safari.";
-
+          if (err.name === "NotAllowedError") pesan = "Izin kamera ditolak. Izinkan akses kamera di browser.";
+          if (err.name === "NotFoundError") pesan = "Kamera tidak ditemukan di perangkat ini.";
+          
           document.getElementById("placeholder-kamera").innerHTML = `
-      <i class="bi bi-exclamation-triangle" style="font-size:48px;color:#e53935"></i>
-      <p style="color:#e53935;margin-top:12px">${pesan}</p>
-      <small style="color:#aaa">${err.name}: ${err.message}</small>
-    `;
+            <i class="bi bi-exclamation-triangle" style="font-size:48px;color:#e53935"></i>
+            <p style="color:#e53935;margin-top:12px">${pesan}</p>
+          `;
         }
       }
 
-      // ── Ambil foto dari video ──
       function ambilFoto() {
-        console.log("=== ambilFoto dipanggil ===");
-        console.log(
-          "Video width:",
-          VIDEO.videoWidth,
-          "height:",
-          VIDEO.videoHeight,
-        );
-
         CANVAS.width = VIDEO.videoWidth;
         CANVAS.height = VIDEO.videoHeight;
         CANVAS.getContext("2d").drawImage(VIDEO, 0, 0);
 
-        console.log("Canvas size:", CANVAS.width, CANVAS.height);
+        CANVAS.toBlob((blob) => {
+          if (!blob || blob.size === 0) return;
 
-        CANVAS.toBlob(
-          (blob) => {
-            console.log("Blob dibuat:", blob);
-            console.log("Blob size:", blob?.size);
+          PREVIEW.src = URL.createObjectURL(blob);
+          VIDEO.style.display = "none";
+          document.getElementById("preview-wrapper").style.display = "block";
+          document.getElementById("btnAmbil").style.display = "none";
+          document.getElementById("btnUlang").style.display = "block";
 
-            if (!blob || blob.size === 0) {
-              console.error("BLOB KOSONG! Video belum siap.");
-              return;
-            }
-
-            // Tampilkan preview
-            PREVIEW.src = URL.createObjectURL(blob);
-            VIDEO.style.display = "none";
-            document.getElementById("preview-wrapper").style.display = "block";
-            document.getElementById("btnAmbil").style.display = "none";
-            document.getElementById("btnUlang").style.display = "block";
-
-            // Hentikan stream
-            if (stream) stream.getTracks().forEach((t) => t.stop());
-
-            console.log("Mengirim ke /api/scan...");
-            kirimKeScan(blob);
-          },
-          "image/jpeg",
-          0.9,
-        );
+          if (stream) stream.getTracks().forEach((t) => t.stop());
+          kirimKeScan(blob);
+        }, "image/jpeg", 0.9);
       }
 
-      // ── Kirim foto ke /api/scan ──
       async function kirimKeScan(blob) {
         OVERLAY.classList.add("show");
-        console.log("=== kirimKeScan dipanggil ===");
-
         const formData = new FormData();
         formData.append("foto", blob, "foto.jpg");
 
         try {
-          console.log("Fetching /api/scan...");
-          const res = await fetch("/api/scan", {
-            method: "POST",
-            body: formData,
-          });
-          console.log("Response status:", res.status);
-
+          const res = await fetch("/api/scan", { method: "POST", body: formData });
           const data = await res.json();
-          console.log("Response data:", data);
-
           OVERLAY.classList.remove("show");
 
           if (data.status !== "ok") {
@@ -580,15 +530,9 @@
           gambarBoundingBox(data.bbox_data);
         } catch (err) {
           OVERLAY.classList.remove("show");
-          console.error("FETCH ERROR:", err);
           tampilkanError("Gagal terhubung ke server: " + err.message);
         }
       }
-
-      // ── Render hasil deteksi ──
-      // ============================================================
-      // GANTI fungsi tampilkanHasil() di scan.html dengan ini
-      // ============================================================
 
       function tampilkanHasil(data) {
         document.getElementById("hasilPlaceholder").style.display = "none";
@@ -597,8 +541,6 @@
         const valid = data.bahan_valid || [];
         const ragu = data.bahan_ragu || [];
 
-        // ── Deduplikasi: gabungkan bahan dengan nama sama ──
-        // Valid: ambil unik saja
         const validUnik = [];
         const validNama = new Set();
         valid.forEach((b) => {
@@ -609,167 +551,132 @@
           }
         });
 
-        // Ragu: ambil unik saja (duplikat otomatis ikut saat konfirmasi)
         const raguUnik = [];
         const raguNama = new Set();
         ragu.forEach((b) => {
           const key = b.nama.toLowerCase().replace(/_/g, " ");
-          // Skip kalau nama ini sudah ada di valid
           if (!validNama.has(key) && !raguNama.has(key)) {
             raguNama.add(key);
             raguUnik.push(b);
           }
         });
 
-        // ── Render bahan valid ──
-        let htmlValid =
-          validUnik.length > 0
-            ? `<p class="label-seksi">✅ TERDETEKSI (${validUnik.length})</p>`
-            : "";
+        // Merender elemen valid
+        let htmlValid = "";
         validUnik.forEach((b) => {
-          const conf = b.confidence ? `${b.confidence}%` : "via Gemini";
-          const sumberIcon = b.sumber === "cnn" ? "🧠" : "🔍";
+          const conf = b.confidence ? `${b.confidence}%` : "100%";
           htmlValid += `
-      <div class="bahan-item valid" id="valid-${_slugify(b.nama)}">
-        ${sumberIcon} ${b.nama.replace(/_/g, " ")}
-        <span class="badge-conf">${conf}</span>
-        <button class="btn-hapus-bahan" title="Hapus bahan ini"
-          onclick="hapusBahanHasil('${_slugify(b.nama)}', '${b.nama}', 'valid')">
-          ✕
-        </button>
-      </div>`;
+            <div class="bahan-item valid" id="valid-${_slugify(b.nama)}" data-nama="${b.nama}" data-conf="${conf}">
+              ${b.nama.replace(/_/g, " ")}
+              <span class="badge-conf">${conf}</span>
+              <button class="btn-hapus-bahan" title="Hapus bahan" onclick="hapusBahanHasil('${_slugify(b.nama)}', 'valid')">✕</button>
+            </div>`;
         });
-
-        // ── Render bahan ragu ──
-        let htmlRagu = "";
-        if (raguUnik.length > 0) {
-          htmlRagu = `<p class="label-seksi" style="margin-top:14px">⚠️ TIDAK YAKIN (${raguUnik.length})</p>
-    <p style="font-size:12px;color:#888;margin-bottom:8px">Konfirmasi atau hapus bahan di bawah ini:</p>`;
-
-          raguUnik.forEach((b) => {
-            const conf = b.confidence ? `${b.confidence}%` : "-";
-            htmlRagu += `
-        <div class="bahan-item ragu" id="ragu-${_slugify(b.nama)}">
-          ⚠️ ${b.nama.replace(/_/g, " ")}
-          <span class="badge-conf">${conf}</span>
-          <div class="aksi-ragu">
-            <button class="btn-yakin" title="Ya, ini benar"
-              onclick="konfirmasiBahan('${_slugify(b.nama)}', '${b.nama}', '${conf}')">
-              ✓ Yakin
-            </button>
-            <button class="btn-hapus-bahan" title="Hapus bahan ini"
-              onclick="hapusBahanHasil('${_slugify(b.nama)}', '${b.nama}', 'ragu')">
-              ✕
-            </button>
-          </div>
-        </div>`;
-          });
-        }
-
         document.getElementById("listBahanValid").innerHTML = htmlValid;
+
+        // Merender elemen ragu
+        let htmlRagu = "";
+        raguUnik.forEach((b) => {
+          const conf = b.confidence ? `${b.confidence}%` : "-";
+          htmlRagu += `
+            <div class="bahan-item ragu" id="ragu-${_slugify(b.nama)}" data-nama="${b.nama}" data-conf="${conf}">
+              ${b.nama.replace(/_/g, " ")}
+              <div class="aksi-ragu">
+                <button class="btn-yakin" onclick="konfirmasiBahan('${_slugify(b.nama)}', '${b.nama}', '${conf}')">✓</button>
+                <button class="btn-hapus-bahan" onclick="hapusBahanHasil('${_slugify(b.nama)}', 'ragu')">✕</button>
+              </div>
+            </div>`;
+        });
         document.getElementById("listBahanRagu").innerHTML = htmlRagu;
 
-        // Tampilkan tombol konfirmasi kalau ada bahan valid
-        if (validUnik.length > 0) {
-          document.getElementById("btnKonfirmasi").classList.add("show");
-        }
+        _updateCounter();
       }
 
-      // ── Helper: slug nama bahan untuk id HTML ──
       function _slugify(nama) {
-        return nama
-          .toLowerCase()
-          .replace(/[\s_]+/g, "-")
-          .replace(/[^a-z0-9-]/g, "");
+        return nama.toLowerCase().replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "");
       }
 
-      // ── Konfirmasi bahan ragu → pindah ke valid ──
       function konfirmasiBahan(slug, nama, conf) {
-        // Hapus dari section ragu
         const elRagu = document.getElementById(`ragu-${slug}`);
         if (elRagu) elRagu.remove();
 
-        // Cek apakah nama ini sudah ada di valid (hindari duplikat)
-        const elValidSudahAda = document.getElementById(`valid-${slug}`);
-        if (elValidSudahAda) return; // sudah ada, tidak perlu tambah lagi
+        if (document.getElementById(`valid-${slug}`)) {
+          _updateCounter();
+          return;
+        }
 
-        // Tambahkan ke section valid
         const htmlBaru = `
-    <div class="bahan-item valid" id="valid-${slug}">
-      ✅ ${nama.replace(/_/g, " ")}
-      <span class="badge-conf">${conf}</span>
-      <button class="btn-hapus-bahan" title="Hapus bahan ini"
-        onclick="hapusBahanHasil('${slug}', '${nama}', 'valid')">
-        ✕
-      </button>
-    </div>`;
-        document
-          .getElementById("listBahanValid")
-          .insertAdjacentHTML("beforeend", htmlBaru);
-
-        // Update counter label
+          <div class="bahan-item valid" id="valid-${slug}" data-nama="${nama}" data-conf="${conf}">
+            ${nama.replace(/_/g, " ")}
+            <span class="badge-conf">${conf}</span>
+            <button class="btn-hapus-bahan" title="Hapus bahan" onclick="hapusBahanHasil('${slug}', 'valid')">✕</button>
+          </div>`;
+        
+        document.getElementById("listBahanValid").insertAdjacentHTML("beforeend", htmlBaru);
         _updateCounter();
-
-        // Pastikan tombol konfirmasi muncul
-        document.getElementById("btnKonfirmasi").classList.add("show");
-
-        // Hapus label "TIDAK YAKIN" kalau sudah kosong
-        _cekRaguKosong();
       }
 
-      // ── Hapus bahan dari valid atau ragu ──
-      function hapusBahanHasil(slug, nama, dari) {
+      function hapusBahanHasil(slug, dari) {
         const el = document.getElementById(`${dari}-${slug}`);
         if (el) el.remove();
-
-        // Update counter
         _updateCounter();
+      }
 
-        // Kalau valid kosong, sembunyikan tombol konfirmasi
-        const sisaValid = document.querySelectorAll(".bahan-item.valid").length;
-        if (sisaValid === 0) {
+      // FITUR BARU: Aksi Massal Setuju Semua
+      function setujuiSemuaRagu() {
+        const itemsRagu = document.querySelectorAll("#listBahanRagu .bahan-item.ragu");
+        itemsRagu.forEach((el) => {
+          const slug = el.id.replace("ragu-", "");
+          const nama = el.getAttribute("data-nama");
+          const conf = el.getAttribute("data-conf");
+          
+          if (!document.getElementById(`valid-${slug}`)) {
+            const htmlBaru = `
+              <div class="bahan-item valid" id="valid-${slug}" data-nama="${nama}" data-conf="${conf}">
+                ${nama.replace(/_/g, " ")}
+                <span class="badge-conf">${conf}</span>
+                <button class="btn-hapus-bahan" title="Hapus bahan" onclick="hapusBahanHasil('${slug}', 'valid')">✕</button>
+              </div>`;
+            document.getElementById("listBahanValid").insertAdjacentHTML("beforeend", htmlBaru);
+          }
+          el.remove();
+        });
+        _updateCounter();
+      }
+
+      // FITUR BARU: Aksi Massal Batal/Hapus Semua Ragu
+      function batalSemuaRagu() {
+        document.getElementById("listBahanRagu").innerHTML = "";
+        _updateCounter();
+      }
+
+      function _updateCounter() {
+        const jmlValid = document.querySelectorAll("#listBahanValid .bahan-item.valid").length;
+        const jmlRagu = document.querySelectorAll("#listBahanRagu .bahan-item.ragu").length;
+
+        // Kontrol tampilan header komponen valid
+        if (jmlValid > 0) {
+          document.getElementById("headerValid").style.display = "flex";
+          document.getElementById("titleValid").textContent = `TERKONFIRMASI (${jmlValid})`;
+          document.getElementById("btnKonfirmasi").classList.add("show");
+        } else {
+          document.getElementById("headerValid").style.display = "none";
           document.getElementById("btnKonfirmasi").classList.remove("show");
         }
 
-        // Hapus label "TIDAK YAKIN" kalau ragu sudah kosong
-        _cekRaguKosong();
-      }
-
-      // ── Update counter di label seksi ──
-      function _updateCounter() {
-        const jmlValid = document.querySelectorAll(".bahan-item.valid").length;
-        const jmlRagu = document.querySelectorAll(".bahan-item.ragu").length;
-
-        const labelValid = document.querySelector(
-          "#listBahanValid .label-seksi",
-        );
-        const labelRagu = document.querySelector("#listBahanRagu .label-seksi");
-
-        if (labelValid) labelValid.textContent = `✅ TERDETEKSI (${jmlValid})`;
-        if (labelRagu) labelRagu.textContent = `⚠️ TIDAK YAKIN (${jmlRagu})`;
-      }
-
-      // ── Sembunyikan section ragu kalau sudah kosong ──
-      function _cekRaguKosong() {
-        const sisaRagu = document.querySelectorAll(".bahan-item.ragu").length;
-        if (sisaRagu === 0) {
-          document.getElementById("listBahanRagu").innerHTML = "";
+        // Kontrol tampilan header komponen ragu
+        if (jmlRagu > 0) {
+          document.getElementById("headerRagu").style.display = "flex";
+          document.getElementById("titleRagu").textContent = `KONFIRMASI (${jmlRagu})`;
+        } else {
+          document.getElementById("headerRagu").style.display = "none";
         }
       }
 
-      // ── Konfirmasi & kirim ke halaman utama ──
       function konfirmasiDanCariResep() {
-        // Ambil semua bahan valid yang tersisa di UI
         const bahanValid = [];
-        document.querySelectorAll(".bahan-item.valid").forEach((el) => {
-          // Ambil teks nama (node pertama setelah icon)
-          const teks =
-            el.childNodes[1]?.textContent?.trim() ||
-            el.textContent.replace(/[✅🧠🔍%0-9.,✕✓Yakin]/g, "").trim();
-
-          // Cara lebih reliable: ambil dari id element
-          const id = el.id.replace("valid-", "");
-          const nama = id.replace(/-/g, " ");
+        document.querySelectorAll("#listBahanValid .bahan-item.valid").forEach((el) => {
+          const nama = el.getAttribute("data-nama").replace(/_/g, " ");
           if (nama) bahanValid.push(nama);
         });
 
@@ -782,7 +689,6 @@
         window.location.href = "/?mode=scan";
       }
 
-      // ── Gambar bounding box di atas foto ──
       function gambarBoundingBox(bboxData) {
         if (!bboxData || !bboxData.length) return;
 
@@ -798,36 +704,27 @@
 
           bboxData.forEach((item) => {
             const { bbox, nama, status, confidence } = item;
-            const color =
-              status === "valid" || status === "gemini_only"
-                ? "#00c53b"
-                : "#ffa726";
+            const color = status === "valid" ? "#00c53b" : "#ffa726";
 
-            // Kotak
             ctx.strokeStyle = color;
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.rect(bbox.x1, bbox.y1, bbox.x2 - bbox.x1, bbox.y2 - bbox.y1);
             ctx.stroke();
 
-            // Label background
             const label = `${nama.replace(/_/g, " ")}${confidence ? " " + confidence + "%" : ""}`;
             ctx.font = "bold 14px Nunito, sans-serif";
             const tw = ctx.measureText(label).width;
             ctx.fillStyle = color;
             ctx.fillRect(bbox.x1, bbox.y1 - 24, tw + 12, 24);
 
-            // Label teks
             ctx.fillStyle = "white";
             ctx.fillText(label, bbox.x1 + 6, bbox.y1 - 6);
           });
         };
-
-        // Trigger onload jika gambar sudah loaded
         if (img.complete) img.onload();
       }
 
-      // ── Foto ulang ──
       function ulangi() {
         hasilScan = null;
         document.getElementById("preview-wrapper").style.display = "none";
@@ -837,33 +734,22 @@
         document.getElementById("hasilPlaceholder").style.display = "block";
         document.getElementById("hasilKonten").style.display = "none";
         document.getElementById("statusDot").classList.remove("aktif");
-        document.getElementById("statusTeks").textContent =
-          "Kamera belum aktif";
+        document.getElementById("statusTeks").textContent = "Kamera belum aktif";
 
         const ctx = BBOX_CVS.getContext("2d");
         ctx.clearRect(0, 0, BBOX_CVS.width, BBOX_CVS.height);
       }
 
-      // ── Konfirmasi hasil & pindah ke halaman utama ──
-      function konfirmasiDanCariResep() {
-        if (!hasilScan || !hasilScan.bahan_valid.length) return;
-
-        const bahanValid = hasilScan.bahan_valid.map((b) =>
-          b.nama.replace(/_/g, " "),
-        );
-        localStorage.setItem("hasilScan", JSON.stringify(bahanValid));
-        window.location.href = "/?mode=scan";
-      }
-
-      // ── Error handler ──
       function tampilkanError(pesan) {
         document.getElementById("hasilPlaceholder").style.display = "none";
         document.getElementById("hasilKonten").style.display = "block";
+        document.getElementById("headerValid").style.display = "none";
+        document.getElementById("headerRagu").style.display = "none";
         document.getElementById("listBahanValid").innerHTML = `
-        <div style="text-align:center;padding:20px;color:#c62828">
-          <i class="bi bi-exclamation-triangle" style="font-size:32px;display:block;margin-bottom:8px"></i>
-          <p>${pesan}</p>
-        </div>`;
+          <div style="text-align:center;padding:20px;color:#c62828">
+            <i class="bi bi-exclamation-triangle" style="font-size:32px;display:block;margin-bottom:8px"></i>
+            <p>${pesan}</p>
+          </div>`;
         document.getElementById("listBahanRagu").innerHTML = "";
       }
     </script>
