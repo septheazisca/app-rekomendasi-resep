@@ -39,7 +39,7 @@ import tensorflow as tf
 
 MODEL_PATH  = os.path.join(os.path.dirname(__file__), "../model/model_bahan_makanan.h5")
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "../model/class_labels.json")
-CNN_THRESHOLD = 0.50   # confidence minimum agar bahan dinyatakan valid
+CNN_THRESHOLD = 0.35   # confidence minimum agar bahan dinyatakan valid
 
 # Load daftar label CNN
 with open(LABELS_PATH, encoding="utf-8") as f:

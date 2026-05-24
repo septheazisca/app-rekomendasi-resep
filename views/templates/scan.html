@@ -586,6 +586,10 @@
       }
 
       // ── Render hasil deteksi ──
+      // ============================================================
+      // GANTI fungsi tampilkanHasil() di scan.html dengan ini
+      // ============================================================
+
       function tampilkanHasil(data) {
         document.getElementById("hasilPlaceholder").style.display = "none";
         document.getElementById("hasilKonten").style.display = "block";
@@ -593,39 +597,189 @@
         const valid = data.bahan_valid || [];
         const ragu = data.bahan_ragu || [];
 
-        let htmlValid =
-          valid.length > 0
-            ? `<p style="font-size:12px;color:#555;font-weight:700;margin-bottom:8px">✅ TERDETEKSI (${valid.length})</p>`
-            : "";
+        // ── Deduplikasi: gabungkan bahan dengan nama sama ──
+        // Valid: ambil unik saja
+        const validUnik = [];
+        const validNama = new Set();
         valid.forEach((b) => {
+          const key = b.nama.toLowerCase().replace(/_/g, " ");
+          if (!validNama.has(key)) {
+            validNama.add(key);
+            validUnik.push(b);
+          }
+        });
+
+        // Ragu: ambil unik saja (duplikat otomatis ikut saat konfirmasi)
+        const raguUnik = [];
+        const raguNama = new Set();
+        ragu.forEach((b) => {
+          const key = b.nama.toLowerCase().replace(/_/g, " ");
+          // Skip kalau nama ini sudah ada di valid
+          if (!validNama.has(key) && !raguNama.has(key)) {
+            raguNama.add(key);
+            raguUnik.push(b);
+          }
+        });
+
+        // ── Render bahan valid ──
+        let htmlValid =
+          validUnik.length > 0
+            ? `<p class="label-seksi">✅ TERDETEKSI (${validUnik.length})</p>`
+            : "";
+        validUnik.forEach((b) => {
           const conf = b.confidence ? `${b.confidence}%` : "via Gemini";
           const sumberIcon = b.sumber === "cnn" ? "🧠" : "🔍";
           htmlValid += `
-          <div class="bahan-item valid">
-            ${sumberIcon} ${b.nama.replace(/_/g, " ")}
-            <span class="badge-conf">${conf}</span>
-          </div>`;
+      <div class="bahan-item valid" id="valid-${_slugify(b.nama)}">
+        ${sumberIcon} ${b.nama.replace(/_/g, " ")}
+        <span class="badge-conf">${conf}</span>
+        <button class="btn-hapus-bahan" title="Hapus bahan ini"
+          onclick="hapusBahanHasil('${_slugify(b.nama)}', '${b.nama}', 'valid')">
+          ✕
+        </button>
+      </div>`;
         });
 
-        let htmlRagu =
-          ragu.length > 0
-            ? `<p style="font-size:12px;color:#555;font-weight:700;margin:12px 0 8px">⚠️ TIDAK YAKIN (${ragu.length})</p>`
-            : "";
-        ragu.forEach((b) => {
-          const conf = b.confidence ? `${b.confidence}%` : "-";
-          htmlRagu += `
-          <div class="bahan-item ragu">
-            ⚠️ ${b.nama.replace(/_/g, " ")}
-            <span class="badge-conf">${conf}</span>
-          </div>`;
-        });
+        // ── Render bahan ragu ──
+        let htmlRagu = "";
+        if (raguUnik.length > 0) {
+          htmlRagu = `<p class="label-seksi" style="margin-top:14px">⚠️ TIDAK YAKIN (${raguUnik.length})</p>
+    <p style="font-size:12px;color:#888;margin-bottom:8px">Konfirmasi atau hapus bahan di bawah ini:</p>`;
+
+          raguUnik.forEach((b) => {
+            const conf = b.confidence ? `${b.confidence}%` : "-";
+            htmlRagu += `
+        <div class="bahan-item ragu" id="ragu-${_slugify(b.nama)}">
+          ⚠️ ${b.nama.replace(/_/g, " ")}
+          <span class="badge-conf">${conf}</span>
+          <div class="aksi-ragu">
+            <button class="btn-yakin" title="Ya, ini benar"
+              onclick="konfirmasiBahan('${_slugify(b.nama)}', '${b.nama}', '${conf}')">
+              ✓ Yakin
+            </button>
+            <button class="btn-hapus-bahan" title="Hapus bahan ini"
+              onclick="hapusBahanHasil('${_slugify(b.nama)}', '${b.nama}', 'ragu')">
+              ✕
+            </button>
+          </div>
+        </div>`;
+          });
+        }
 
         document.getElementById("listBahanValid").innerHTML = htmlValid;
         document.getElementById("listBahanRagu").innerHTML = htmlRagu;
 
-        if (valid.length > 0) {
+        // Tampilkan tombol konfirmasi kalau ada bahan valid
+        if (validUnik.length > 0) {
           document.getElementById("btnKonfirmasi").classList.add("show");
         }
+      }
+
+      // ── Helper: slug nama bahan untuk id HTML ──
+      function _slugify(nama) {
+        return nama
+          .toLowerCase()
+          .replace(/[\s_]+/g, "-")
+          .replace(/[^a-z0-9-]/g, "");
+      }
+
+      // ── Konfirmasi bahan ragu → pindah ke valid ──
+      function konfirmasiBahan(slug, nama, conf) {
+        // Hapus dari section ragu
+        const elRagu = document.getElementById(`ragu-${slug}`);
+        if (elRagu) elRagu.remove();
+
+        // Cek apakah nama ini sudah ada di valid (hindari duplikat)
+        const elValidSudahAda = document.getElementById(`valid-${slug}`);
+        if (elValidSudahAda) return; // sudah ada, tidak perlu tambah lagi
+
+        // Tambahkan ke section valid
+        const htmlBaru = `
+    <div class="bahan-item valid" id="valid-${slug}">
+      ✅ ${nama.replace(/_/g, " ")}
+      <span class="badge-conf">${conf}</span>
+      <button class="btn-hapus-bahan" title="Hapus bahan ini"
+        onclick="hapusBahanHasil('${slug}', '${nama}', 'valid')">
+        ✕
+      </button>
+    </div>`;
+        document
+          .getElementById("listBahanValid")
+          .insertAdjacentHTML("beforeend", htmlBaru);
+
+        // Update counter label
+        _updateCounter();
+
+        // Pastikan tombol konfirmasi muncul
+        document.getElementById("btnKonfirmasi").classList.add("show");
+
+        // Hapus label "TIDAK YAKIN" kalau sudah kosong
+        _cekRaguKosong();
+      }
+
+      // ── Hapus bahan dari valid atau ragu ──
+      function hapusBahanHasil(slug, nama, dari) {
+        const el = document.getElementById(`${dari}-${slug}`);
+        if (el) el.remove();
+
+        // Update counter
+        _updateCounter();
+
+        // Kalau valid kosong, sembunyikan tombol konfirmasi
+        const sisaValid = document.querySelectorAll(".bahan-item.valid").length;
+        if (sisaValid === 0) {
+          document.getElementById("btnKonfirmasi").classList.remove("show");
+        }
+
+        // Hapus label "TIDAK YAKIN" kalau ragu sudah kosong
+        _cekRaguKosong();
+      }
+
+      // ── Update counter di label seksi ──
+      function _updateCounter() {
+        const jmlValid = document.querySelectorAll(".bahan-item.valid").length;
+        const jmlRagu = document.querySelectorAll(".bahan-item.ragu").length;
+
+        const labelValid = document.querySelector(
+          "#listBahanValid .label-seksi",
+        );
+        const labelRagu = document.querySelector("#listBahanRagu .label-seksi");
+
+        if (labelValid) labelValid.textContent = `✅ TERDETEKSI (${jmlValid})`;
+        if (labelRagu) labelRagu.textContent = `⚠️ TIDAK YAKIN (${jmlRagu})`;
+      }
+
+      // ── Sembunyikan section ragu kalau sudah kosong ──
+      function _cekRaguKosong() {
+        const sisaRagu = document.querySelectorAll(".bahan-item.ragu").length;
+        if (sisaRagu === 0) {
+          document.getElementById("listBahanRagu").innerHTML = "";
+        }
+      }
+
+      // ── Konfirmasi & kirim ke halaman utama ──
+      function konfirmasiDanCariResep() {
+        // Ambil semua bahan valid yang tersisa di UI
+        const bahanValid = [];
+        document.querySelectorAll(".bahan-item.valid").forEach((el) => {
+          // Ambil teks nama (node pertama setelah icon)
+          const teks =
+            el.childNodes[1]?.textContent?.trim() ||
+            el.textContent.replace(/[✅🧠🔍%0-9.,✕✓Yakin]/g, "").trim();
+
+          // Cara lebih reliable: ambil dari id element
+          const id = el.id.replace("valid-", "");
+          const nama = id.replace(/-/g, " ");
+          if (nama) bahanValid.push(nama);
+        });
+
+        if (bahanValid.length === 0) {
+          alert("Tidak ada bahan yang valid untuk dicari resepnya.");
+          return;
+        }
+
+        localStorage.setItem("hasilScan", JSON.stringify(bahanValid));
+        window.location.href = "/?mode=scan";
       }
 
       // ── Gambar bounding box di atas foto ──
