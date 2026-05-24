@@ -1,40 +1,45 @@
+// ============================================================
+// app.js — Versi 2 (Hybrid AI: Gemini + CNN)
+// Teachable Machine dihapus, scan sekarang di halaman /scan
+// ============================================================
+
 let bahanDipilih = new Set();
 
 document.addEventListener("DOMContentLoaded", () => {
   muatBahan();
 
+  // Tangkap hasil scan dari halaman /scan via localStorage
   const hasil = JSON.parse(localStorage.getItem("hasilScan"));
   if (hasil && hasil.length > 0) {
-  console.log("Hasil scan:", hasil);
+    console.log("Hasil scan diterima:", hasil);
 
-  setTimeout(() => {
-    hasil.forEach(item => {
-      bahanDipilih.add(item.toLowerCase());
-    });
+    setTimeout(() => {
+      hasil.forEach(item => {
+        bahanDipilih.add(item.toLowerCase());
+      });
+      updateBarBahan();
+      cariResep();
+    }, 500);
 
-    updateBarBahan();
-    cariResep();
-  }, 500);
-
-  localStorage.removeItem("hasilScan");
-  
+    localStorage.removeItem("hasilScan");
   }
 });
-// Ambil & render semua bahan dari API
+
+// ── Ambil & render semua bahan dari API ──────────────────────
 async function muatBahan() {
   try {
     const { data } = await fetch("/api/bahan").then(r => r.json());
     const kontainer = document.getElementById("daftarBahan");
     kontainer.innerHTML = "";
 
-    const kategoriList = [ "Karbohidrat", "Protein Hewani", "Protein Nabati", "Sayuran", "Buah", "Bumbu", "Minyak & Lemak", "Produk Susu", "Kacang & Biji", "Cairan", "Makanan Manis", "Minuman", "Rempah & Bumbu"];
-    // const kategoriList = ["Protein","Karbohidrat","Sayuran","Bumbu","Protein Nabati","Buah"];
-    // const kategoriList = ["Karbohidrat", 'Protein Hewani', "Protein Nabati", "Sayuran", "Bumbu", 'Minyak & Lemak', "Produk Susu", "Kacang & Biji", "Cairan", "Makanan Manis", "Minuman"];
+    const kategoriList = [
+      "Karbohidrat", "Sayur", "Protein Hewan", "Protein Nabati", "Bumbu", "Rempah", "Lainnya"
+    ];
 
     kategoriList
       .filter(kat => data[kat])
       .forEach((kat, index) => {
-        const id = kat.replace(/\s+/g, "-").toLowerCase();
+        const id      = kat.replace(/\s+/g, "-").toLowerCase();
         const isFirst = index === 0;
 
         const item = document.createElement("div");
@@ -49,10 +54,8 @@ async function muatBahan() {
               aria-expanded="${isFirst ? 'true' : 'false'}"
               aria-controls="collapse-${id}"
               style="background-color: #80F6A3; color: #1a1a1a; box-shadow: none; padding: 12px 16px;">
-
               <span class="judul-kategori">${kat}</span>
               <i class="bi bi-chevron-down icon-panah"></i>
-
             </button>
           </h2>
           <div
@@ -74,13 +77,27 @@ async function muatBahan() {
         kontainer.appendChild(item);
       });
 
+    // Setelah bahan dimuat, aktifkan bahan dari hasil scan jika ada
+    _aktifkanBahanDariScan();
+
   } catch (err) {
     document.getElementById("daftarBahan").innerHTML =
       `<p style="color:red">Gagal memuat bahan: ${err.message}</p>`;
   }
 }
 
-//  Pilih/batalkan bahan saat diklik
+// Aktifkan visual card bahan yang sesuai hasil scan
+function _aktifkanBahanDariScan() {
+  if (bahanDipilih.size === 0) return;
+  document.querySelectorAll(".bahan-card").forEach(card => {
+    const nama = card.querySelector(".nama")?.textContent?.toLowerCase();
+    if (nama && bahanDipilih.has(nama)) {
+      card.classList.add("aktif");
+    }
+  });
+}
+
+// ── Pilih/batalkan bahan saat diklik ────────────────────────
 function toggleBahan(nama, card) {
   if (bahanDipilih.has(nama)) {
     bahanDipilih.delete(nama);
@@ -92,7 +109,7 @@ function toggleBahan(nama, card) {
   updateBarBahan();
 }
 
-// Hapus 1 bahan dari pilihan via tag
+// ── Hapus 1 bahan dari pilihan via tag ──────────────────────
 function hapusBahan(nama) {
   bahanDipilih.delete(nama);
   document.querySelectorAll(".bahan-card .nama")
@@ -100,16 +117,16 @@ function hapusBahan(nama) {
   updateBarBahan();
 }
 
-// Bersihkan semua pilihan & tampilan
+// ── Bersihkan semua pilihan ──────────────────────────────────
 function resetBahan() {
   bahanDipilih.clear();
   document.querySelectorAll(".bahan-card.aktif").forEach(c => c.classList.remove("aktif"));
   updateBarBahan();
-  document.getElementById("hasilKonten").style.display = "none";
+  document.getElementById("hasilKonten").style.display      = "none";
   document.getElementById("hasilPlaceholder").style.display = "block";
 }
 
-// Sinkronkan bar tags dengan state terkini
+// ── Sinkronkan bar tags ──────────────────────────────────────
 function updateBarBahan() {
   const tagsEl  = document.getElementById("bahanTags");
   const btnCari = document.getElementById("btnCari");
@@ -125,18 +142,22 @@ function updateBarBahan() {
       `).join("");
 }
 
-// Kirim bahan ke backend, tunggu hasil
+// ── Kirim bahan ke backend, tampilkan hasil ─────────────────
 async function cariResep() {
   const konten = document.getElementById("hasilKonten");
   document.getElementById("hasilPlaceholder").style.display = "none";
   konten.style.display = "block";
-  konten.innerHTML = `<div class="loading"><div class="spinner"></div><p>Mencari resep terbaik untukmu...</p></div>`;
+  konten.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Mencari resep terbaik untukmu...</p>
+    </div>`;
 
   try {
     const { status, data } = await fetch("/api/rekomendasi", {
-      method: "POST",
+      method : "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ bahan: [...bahanDipilih] })
+      body   : JSON.stringify({ bahan: [...bahanDipilih] })
     }).then(r => r.json());
 
     if (status !== "ok" || !data.length) {
@@ -155,15 +176,18 @@ async function cariResep() {
   }
 }
 
-// Render kartu resep dari response
+// ── Render kartu resep ───────────────────────────────────────
 function tampilkanHasil(resepList) {
-  const rankLabel = ["🥇 Terbaik","🥈 Kedua","🥉 Ketiga"];
-  const rankClass = ["rank-1","rank-2","rank-3"];
+  const rankLabel = ["🥇 Terbaik", "🥈 Kedua", "🥉 Ketiga"];
+  const rankClass = ["rank-1", "rank-2", "rank-3"];
 
   document.getElementById("hasilKonten").innerHTML =
-    `<div class="hasil-title"><i class="bi bi-stars" style="color: orange;"></i> ${resepList.length} Resep Direkomendasikan</div>` +
+    `<div class="hasil-title">
+       <i class="bi bi-stars" style="color:orange"></i>
+       ${resepList.length} Resep Direkomendasikan
+     </div>` +
     resepList.map((resep, i) => `
-      <a href="/resep/${resep.id_resep}" class="resep-card" onclick="this.classList.toggle('expanded')">
+      <a href="/resep/${resep.id_resep}" class="resep-card">
         <span class="resep-ranking ${rankClass[i] ?? ""}">${rankLabel[i] ?? `#${i+1}`}</span>
         <div class="resep-header">
           <span class="resep-nama">${resep.nama_resep}</span>
@@ -182,171 +206,36 @@ function tampilkanHasil(resepList) {
         <div class="bahan-badges">
           ${resep.bahan_cocok.map(b => `<span class="badge badge-ada">✓ ${b}</span>`).join("")}
           ${resep.bahan_kurang.slice(0,4).map(b => `<span class="badge badge-kurang">+ ${b}</span>`).join("")}
-          ${resep.bahan_kurang.length > 4 ? `<span class="badge badge-kurang">+${resep.bahan_kurang.length-4} lagi</span>` : ""}
+          ${resep.bahan_kurang.length > 4
+            ? `<span class="badge badge-kurang">+${resep.bahan_kurang.length - 4} lagi</span>`
+            : ""}
         </div>
       </a>
     `).join("");
 }
 
-
+// ── Filter bahan di panel kiri ───────────────────────────────
 function filterBahan() {
   const input = document.getElementById("inputCariBahan").value.toLowerCase();
-  const accordionItems = document.querySelectorAll(".accordion-item");
-
-  accordionItems.forEach(item => {
+  document.querySelectorAll(".accordion-item").forEach(item => {
     const cards = item.querySelectorAll(".bahan-card");
     let adaYangCocok = false;
 
     cards.forEach(card => {
-      const namaBahan = card.querySelector(".nama").textContent.toLowerCase();
-      if (namaBahan.includes(input)) {
-        card.style.display = "flex"; // Tampilkan card
-        adaYangCocok = true;
-      } else {
-        card.style.display = "none"; // Sembunyikan card
-      }
+      const nama = card.querySelector(".nama").textContent.toLowerCase();
+      const cocok = nama.includes(input);
+      card.style.display = cocok ? "flex" : "none";
+      if (cocok) adaYangCocok = true;
     });
 
-    // Logika Accordion: Tampilkan kategori hanya jika ada bahan yang cocok
-    if (adaYangCocok) {
-      item.style.display = "block";
-      // Opsional: Otomatis buka accordion kalau lagi nyari
-      if (input.length > 0) {
-        const collapse = item.querySelector(".accordion-collapse");
-        if (!collapse.classList.contains("show")) {
-          const btn = item.querySelector(".accordion-button");
-          btn.classList.remove("collapsed");
-          collapse.classList.add("show");
-        }
+    item.style.display = adaYangCocok ? "block" : "none";
+
+    if (adaYangCocok && input.length > 0) {
+      const collapse = item.querySelector(".accordion-collapse");
+      if (!collapse.classList.contains("show")) {
+        item.querySelector(".accordion-button").classList.remove("collapsed");
+        collapse.classList.add("show");
       }
-    } else {
-      item.style.display = "none";
     }
   });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const URL_MODEL = "https://teachablemachine.withgoogle.com/models/4GCdHJwhO/";
-let model, webcam, labelContainer, maxPredictions;
-let hasilScanLocal = [];
-let counterScan = {};
-
-// Fungsi untuk memulai kamera di dalam modal
-async function initScan() {
-    const btnStart = document.getElementById("btnStartWebcam");
-    btnStart.disabled = true;
-    btnStart.innerHTML = "Memuat Model...";
-
-    const modelURL = URL_MODEL + "model.json";
-    const metadataURL = URL_MODEL + "metadata.json";
-
-    model = await tmImage.load(modelURL, metadataURL);
-    maxPredictions = model.getTotalClasses();
-
-    webcam = new tmImage.Webcam(250, 250, true); // flip: true
-    await webcam.setup();
-    await webcam.play();
-    
-    btnStart.style.display = "none"; // Sembunyikan tombol setelah kamera aktif
-    window.requestAnimationFrame(loopScan);
-
-    document.getElementById("webcam-container").innerHTML = "";
-    document.getElementById("webcam-container").appendChild(webcam.canvas);
-}
-
-async function loopScan() {
-    if (webcam && webcam.canvas) {
-        webcam.update();
-        await predictScan();
-        window.requestAnimationFrame(loopScan);
-    }
-}
-
-async function predictScan() {
-    const prediction = await model.predict(webcam.canvas);
-    let tertinggi = prediction.reduce((a, b) => a.probability > b.probability ? a : b);
-    let nama = tertinggi.className.toLowerCase();
-
-    if (tertinggi.probability > 0.97) {
-        if (!counterScan[nama]) counterScan[nama] = 0;
-        counterScan[nama]++;
-
-        if (counterScan[nama] >= 10 && !hasilScanLocal.includes(nama)) {
-            hasilScanLocal.push(nama);
-            document.getElementById("list-bahan-scan").innerText = hasilScanLocal.join(", ");
-        }
-    }
-
-    document.getElementById("label-container").innerHTML = 
-        `${tertinggi.className} (${(tertinggi.probability * 100).toFixed(0)}%)`;
-}
-
-// Fungsi memindahkan hasil scan ke list utama
-function terapkanHasilScan() {
-  if (hasilScanLocal.length > 0) {
-      hasilScanLocal.forEach(item => {
-          bahanDipilih.add(item.toLowerCase());
-      });
-
-      updateBarBahan();
-      cariResep();
-      
-      // Ambil instance modal lalu tutup
-      const modalEl = document.getElementById('modalScan');
-      const modal = bootstrap.Modal.getInstance(modalEl);
-      if (modal) modal.hide();
-      
-      // PENTING: Panggil stopWebcam di sini untuk refresh state
-      stopWebcam();
-  } else {
-      alert("Belum ada bahan yang terdeteksi secara valid.");
-  }
-}
-
-// Fungsi menghentikan kamera agar tidak memakan resource
-
-function stopWebcam() {
-  // 1. Hentikan aliran video kamera
-  if (webcam) {
-      webcam.stop();
-      webcam = null;
-  }
-
-  // 2. Kosongkan container webcam di UI agar tidak sisa gambar terakhir
-  const container = document.getElementById("webcam-container");
-  if (container) container.innerHTML = "";
-
-  // 3. Reset semua data deteksi (REFRESH STATE)
-  hasilScanLocal = [];
-  counterScan = {};
-
-  // 4. Reset teks petunjuk di modal
-  const labelContainer = document.getElementById("label-container");
-  const listScan = document.getElementById("list-bahan-scan");
-  if (labelContainer) labelContainer.innerHTML = "";
-  if (listScan) listScan.innerText = "-";
-
-  // 5. Munculkan kembali tombol "Aktifkan Kamera" untuk penggunaan berikutnya
-  const btnStart = document.getElementById("btnStartWebcam");
-  if (btnStart) {
-      btnStart.style.display = "block";
-      btnStart.disabled = false;
-      btnStart.innerHTML = "📷 Aktifkan Kamera";
-  }
-}
-
-

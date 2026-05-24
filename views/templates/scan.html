@@ -1,120 +1,717 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <title>Scan Bahan</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scan Bahan — Reseep</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <style>
+      :root {
+        --hijau-tua: #0c3318;
+        --hijau-muda: #00c53b;
+        --hijau-bg: #e8f5e9;
+      }
 
-<body class="bg-white" style="font-family: 'Nunito', sans-serif;"></body>
+      body {
+        font-family: "Nunito", sans-serif;
+        background: #f4faf5;
+      }
 
-<div class="container py-5 text-center">
+      /* ── Navbar mini ── */
+      .scan-navbar {
+        background: var(--hijau-tua);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .scan-navbar a {
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        opacity: 0.7;
+      }
+      .scan-navbar a:hover {
+        opacity: 1;
+      }
+      .scan-navbar .brand {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--hijau-muda);
+      }
 
-  <h2 class="fw-bold mb-4" style="color:#0C3318;">
-    Scan Bahan Makanan
-  </h2>
+      /* ── Layout ── */
+      .scan-wrapper {
+        max-width: 960px;
+        margin: 32px auto;
+        padding: 0 16px;
+      }
 
-  <div class="bg-white shadow rounded-4 p-4 mx-auto" style="max-width:400px;">
+      /* ── Kamera area ── */
+      .kamera-box {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+      .kamera-header {
+        background: var(--hijau-tua);
+        color: white;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .kamera-header h5 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 16px;
+      }
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #888;
+        display: inline-block;
+        margin-right: 6px;
+      }
+      .status-dot.aktif {
+        background: var(--hijau-muda);
+        animation: pulse 1.2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
 
-    <!-- tombol kamera -->
-    <button onclick="init()" 
-      class="btn fw-bold w-100 mb-3"
-      style="background-color:#00C53B; color:white;">
-      📷 Aktifkan Kamera
-    </button>
+      /* ── Canvas area ── */
+      #canvas-wrapper {
+        position: relative;
+        width: 100%;
+        background: #111;
+        min-height: 320px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #videoEl {
+        width: 100%;
+        max-height: 420px;
+        object-fit: cover;
+        display: block;
+      }
+      #canvasOverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      #placeholder-kamera {
+        text-align: center;
+        color: #aaa;
+        padding: 60px 20px;
+      }
+      #placeholder-kamera i {
+        font-size: 56px;
+        margin-bottom: 12px;
+        display: block;
+      }
 
-    <!-- kamera -->
-    <div id="webcam-container" class="mb-3"></div>
+      /* ── Foto preview ── */
+      #preview-wrapper {
+        display: none;
+        position: relative;
+      }
+      #imgPreview {
+        width: 100%;
+        max-height: 420px;
+        object-fit: contain;
+        display: block;
+        background: #111;
+      }
+      #canvasBbox {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
 
-    <!-- hasil -->
-    <div id="label-container" class="small text-muted mb-3"></div>
+      /* ── Tombol ── */
+      .kamera-controls {
+        padding: 20px 24px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .btn-ambil {
+        background: var(--hijau-muda);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 32px;
+        font-weight: 700;
+        font-size: 15px;
+        flex: 1;
+        transition: all 0.2s;
+      }
+      .btn-ambil:hover {
+        background: #00a832;
+        transform: translateY(-1px);
+      }
+      .btn-ambil:disabled {
+        background: #ccc;
+        transform: none;
+        cursor: not-allowed;
+      }
+      .btn-ulang {
+        background: white;
+        color: var(--hijau-tua);
+        border: 2px solid var(--hijau-tua);
+        border-radius: 50px;
+        padding: 12px 24px;
+        font-weight: 700;
+        font-size: 15px;
+        display: none;
+      }
+      .btn-ulang:hover {
+        background: var(--hijau-bg);
+      }
 
-    <!-- tombol cari -->
-    <button onclick="simpanHasil()" 
-      class="btn fw-bold w-100"
-      style="background-color:#00C53B; color:white;">
-      Cari Resep
-    </button>
+      /* ── Loading overlay ── */
+      #loading-overlay {
+        display: none;
+        position: absolute;
+        inset: 0;
+        background: rgba(12, 51, 24, 0.75);
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        gap: 14px;
+        z-index: 10;
+      }
+      #loading-overlay.show {
+        display: flex;
+      }
+      .spinner-scan {
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top-color: var(--hijau-muda);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-  </div>
+      /* ── Hasil deteksi ── */
+      .hasil-box {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+      .hasil-header {
+        background: var(--hijau-bg);
+        padding: 16px 24px;
+        border-bottom: 1px solid #c8e6c9;
+      }
+      .hasil-header h6 {
+        margin: 0;
+        font-weight: 700;
+        color: var(--hijau-tua);
+      }
+      .hasil-body {
+        padding: 20px 24px;
+      }
 
-</div>
-  <!-- LIBRARY -->
+      /* Badge bahan */
+      .bahan-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .bahan-item.valid {
+        background: #e8f5e9;
+        color: #1b5e20;
+        border: 1px solid #a5d6a7;
+      }
+      .bahan-item.ragu {
+        background: #fff8e1;
+        color: #f57f17;
+        border: 1px solid #ffe082;
+      }
+      .bahan-item.gemini {
+        background: #e3f2fd;
+        color: #0d47a1;
+        border: 1px solid #90caf9;
+      }
 
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+      .badge-conf {
+        margin-left: auto;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.08);
+      }
 
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+      /* Tombol konfirmasi */
+      .btn-konfirmasi {
+        background: var(--hijau-tua);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 14px 32px;
+        font-weight: 800;
+        font-size: 15px;
+        width: 100%;
+        margin-top: 16px;
+        transition: all 0.2s;
+        display: none;
+      }
+      .btn-konfirmasi:hover {
+        background: #0a2812;
+        transform: translateY(-2px);
+      }
+      .btn-konfirmasi.show {
+        display: block;
+      }
 
-  <!-- SCRIPT -->
+      /* Tips */
+      .tips-box {
+        background: var(--hijau-bg);
+        border-radius: 14px;
+        padding: 16px 20px;
+        font-size: 13px;
+        color: #2e7d32;
+      }
+      .tips-box i {
+        margin-right: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="scan-navbar">
+      <a href="/"><i class="bi bi-arrow-left"></i> Kembali</a>
+      <span class="brand">Reseep</span>
+      <span style="color: white; font-size: 13px; margin-left: auto">
+        <i class="bi bi-camera-fill"></i> Scan Bahan
+      </span>
+    </nav>
 
-  <script>
-    console.log("JS KELOAD ✅");
+    <div class="scan-wrapper">
+      <div class="row g-4">
+        <!-- Kolom Kiri: Kamera -->
+        <div class="col-lg-7">
+          <div class="kamera-box">
+            <div class="kamera-header">
+              <h5><i class="bi bi-camera-fill me-2"></i>Kamera</h5>
+              <div>
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusTeks" style="font-size: 13px"
+                  >Kamera belum aktif</span
+                >
+              </div>
+            </div>
 
-    const URL = "https://teachablemachine.withgoogle.com/models/4GCdHJwhO/";
+            <!-- Area kamera / preview foto -->
+            <div id="canvas-wrapper">
+              <!-- Placeholder sebelum kamera aktif -->
+              <div id="placeholder-kamera">
+                <i class="bi bi-camera"></i>
+                <p>Klik tombol di bawah untuk aktifkan kamera</p>
+              </div>
+              <!-- Video live -->
+              <video
+                id="videoEl"
+                autoplay
+                playsinline
+                style="display: none"
+              ></video>
+              <!-- Preview setelah foto diambil -->
+              <div id="preview-wrapper">
+                <img id="imgPreview" alt="preview foto" />
+                <canvas id="canvasBbox"></canvas>
+              </div>
+              <!-- Loading overlay -->
+              <div id="loading-overlay">
+                <div class="spinner-scan"></div>
+                <span style="font-weight: 700">Menganalisa bahan...</span>
+                <span style="font-size: 13px; opacity: 0.8"
+                  >Layer 1: Gemini Vision → Layer 2: CNN</span
+                >
+              </div>
+            </div>
 
-    let model, webcam;
-    let hasilScan = [];
-    let counter = {};
-    async function init() {
-      console.log("INIT JALAN ✅");
+            <!-- Kontrol -->
+            <div class="kamera-controls">
+              <button
+                id="btnAktifkan"
+                class="btn-ambil"
+                onclick="aktifkanKamera()"
+              >
+                <i class="bi bi-camera me-2"></i>Aktifkan Kamera
+              </button>
+              <button
+                id="btnAmbil"
+                class="btn-ambil"
+                onclick="ambilFoto()"
+                style="display: none"
+              >
+                <i class="bi bi-camera-fill me-2"></i>Ambil Foto
+              </button>
+              <button id="btnUlang" class="btn-ulang" onclick="ulangi()">
+                <i class="bi bi-arrow-clockwise me-2"></i>Foto Ulang
+              </button>
+            </div>
+          </div>
 
-      const modelURL = URL + "model.json";
-      const metadataURL = URL + "metadata.json";
+          <!-- Tips -->
+          <div class="tips-box mt-3">
+            <i class="bi bi-lightbulb-fill"></i>
+            <strong>Tips foto yang baik:</strong> Letakkan semua bahan di
+            permukaan datar, pastikan pencahayaan cukup, dan ambil foto dari
+            atas.
+          </div>
+        </div>
 
-      model = await tmImage.load(modelURL, metadataURL);
+        <!-- Kolom Kanan: Hasil Deteksi -->
+        <div class="col-lg-5">
+          <div class="hasil-box h-100">
+            <div class="hasil-header">
+              <h6><i class="bi bi-list-check me-2"></i>Hasil Deteksi Bahan</h6>
+            </div>
+            <div class="hasil-body">
+              <!-- Placeholder sebelum scan -->
+              <div
+                id="hasilPlaceholder"
+                style="text-align: center; padding: 40px 20px; color: #aaa"
+              >
+                <i
+                  class="bi bi-image"
+                  style="font-size: 48px; display: block; margin-bottom: 12px"
+                ></i>
+                <p style="font-size: 14px">
+                  Foto bahan makanan untuk<br />mulai deteksi otomatis
+                </p>
+              </div>
 
-      webcam = new tmImage.Webcam(250, 250, true);
-      await webcam.setup();
-      await webcam.play();
-      window.requestAnimationFrame(loop);
+              <!-- Hasil setelah scan -->
+              <div id="hasilKonten" style="display: none">
+                <div id="listBahanValid"></div>
+                <div id="listBahanRagu"></div>
+                <button
+                  class="btn-konfirmasi"
+                  id="btnKonfirmasi"
+                  onclick="konfirmasiDanCariResep()"
+                >
+                  <i class="bi bi-search me-2"></i>Konfirmasi & Cari Resep
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      document.getElementById("webcam-container").appendChild(webcam.canvas);
-    }
+    <!-- Canvas tersembunyi untuk capture foto -->
+    <canvas id="canvasCapture" style="display: none"></canvas>
 
-    async function loop() {
-      webcam.update();
-      await predict();
-      window.requestAnimationFrame(loop);
-    }
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      let stream = null;
+      let hasilScan = null;
+      const VIDEO = document.getElementById("videoEl");
+      const CANVAS = document.getElementById("canvasCapture");
+      const BBOX_CVS = document.getElementById("canvasBbox");
+      const PREVIEW = document.getElementById("imgPreview");
+      const OVERLAY = document.getElementById("loading-overlay");
 
-    async function predict() {
-  const prediction = await model.predict(webcam.canvas);
+      // ── Aktifkan kamera ──
+      async function aktifkanKamera() {
+        try {
+          // Coba kamera belakang dulu (mobile), fallback ke depan
+          const constraints = {
+            video: {
+              facingMode: { ideal: "environment" },
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+            audio: false,
+          };
 
-  let tertinggi = prediction.reduce((a, b) =>
-    a.probability > b.probability ? a : b
-  );
+          stream = await navigator.mediaDevices.getUserMedia(constraints);
+          VIDEO.srcObject = stream;
 
-  let nama = tertinggi.className.toLowerCase();
+          // Tunggu video benar-benar siap
+          await new Promise((resolve) => (VIDEO.onloadedmetadata = resolve));
+          await VIDEO.play();
 
-  // 🔥 inisialisasi counter
-  if (!counter[nama]) {
-    counter[nama] = 0;
-  }
+          VIDEO.style.display = "block";
+          document.getElementById("placeholder-kamera").style.display = "none";
+          document.getElementById("btnAktifkan").style.display = "none";
+          document.getElementById("btnAmbil").style.display = "block";
+          document.getElementById("statusDot").classList.add("aktif");
+          document.getElementById("statusTeks").textContent = "Kamera aktif";
+        } catch (err) {
+          // Tampilkan error spesifik
+          let pesan = "Tidak bisa akses kamera.";
+          if (err.name === "NotAllowedError")
+            pesan = "Izin kamera ditolak. Izinkan akses kamera di browser.";
+          if (err.name === "NotFoundError")
+            pesan = "Kamera tidak ditemukan di perangkat ini.";
+          if (err.name === "NotSupportedError")
+            pesan = "Browser tidak support kamera. Coba Chrome/Safari.";
 
-  // 🔥 hanya hitung kalau yakin
-  if (tertinggi.probability > 0.97) {
-    counter[nama]++;
-  }
+          document.getElementById("placeholder-kamera").innerHTML = `
+      <i class="bi bi-exclamation-triangle" style="font-size:48px;color:#e53935"></i>
+      <p style="color:#e53935;margin-top:12px">${pesan}</p>
+      <small style="color:#aaa">${err.name}: ${err.message}</small>
+    `;
+        }
+      }
 
-  // 🔥 baru dianggap valid kalau muncul berkali-kali
-  if (counter[nama] >= 10 && !hasilScan.includes(nama)) {
-    hasilScan.push(nama);
-    console.log("Ditambahkan (VALID):", nama);
-  }
+      // ── Ambil foto dari video ──
+      function ambilFoto() {
+        console.log("=== ambilFoto dipanggil ===");
+        console.log(
+          "Video width:",
+          VIDEO.videoWidth,
+          "height:",
+          VIDEO.videoHeight,
+        );
 
-  // tampilkan ke layar
-  document.getElementById("label-container").innerHTML =
-    tertinggi.className + " (" + tertinggi.probability.toFixed(2) + ")";
-}
+        CANVAS.width = VIDEO.videoWidth;
+        CANVAS.height = VIDEO.videoHeight;
+        CANVAS.getContext("2d").drawImage(VIDEO, 0, 0);
 
-    function simpanHasil() {
-      localStorage.setItem("hasilScan", JSON.stringify(hasilScan));
-      window.location.href = "/";
-    }
-  </script>
+        console.log("Canvas size:", CANVAS.width, CANVAS.height);
 
-</body>
+        CANVAS.toBlob(
+          (blob) => {
+            console.log("Blob dibuat:", blob);
+            console.log("Blob size:", blob?.size);
+
+            if (!blob || blob.size === 0) {
+              console.error("BLOB KOSONG! Video belum siap.");
+              return;
+            }
+
+            // Tampilkan preview
+            PREVIEW.src = URL.createObjectURL(blob);
+            VIDEO.style.display = "none";
+            document.getElementById("preview-wrapper").style.display = "block";
+            document.getElementById("btnAmbil").style.display = "none";
+            document.getElementById("btnUlang").style.display = "block";
+
+            // Hentikan stream
+            if (stream) stream.getTracks().forEach((t) => t.stop());
+
+            console.log("Mengirim ke /api/scan...");
+            kirimKeScan(blob);
+          },
+          "image/jpeg",
+          0.9,
+        );
+      }
+
+      // ── Kirim foto ke /api/scan ──
+      async function kirimKeScan(blob) {
+        OVERLAY.classList.add("show");
+        console.log("=== kirimKeScan dipanggil ===");
+
+        const formData = new FormData();
+        formData.append("foto", blob, "foto.jpg");
+
+        try {
+          console.log("Fetching /api/scan...");
+          const res = await fetch("/api/scan", {
+            method: "POST",
+            body: formData,
+          });
+          console.log("Response status:", res.status);
+
+          const data = await res.json();
+          console.log("Response data:", data);
+
+          OVERLAY.classList.remove("show");
+
+          if (data.status !== "ok") {
+            tampilkanError(data.pesan || "Terjadi kesalahan saat analisa.");
+            return;
+          }
+
+          hasilScan = data;
+          tampilkanHasil(data);
+          gambarBoundingBox(data.bbox_data);
+        } catch (err) {
+          OVERLAY.classList.remove("show");
+          console.error("FETCH ERROR:", err);
+          tampilkanError("Gagal terhubung ke server: " + err.message);
+        }
+      }
+
+      // ── Render hasil deteksi ──
+      function tampilkanHasil(data) {
+        document.getElementById("hasilPlaceholder").style.display = "none";
+        document.getElementById("hasilKonten").style.display = "block";
+
+        const valid = data.bahan_valid || [];
+        const ragu = data.bahan_ragu || [];
+
+        let htmlValid =
+          valid.length > 0
+            ? `<p style="font-size:12px;color:#555;font-weight:700;margin-bottom:8px">✅ TERDETEKSI (${valid.length})</p>`
+            : "";
+        valid.forEach((b) => {
+          const conf = b.confidence ? `${b.confidence}%` : "via Gemini";
+          const sumberIcon = b.sumber === "cnn" ? "🧠" : "🔍";
+          htmlValid += `
+          <div class="bahan-item valid">
+            ${sumberIcon} ${b.nama.replace(/_/g, " ")}
+            <span class="badge-conf">${conf}</span>
+          </div>`;
+        });
+
+        let htmlRagu =
+          ragu.length > 0
+            ? `<p style="font-size:12px;color:#555;font-weight:700;margin:12px 0 8px">⚠️ TIDAK YAKIN (${ragu.length})</p>`
+            : "";
+        ragu.forEach((b) => {
+          const conf = b.confidence ? `${b.confidence}%` : "-";
+          htmlRagu += `
+          <div class="bahan-item ragu">
+            ⚠️ ${b.nama.replace(/_/g, " ")}
+            <span class="badge-conf">${conf}</span>
+          </div>`;
+        });
+
+        document.getElementById("listBahanValid").innerHTML = htmlValid;
+        document.getElementById("listBahanRagu").innerHTML = htmlRagu;
+
+        if (valid.length > 0) {
+          document.getElementById("btnKonfirmasi").classList.add("show");
+        }
+      }
+
+      // ── Gambar bounding box di atas foto ──
+      function gambarBoundingBox(bboxData) {
+        if (!bboxData || !bboxData.length) return;
+
+        const img = PREVIEW;
+        img.onload = () => {
+          BBOX_CVS.width = img.naturalWidth;
+          BBOX_CVS.height = img.naturalHeight;
+          BBOX_CVS.style.width = "100%";
+          BBOX_CVS.style.height = "100%";
+
+          const ctx = BBOX_CVS.getContext("2d");
+          ctx.clearRect(0, 0, BBOX_CVS.width, BBOX_CVS.height);
+
+          bboxData.forEach((item) => {
+            const { bbox, nama, status, confidence } = item;
+            const color =
+              status === "valid" || status === "gemini_only"
+                ? "#00c53b"
+                : "#ffa726";
+
+            // Kotak
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.rect(bbox.x1, bbox.y1, bbox.x2 - bbox.x1, bbox.y2 - bbox.y1);
+            ctx.stroke();
+
+            // Label background
+            const label = `${nama.replace(/_/g, " ")}${confidence ? " " + confidence + "%" : ""}`;
+            ctx.font = "bold 14px Nunito, sans-serif";
+            const tw = ctx.measureText(label).width;
+            ctx.fillStyle = color;
+            ctx.fillRect(bbox.x1, bbox.y1 - 24, tw + 12, 24);
+
+            // Label teks
+            ctx.fillStyle = "white";
+            ctx.fillText(label, bbox.x1 + 6, bbox.y1 - 6);
+          });
+        };
+
+        // Trigger onload jika gambar sudah loaded
+        if (img.complete) img.onload();
+      }
+
+      // ── Foto ulang ──
+      function ulangi() {
+        hasilScan = null;
+        document.getElementById("preview-wrapper").style.display = "none";
+        document.getElementById("placeholder-kamera").style.display = "block";
+        document.getElementById("btnUlang").style.display = "none";
+        document.getElementById("btnAktifkan").style.display = "block";
+        document.getElementById("hasilPlaceholder").style.display = "block";
+        document.getElementById("hasilKonten").style.display = "none";
+        document.getElementById("statusDot").classList.remove("aktif");
+        document.getElementById("statusTeks").textContent =
+          "Kamera belum aktif";
+
+        const ctx = BBOX_CVS.getContext("2d");
+        ctx.clearRect(0, 0, BBOX_CVS.width, BBOX_CVS.height);
+      }
+
+      // ── Konfirmasi hasil & pindah ke halaman utama ──
+      function konfirmasiDanCariResep() {
+        if (!hasilScan || !hasilScan.bahan_valid.length) return;
+
+        const bahanValid = hasilScan.bahan_valid.map((b) =>
+          b.nama.replace(/_/g, " "),
+        );
+        localStorage.setItem("hasilScan", JSON.stringify(bahanValid));
+        window.location.href = "/?mode=scan";
+      }
+
+      // ── Error handler ──
+      function tampilkanError(pesan) {
+        document.getElementById("hasilPlaceholder").style.display = "none";
+        document.getElementById("hasilKonten").style.display = "block";
+        document.getElementById("listBahanValid").innerHTML = `
+        <div style="text-align:center;padding:20px;color:#c62828">
+          <i class="bi bi-exclamation-triangle" style="font-size:32px;display:block;margin-bottom:8px"></i>
+          <p>${pesan}</p>
+        </div>`;
+        document.getElementById("listBahanRagu").innerHTML = "";
+      }
+    </script>
+  </body>
 </html>

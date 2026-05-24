@@ -1,5 +1,10 @@
 flask
 pandas
 scikit-learn
+tensorflow
+pillow
+google-genai
+python-dotenv
+numpy
 
 # jalankan ini di terminal: pip install -r requirements.txt 

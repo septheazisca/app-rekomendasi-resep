@@ -1,17 +1,24 @@
 from flask import Flask, request, jsonify, render_template
-import sys
-import os
+import sys, os, uuid
 import pandas as pd
+from dotenv import load_dotenv
+
+load_dotenv()  # Load .env
 
 # Tambahkan folder backend ke path agar bisa import recommender
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "services"))
 from recommender import rekomendasikan, df_bahan, df_resep
-
+from vision_service import proses_foto   # ← tambahan baru
+ 
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static/uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+ 
 app = Flask(
     __name__,
     template_folder="views/templates",
     static_folder="views/static"
 )
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # max 16MB
 
 
 # ── Halaman Utama ──
@@ -88,6 +95,7 @@ def get_rekomendasi():
         "data": hasil
     })
 
+
 @app.route("/resep/<int:id_resep>")
 def detail_resep(id_resep):
     df = pd.read_csv("data/resep.csv", sep=";")
@@ -120,5 +128,75 @@ def detail_resep(id_resep):
         langkah    = langkah_list,
     )
 
+
+@app.route("/api/scan", methods=["POST"])
+def api_scan():
+    """
+    Endpoint utama scan foto.
+    Menerima: multipart/form-data dengan field 'foto'
+    Mengembalikan: hasil deteksi Layer 1 + Layer 2
+    """
+    if "foto" not in request.files:
+        return jsonify({"status": "error", "pesan": "Tidak ada file foto"}), 400
+
+    file = request.files["foto"]
+    if file.filename == "":
+        return jsonify({"status": "error", "pesan": "File kosong"}), 400
+
+    # Baca bytes foto
+    image_bytes = file.read()
+
+    # Simpan foto untuk ditampilkan di frontend (opsional)
+    ext       = os.path.splitext(file.filename)[1] or ".jpg"
+    nama_file = f"{uuid.uuid4().hex}{ext}"
+    path_file = os.path.join(UPLOAD_FOLDER, nama_file)
+    with open(path_file, "wb") as f_out:
+        f_out.write(image_bytes)
+
+    # Jalankan Layer 1 + Layer 2
+    hasil = proses_foto(image_bytes)
+
+    # Tambahkan URL foto ke response
+    hasil["foto_url"] = f"/static/uploads/{nama_file}"
+
+    return jsonify({
+        "status": "ok",
+        **hasil
+    })
+
+
+@app.route("/api/scan-result", methods=["POST"])
+def api_scan_result():
+    """
+    Endpoint opsional: langsung scan + rekomendasikan resep sekaligus.
+    Untuk flow yang lebih cepat tanpa 2 request terpisah.
+    """
+    if "foto" not in request.files:
+        return jsonify({"status": "error", "pesan": "Tidak ada file foto"}), 400
+
+    file        = request.files["foto"]
+    image_bytes = file.read()
+
+    # Layer 1 + 2
+    hasil_scan = proses_foto(image_bytes)
+
+    # Ambil nama bahan yang valid
+    bahan_valid = [b["nama"] for b in hasil_scan.get("bahan_valid", [])]
+
+    # Layer 3: Rekomendasi
+    if bahan_valid:
+        rekomendasi = rekomendasikan(bahan_valid, top_n=6)
+    else:
+        rekomendasi = []
+
+    return jsonify({
+        "status"      : "ok",
+        "scan"        : hasil_scan,
+        "rekomendasi" : rekomendasi
+    })
+
+print("API KEY 1:", os.getenv("GEMINI_API_KEY_1"))
+
+    
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
