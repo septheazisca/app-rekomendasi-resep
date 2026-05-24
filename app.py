@@ -24,7 +24,9 @@ app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # max 16MB
 # ── Halaman Utama ──
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", halaman="index")
+
+
 # ── Tambahan agar scan bisa dibuka ──
 @app.route("/scan")
 def scan():
@@ -126,6 +128,7 @@ def detail_resep(id_resep):
         deskripsi  = resep["deskripsi"],
         bahan      = bahan_list,
         langkah    = langkah_list,
+        halaman    = "detail"
     )
 
 
@@ -195,7 +198,25 @@ def api_scan_result():
         "rekomendasi" : rekomendasi
     })
 
-print("API KEY 1:", os.getenv("GEMINI_API_KEY_1"))
+# print("API KEY 1:", os.getenv("GEMINI_API_KEY_1"))
+
+
+# ── Halaman Utama ──
+@app.route("/jelajahi")
+def jelajahi():
+    df = pd.read_csv("data/resep.csv", sep=";")
+    #Pastikan kolom nama dan deskripsi ada, konversi ke list of dict
+    daftar_resep = df.to_dict(orient="records")
+    
+    # 2. Ambil list kategori unik secara dinamis, hapus nilai kosong, lalu urutkan
+    kategori_unik = sorted(df["kategori"].dropna().unique().tolist())
+    
+    return render_template(
+        "jelajahi.html", 
+        daftar_resep=daftar_resep, 
+        daftar_kategori=kategori_unik, 
+        halaman="jelajah"
+    )
 
     
 if __name__ == "__main__":

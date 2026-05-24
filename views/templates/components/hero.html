@@ -1,8 +1,6 @@
-<!-- ── Hero ── -->
 <div class="container mt-3">
   <div class="rounded-4 px-4 pt-4 overflow-visible position-relative mb-5" style="background: linear-gradient(135deg, #80F6A3 0%, #4ade80 90%, #22c55e 100%); min-height: 250px;">
 
-    <!-- Decorative circles -->
     <div style="position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.18);top:-60px;right:120px;pointer-events:none;"></div>
     <div style="position:absolute;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.18);bottom:-30px;right:60px;pointer-events:none;"></div>
     <div style="position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,0.18);bottom:80px;right:-20px;pointer-events:none;"></div>
@@ -14,19 +12,51 @@
     <div class="row align-items-center g-0">
 
       <div class="col-12 col-sm-5 order-1 order-sm-2 d-flex align-items-end justify-content-center justify-content-sm-end position-relative pt-3 pt-sm-0" style="z-index:2;">
-        <img
-          src="{{ url_for('static', filename='images/group.png') }}"
-          class="rk-group"
-          alt="group"
-          style="max-height:clamp(120px, 30vw, 250px);width:auto;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.10));">
+        {% if halaman == "jelajah" %}
+          <img
+            src="{{ url_for('static', filename='images/group.png') }}"
+            class="rk-group"
+            alt="Jelajahi"
+            style="max-height:clamp(120px, 30vw, 250px);width:auto;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.10));">
+        {% elif halaman == "detail" %}
+          <img
+            src="{{ url_for('static', filename='images/group.png') }}"
+            class="rk-group"
+            alt="Detail Resep"
+            style="max-height:clamp(120px, 30vw, 250px);width:auto;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.10));">
+        {% else %}
+          <img
+            src="{{ url_for('static', filename='images/group.png') }}"
+            class="rk-group"
+            alt="Utama"
+            style="max-height:clamp(120px, 30vw, 250px);width:auto;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.10));">
+        {% endif %}
       </div>
 
       <div class="col-12 col-sm-7 order-2 order-sm-1 pb-4 text-center text-sm-start" style="position:relative;z-index:2;">
-        <h1 class="fw-bold lh-sm" style="color:#14532d;font-size:clamp(1.4rem, 4vw, 2rem);">Masak Enak Nggak<br>Pakai Bingung</h1>
-        <p class="rk-hero-sub small mt-3 mb-0">
-          Temukan inspirasi masakan harian yang dikurasi khusus untuk kamu,<br>
-          dari bahan seadanya, jadi hidangan istimewa.
-        </p>
+        
+        {% if halaman == "jelajah" %}
+          <h1 class="fw-bold lh-sm" style="color:#14532d;font-size:clamp(1.4rem, 4vw, 2rem);">Eksplorasi Lembar<br>Katalog Kuliner</h1>
+          <p class="rk-hero-sub small mt-3 mb-0">
+            Jelajahi seluruh koleksi database resep makanan nusantara pilihan kami.<br>
+            Temukan ide memasak baru tanpa batas untuk hidangan harianmu.
+          </p>
+
+        {% elif halaman == "detail" %}
+          <h1 class="fw-bold lh-sm" style="color:#14532d;font-size:clamp(1.4rem, 4vw, 2rem);">Rahasia Dapur<br>{{ nama_resep }}</h1>
+          <p class="rk-hero-sub small mt-3 mb-0">
+            Ikuti panduan takaran bahan utama dan langkah-langkah memasak lengkap<br>
+            di bawah ini untuk menciptakan rasa hidangan yang sempurna.
+          </p>
+
+        {% else %}
+          <h1 class="fw-bold lh-sm" style="color:#14532d;font-size:clamp(1.4rem, 4vw, 2rem);">Masak Enak Nggak<br>Pakai Bingung</h1>
+          <p class="rk-hero-sub small mt-3 mb-0">
+            Temukan inspirasi masakan harian yang dikurasi khusus untuk kamu,<br>
+            dari bahan seadanya, jadi hidangan istimewa.
+          </p>
+        {% endif %}
+
       </div>
 
     </div>
