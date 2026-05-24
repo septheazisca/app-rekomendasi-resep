@@ -23,7 +23,7 @@ _env_path = os.path.join(os.path.dirname(__file__), "../.env")
 load_dotenv(dotenv_path=_env_path)
 
 # DEBUG — hapus setelah beres
-print("DEBUG KEY 1:", os.getenv("GEMINI_API_KEY_1"))
+# print("DEBUG KEY 1:", os.getenv("GEMINI_API_KEY_1"))
 
 # ── Gemini ──
 from google import genai
