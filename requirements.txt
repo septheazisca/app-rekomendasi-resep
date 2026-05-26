@@ -1,10 +1,13 @@
 flask
 pandas
 scikit-learn
-tensorflow
 pillow
-google-genai
 python-dotenv
 numpy
+requests
 
-# jalankan ini di terminal: pip install -r requirements.txt 
+# tensorflow dan google-genai dihapus (tidak dipakai di v3)
+# inference-sdk dihapus (tidak support Python 3.13)
+# requests sudah cukup untuk panggil Roboflow API langsung
+
+# jalankan: pip install -r requirements.txt

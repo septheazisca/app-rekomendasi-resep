@@ -162,6 +162,22 @@
         background: var(--hijau-bg);
       }
 
+      /* ── Tombol Upload ── */
+      .btn-upload {
+        background: white;
+        color: var(--hijau-tua);
+        border: 2px solid var(--hijau-tua);
+        border-radius: 50px;
+        padding: 12px 24px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-upload:hover {
+        background: var(--hijau-bg);
+      }
+
       /* ── Loading overlay ── */
       #loading-overlay {
         display: none;
@@ -389,6 +405,13 @@
               <button id="btnAmbil" class="btn-ambil" onclick="ambilFoto()" style="display: none">
                 <i class="bi bi-camera-fill me-2"></i>Ambil Foto
               </button>
+
+              <!-- Tombol Upload -->
+              <button id="btnUpload" class="btn-upload" onclick="document.getElementById('inputFile').click()">
+                <i class="bi bi-upload me-2"></i>Upload Foto
+              </button>
+              <input type="file" id="inputFile" accept="image/*" style="display:none" onchange="handleUpload(event)">
+
               <button id="btnUlang" class="btn-ulang" onclick="ulangi()">
                 <i class="bi bi-arrow-clockwise me-2"></i>Foto Ulang
               </button>
@@ -731,6 +754,7 @@
         document.getElementById("placeholder-kamera").style.display = "block";
         document.getElementById("btnUlang").style.display = "none";
         document.getElementById("btnAktifkan").style.display = "block";
+        document.getElementById("btnUpload").style.display = "block";
         document.getElementById("hasilPlaceholder").style.display = "block";
         document.getElementById("hasilKonten").style.display = "none";
         document.getElementById("statusDot").classList.remove("aktif");
@@ -751,6 +775,46 @@
             <p>${pesan}</p>
           </div>`;
         document.getElementById("listBahanRagu").innerHTML = "";
+      }
+
+      function handleUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Validasi tipe file
+        if (!file.type.startsWith("image/")) {
+          alert("File harus berupa gambar (JPG, PNG, dll).");
+          return;
+        }
+
+        // Hentikan kamera kalau sedang aktif
+        if (stream) {
+          stream.getTracks().forEach((t) => t.stop());
+          stream = null;
+        }
+
+        // Tampilkan preview gambar yang diupload
+        const url = URL.createObjectURL(file);
+        PREVIEW.src = url;
+        VIDEO.style.display = "none";
+        document.getElementById("placeholder-kamera").style.display = "none";
+        document.getElementById("preview-wrapper").style.display = "block";
+
+        // Sembunyikan tombol kamera, tampilkan tombol ulang
+        document.getElementById("btnAktifkan").style.display = "none";
+        document.getElementById("btnAmbil").style.display = "none";
+        document.getElementById("btnUpload").style.display = "none";
+        document.getElementById("btnUlang").style.display = "block";
+
+        // Update status
+        document.getElementById("statusDot").classList.add("aktif");
+        document.getElementById("statusTeks").textContent = "Foto dari galeri";
+
+        // Reset input file agar file yang sama bisa diupload ulang
+        event.target.value = "";
+
+        // Kirim ke server untuk dianalisa
+        kirimKeScan(file);
       }
     </script>
   </body>
