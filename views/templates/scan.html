@@ -4,22 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scan Bahan — Reseep</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght=400;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
     <style>
       :root {
         --hijau-tua: #0c3318;
@@ -27,340 +15,208 @@
         --hijau-bg: #e8f5e9;
       }
 
-      body {
-        font-family: "Nunito", sans-serif;
-        background: #fcfffc;
-      }
+      body { font-family: "Nunito", sans-serif; background: #fcfffc; }
 
-      /* ── Layout ── */
-      .scan-wrapper {
-        max-width: 960px;
-        margin: 32px auto;
-        padding: 0 16px;
-      }
+      .scan-wrapper { max-width: 960px; margin: 32px auto; padding: 0 16px; }
 
       /* ── Kamera area ── */
       .kamera-box {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
+        background: white; border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08); overflow: hidden;
       }
       .kamera-header {
-        background: #9FFFBB;
-        color: #1a1a1a;
-        padding: 16px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+        background: #9FFFBB; color: #1a1a1a;
+        padding: 16px 24px; display: flex;
+        align-items: center; justify-content: space-between;
       }
-      .kamera-header h5 {
-        margin: 0;
-        font-weight: 700;
-        font-size: 16px;
-      }
+      .kamera-header h5 { margin: 0; font-weight: 700; font-size: 16px; }
       .status-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #888;
-        display: inline-block;
-        margin-right: 6px;
+        width: 10px; height: 10px; border-radius: 50%;
+        background: #888; display: inline-block; margin-right: 6px;
       }
-      .status-dot.aktif {
-        background: var(--hijau-muda);
-        animation: pulse 1.2s infinite;
-      }
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.4; }
-      }
+      .status-dot.aktif { background: var(--hijau-muda); animation: pulse 1.2s infinite; }
+      @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
       /* ── Canvas area ── */
       #canvas-wrapper {
-        position: relative;
-        width: 100%;
-        background: #111;
-        min-height: 320px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        position: relative; width: 100%; background: #111;
+        min-height: 320px; display: flex;
+        align-items: center; justify-content: center;
       }
-      #videoEl {
-        width: 100%;
-        max-height: 420px;
-        object-fit: cover;
-        display: block;
-      }
-      #canvasOverlay {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        pointer-events: none;
-      }
-      #placeholder-kamera {
-        text-align: center;
-        color: #aaa;
-        padding: 60px 20px;
-      }
-      #placeholder-kamera i {
-        font-size: 56px;
-        margin-bottom: 12px;
-        display: block;
-      }
+      #videoEl { width: 100%; max-height: 420px; object-fit: cover; display: block; }
+      #canvasOverlay { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+      #placeholder-kamera { text-align: center; color: #aaa; padding: 60px 20px; }
+      #placeholder-kamera i { font-size: 56px; margin-bottom: 12px; display: block; }
 
       /* ── Foto preview ── */
-      #preview-wrapper {
-        display: none;
-        position: relative;
-      }
-      #imgPreview {
-        width: 100%;
-        max-height: 420px;
-        object-fit: contain;
-        display: block;
-        background: #111;
-      }
-      #canvasBbox {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        pointer-events: none;
-      }
+      #preview-wrapper { display: none; position: relative; }
+      #imgPreview { width:100%; max-height:420px; object-fit:contain; display:block; background:#111; }
+      #canvasBbox { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
 
-      /* ── Tombol Kontrol Kamera ── */
-      .kamera-controls {
-        padding: 20px 24px;
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
+      /* ── Live prediction bar (baru!) ── */
+      #livePredBar {
+        display: none;
+        padding: 10px 20px;
+        background: #f0fff4;
+        border-top: 1px solid #c8e6c9;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--hijau-tua);
+        align-items: center;
+        gap: 10px;
       }
-      .btn-ambil {
+      #livePredBar.show { display: flex; }
+      .live-label { flex: 1; }
+      .live-bar-wrap {
+        flex: 2; background: #ddd; border-radius: 20px;
+        height: 10px; overflow: hidden;
+      }
+      .live-bar-fill {
+        height: 100%; border-radius: 20px;
         background: var(--hijau-muda);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 12px 32px;
-        font-weight: 700;
-        font-size: 15px;
-        flex: 1;
-        transition: all 0.2s;
+        transition: width 0.3s ease;
       }
-      .btn-ambil:hover {
-        background: #00a832;
-        transform: translateY(-1px);
-      }
-      .btn-ulang {
-        background: white;
-        color: var(--hijau-tua);
-        border: 2px solid var(--hijau-tua);
-        border-radius: 50px;
-        padding: 12px 24px;
-        font-weight: 700;
-        font-size: 15px;
+      .live-conf { min-width: 44px; text-align: right; }
+
+      /* ── Notif auto-add (baru!) ── */
+      #notifAutoAdd {
         display: none;
+        position: absolute;
+        bottom: 16px; left: 50%; transform: translateX(-50%);
+        background: var(--hijau-tua);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 13px; font-weight: 700;
+        white-space: nowrap;
+        z-index: 20;
+        animation: fadeInUp 0.3s ease;
       }
-      .btn-ulang:hover {
-        background: var(--hijau-bg);
+      #notifAutoAdd.show { display: block; }
+      @keyframes fadeInUp {
+        from { opacity:0; transform: translateX(-50%) translateY(10px); }
+        to   { opacity:1; transform: translateX(-50%) translateY(0); }
       }
 
-      /* ── Tombol Upload ── */
+      /* ── Kontrol ── */
+      .kamera-controls { padding: 20px 24px; display:flex; gap:12px; flex-wrap:wrap; }
+      .btn-ambil {
+        background: var(--hijau-muda); color: white; border: none;
+        border-radius: 50px; padding: 12px 32px;
+        font-weight: 700; font-size: 15px; flex: 1; transition: all 0.2s;
+      }
+      .btn-ambil:hover { background:#00a832; transform:translateY(-1px); }
+      .btn-ulang {
+        background: white; color: var(--hijau-tua);
+        border: 2px solid var(--hijau-tua); border-radius: 50px;
+        padding: 12px 24px; font-weight: 700; font-size: 15px; display: none;
+      }
+      .btn-ulang:hover { background: var(--hijau-bg); }
       .btn-upload {
-        background: white;
-        color: var(--hijau-tua);
-        border: 2px solid var(--hijau-tua);
-        border-radius: 50px;
-        padding: 12px 24px;
-        font-weight: 700;
-        font-size: 15px;
-        cursor: pointer;
-        transition: all 0.2s;
+        background: white; color: var(--hijau-tua);
+        border: 2px solid var(--hijau-tua); border-radius: 50px;
+        padding: 12px 24px; font-weight: 700; font-size: 15px;
+        cursor: pointer; transition: all 0.2s;
       }
-      .btn-upload:hover {
-        background: var(--hijau-bg);
-      }
+      .btn-upload:hover { background: var(--hijau-bg); }
 
       /* ── Loading overlay ── */
       #loading-overlay {
-        display: none;
-        position: absolute;
-        inset: 0;
-        background: rgba(12, 51, 24, 0.85);
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        color: white;
-        gap: 14px;
-        z-index: 10;
+        display: none; position: absolute; inset: 0;
+        background: rgba(12,51,24,0.85);
+        align-items: center; justify-content: center;
+        flex-direction: column; color: white; gap: 14px; z-index: 10;
       }
       #loading-overlay.show { display: flex; }
       .spinner-scan {
-        width: 48px;
-        height: 48px;
-        border: 4px solid rgba(255, 255, 255, 0.3);
+        width:48px; height:48px;
+        border: 4px solid rgba(255,255,255,0.3);
         border-top-color: var(--hijau-muda);
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
+        border-radius: 50%; animation: spin 0.8s linear infinite;
       }
       @keyframes spin { to { transform: rotate(360deg); } }
 
       /* ── Hasil deteksi ── */
       .hasil-box {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
+        background: white; border-radius: 20px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.08); overflow: hidden;
       }
-      .hasil-header {
-        background: #9FFFBB;
-        padding: 16px 24px;
-        border-bottom: 1px solid #c8e6c9;
-      }
-      .hasil-header h6 {
-        margin: 0;
-        font-weight: 700;
-        color: var(--hijau-tua);
-      }
+      .hasil-header { background: #9FFFBB; padding: 16px 24px; border-bottom: 1px solid #c8e6c9; }
+      .hasil-header h6 { margin:0; font-weight:700; color: var(--hijau-tua); }
       .hasil-body { padding: 20px 24px; }
-      
+
       .seksi-header-container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 8px;
+        display:flex; align-items:center;
+        justify-content:space-between; margin-bottom:8px;
       }
-      .label-seksi {
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.5px;
-        margin: 0;
-        color: #555;
-      }
+      .label-seksi { font-size:12px; font-weight:800; letter-spacing:0.5px; margin:0; color:#555; }
 
-      /* Tombol Aksi Massal (Pilih Semua) */
-      .bulk-actions {
-        display: flex;
-        gap: 8px;
-      }
+      .bulk-actions { display:flex; gap:8px; }
       .btn-bulk-setuju {
-        background: none;
-        border: none;
-        color: #2e7d32;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 2px 6px;
-        border-radius: 4px;
-        transition: background 0.2s;
+        background:none; border:none; color:#2e7d32;
+        font-size:11px; font-weight:700; padding:2px 6px;
+        border-radius:4px; transition:background 0.2s;
       }
-      .btn-bulk-setuju:hover {
-        background: #e8f5e9;
-      }
+      .btn-bulk-setuju:hover { background:#e8f5e9; }
       .btn-bulk-batal {
-        background: none;
-        border: none;
-        color: #c62828;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 2px 6px;
-        border-radius: 4px;
-        transition: background 0.2s;
+        background:none; border:none; color:#c62828;
+        font-size:11px; font-weight:700; padding:2px 6px;
+        border-radius:4px; transition:background 0.2s;
       }
-      .btn-bulk-batal:hover {
-        background: #ffebee;
-      }
+      .btn-bulk-batal:hover { background:#ffebee; }
 
-      /* Badge bahan */
       .bahan-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 14px;
-        border-radius: 12px;
-        margin-bottom: 8px;
-        font-weight: 600;
-        font-size: 14px;
+        display:flex; align-items:center; gap:10px;
+        padding:10px 14px; border-radius:12px;
+        margin-bottom:8px; font-weight:600; font-size:14px;
       }
-      .bahan-item.valid {
-        background: #ebfff1;
-        color: #1a1a1a;
-        border: 1px solid #00c53b;
-      }
-      .bahan-item.ragu {
-        background: #fff8e1;
-        color: #f57f17;
-        border: 1px solid #ffe082;
-      }
+      .bahan-item.valid { background:#ebfff1; color:#1a1a1a; border:1px solid #00c53b; }
+      .bahan-item.ragu  { background:#fff8e1; color:#f57f17; border:1px solid #ffe082; }
 
       .badge-conf {
-        margin-left: auto;
-        font-size: 11px;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 20px;
-        background: rgba(0, 0, 0, 0.05);
-        color: inherit;
+        margin-left:auto; font-size:11px; font-weight:700;
+        padding:2px 8px; border-radius:20px;
+        background:rgba(0,0,0,0.05); color:inherit;
       }
-
-      /* Styling Aksi Tombol di Dalam List Bahan */
-      .aksi-ragu {
-        display: flex;
-        gap: 6px;
-        margin-left: auto;
-      }
+      .aksi-ragu { display:flex; gap:6px; margin-left:auto; }
       .btn-yakin {
-        background: #00c53b;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 4px 12px;
-        font-size: 12px;
-        font-weight: 700;
-        transition: background 0.2s;
+        background:#00c53b; color:white; border:none;
+        border-radius:8px; padding:4px 12px;
+        font-size:12px; font-weight:700; transition:background 0.2s;
       }
-      .btn-yakin:hover { background: #05a134; }
-      
+      .btn-yakin:hover { background:#05a134; }
       .btn-hapus-bahan {
-        background: #c50000;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        width: 26px;
-        height: 26px;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.2s;
+        background:#c50000; color:white; border:none;
+        border-radius:8px; width:26px; height:26px; font-size:12px;
+        display:flex; align-items:center; justify-content:center;
+        transition:background 0.2s;
       }
-      .btn-hapus-bahan:hover { background: #9a0000; }
-      .valid .btn-hapus-bahan { margin-left: 10px; }
+      .btn-hapus-bahan:hover { background:#9a0000; }
+      .valid .btn-hapus-bahan { margin-left:10px; }
 
-      /* Tombol konfirmasi bawah */
       .btn-konfirmasi {
-        background: #00c53b;
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 14px 32px;
-        font-weight: 800;
-        font-size: 15px;
-        width: 100%;
-        margin-top: 16px;
-        transition: all 0.2s;
-        display: none;
+        background:#00c53b; color:white; border:none;
+        border-radius:50px; padding:14px 32px;
+        font-weight:800; font-size:15px; width:100%;
+        margin-top:16px; transition:all 0.2s; display:none;
       }
-      .btn-konfirmasi:hover {
-        background: #00a231;
-        transform: translateY(-2px);
-      }
-      .btn-konfirmasi.show { display: block; }
+      .btn-konfirmasi:hover { background:#00a231; transform:translateY(-2px); }
+      .btn-konfirmasi.show { display:block; }
 
+      /* ── Tips box ── */
       .tips-box {
-        background: var(--hijau-bg);
-        border-radius: 14px;
-        padding: 16px 20px;
-        font-size: 13px;
-        color: #2e7d32;
+        background: var(--hijau-bg); border-radius:14px;
+        padding:16px 20px; font-size:13px; color:#2e7d32;
       }
-      .tips-box i { margin-right: 6px; }
+      .tips-box i { margin-right:6px; }
+
+      /* ── Tidak dikenali card ── */
+      .tidak-dikenali {
+        text-align:center; padding:16px;
+        background:#f5f5f5; border-radius:12px;
+        color:#888; font-size:13px; font-weight:600;
+        border:1px dashed #ddd;
+      }
     </style>
   </head>
   <body>
@@ -368,6 +224,7 @@
 
     <div class="scan-wrapper">
       <div class="row g-4">
+
         <!-- Kolom Kiri: Kamera -->
         <div class="col-lg-7">
           <div class="kamera-box">
@@ -375,7 +232,7 @@
               <h5><i class="bi bi-camera-fill me-2"></i>Kamera</h5>
               <div>
                 <span class="status-dot" id="statusDot"></span>
-                <span id="statusTeks" style="font-size: 13px">Kamera belum aktif</span>
+                <span id="statusTeks" style="font-size:13px">Kamera belum aktif</span>
               </div>
             </div>
 
@@ -384,8 +241,8 @@
                 <i class="bi bi-camera"></i>
                 <p>Klik tombol di bawah untuk aktifkan kamera</p>
               </div>
-              <video id="videoEl" autoplay playsinline style="display: none"></video>
-              
+              <video id="videoEl" autoplay playsinline style="display:none"></video>
+
               <div id="preview-wrapper">
                 <img id="imgPreview" alt="preview foto" />
                 <canvas id="canvasBbox"></canvas>
@@ -393,34 +250,44 @@
 
               <div id="loading-overlay">
                 <div class="spinner-scan"></div>
-                <span style="font-weight: 700">Menganalisa bahan...</span>
-                <span style="font-size: 13px; opacity: 0.8">Layer 1: Object Detection → Layer 2: Filter</span>
+                <span style="font-weight:700">Menganalisa bahan...</span>
               </div>
+
+              <!-- Notif auto-add -->
+              <div id="notifAutoAdd">✅ Ditambahkan! Lanjut ke bahan selanjutnya</div>
+            </div>
+
+            <!-- Live prediction bar (tampil saat kamera aktif) -->
+            <div id="livePredBar">
+              <span class="live-label" id="livePredLabel">Menunggu...</span>
+              <div class="live-bar-wrap">
+                <div class="live-bar-fill" id="livePredFill" style="width:0%"></div>
+              </div>
+              <span class="live-conf" id="livePredConf">0%</span>
             </div>
 
             <div class="kamera-controls">
               <button id="btnAktifkan" class="btn-ambil" onclick="aktifkanKamera()">
                 <i class="bi bi-camera me-2"></i>Aktifkan Kamera
               </button>
-              <button id="btnAmbil" class="btn-ambil" onclick="ambilFoto()" style="display: none">
+              <button id="btnAmbil" class="btn-ambil" onclick="ambilFoto()" style="display:none">
                 <i class="bi bi-camera-fill me-2"></i>Ambil Foto
               </button>
-
-              <!-- Tombol Upload -->
               <button id="btnUpload" class="btn-upload" onclick="document.getElementById('inputFile').click()">
                 <i class="bi bi-upload me-2"></i>Upload Foto
               </button>
               <input type="file" id="inputFile" accept="image/*" style="display:none" onchange="handleUpload(event)">
-
               <button id="btnUlang" class="btn-ulang" onclick="ulangi()">
                 <i class="bi bi-arrow-clockwise me-2"></i>Foto Ulang
               </button>
             </div>
           </div>
 
-          <div class="tips-box mt-3">
+          <!-- Tips: teks berbeda tergantung mode -->
+          <div class="tips-box mt-3" id="tipsBox">
             <i class="bi bi-lightbulb-fill"></i>
-            <strong>Tips foto yang baik:</strong> Letakkan semua bahan di permukaan datar, pastikan pencahayaan cukup, dan ambil foto lurus dari atas.
+            <strong>Tips foto yang baik:</strong>
+            Letakkan semua bahan di permukaan datar, pastikan pencahayaan cukup, dan ambil foto lurus dari atas.
           </div>
         </div>
 
@@ -431,23 +298,21 @@
               <h6><i class="bi bi-list-check me-2"></i>Hasil Deteksi Bahan</h6>
             </div>
             <div class="hasil-body">
-              <div id="hasilPlaceholder" style="text-align: center; padding: 40px 20px; color: #aaa">
-                <i class="bi bi-image" style="font-size: 48px; display: block; margin-bottom: 12px"></i>
-                <p style="font-size: 14px">Foto bahan makanan untuk<br />mulai deteksi otomatis</p>
+              <div id="hasilPlaceholder" style="text-align:center;padding:40px 20px;color:#aaa">
+                <i class="bi bi-image" style="font-size:48px;display:block;margin-bottom:12px"></i>
+                <p style="font-size:14px">Foto bahan makanan untuk<br />mulai deteksi otomatis</p>
               </div>
 
-              <div id="hasilKonten" style="display: none">
-                <!-- Kontainer Bahan Terdeteksi (Valid) -->
+              <div id="hasilKonten" style="display:none">
                 <div id="wrapperValid">
-                  <div class="seksi-header-container" id="headerValid" style="display: none;">
+                  <div class="seksi-header-container" id="headerValid" style="display:none">
                     <p class="label-seksi" id="titleValid">✅ TERDETEKSI (0)</p>
                   </div>
                   <div id="listBahanValid"></div>
                 </div>
 
-                <!-- Kontainer Bahan Diragukan (Ragu) -->
                 <div id="wrapperRagu" class="mt-3">
-                  <div class="seksi-header-container" id="headerRagu" style="display: none;">
+                  <div class="seksi-header-container" id="headerRagu" style="display:none">
                     <p class="label-seksi" id="titleRagu">⚠️ TIDAK YAKIN (0)</p>
                     <div class="bulk-actions">
                       <button class="btn-bulk-setuju" onclick="setujuiSemuaRagu()"><i class="bi bi-check-all"></i> Setuju Semua</button>
@@ -464,74 +329,93 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
-    <canvas id="canvasCapture" style="display: none"></canvas>
+    <canvas id="canvasCapture" style="display:none"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
     <script>
-      let stream = null;
-      let hasilScan = null;
-      
-      const TM_URL = "https://teachablemachine.withgoogle.com/models/CLV_1ruvN/";
-      
-      let tmModel = null;
+      // ── Konstanta ──
+      const TM_URL          = "https://teachablemachine.withgoogle.com/models/CLV_1ruvN/";
+      const AUTO_ADD_THRESH = 98;    // % confidence untuk auto-add ke list
+      const SCAN_INTERVAL   = 1000;  // ms antar prediksi realtime
+      const COOLDOWN_MS     = 3000;  // ms jeda setelah auto-add agar tidak spam
+
+      // ── State ──
+      let stream         = null;
+      let hasilScan      = null;
+      let tmModel        = null;
       let maxPredictions = 0;
-      
-      const VIDEO = document.getElementById("videoEl");
-      const CANVAS = document.getElementById("canvasCapture");
-      const BBOX_CVS = document.getElementById("canvasBbox");
+      let modeKamera     = false;   // true = kamera live, false = upload
+      let lastAutoAdd    = 0;       // timestamp terakhir auto-add
+
+      // ── Elemen DOM ──
+      const VIDEO   = document.getElementById("videoEl");
+      const CANVAS  = document.getElementById("canvasCapture");
+      const BBOX_CVS= document.getElementById("canvasBbox");
       const PREVIEW = document.getElementById("imgPreview");
       const OVERLAY = document.getElementById("loading-overlay");
 
+
+      // ============================================================
+      // LOAD MODEL TEACHABLE MACHINE
+      // ============================================================
       async function loadTMModel() {
-        const modelURL = TM_URL + "model.json";
+        if (tmModel) return;
+        const modelURL    = TM_URL + "model.json";
         const metadataURL = TM_URL + "metadata.json";
-        
-        tmModel = await tmImage.load(modelURL, metadataURL);
+        tmModel        = await tmImage.load(modelURL, metadataURL);
         maxPredictions = tmModel.getTotalClasses();
-        
-        console.log("Model Teachable Machine berhasil dimuat");
+        console.log("[TM] Model loaded. Classes:", maxPredictions);
       }
 
+
+      // ============================================================
+      // AKTIFKAN KAMERA
+      // ============================================================
       async function aktifkanKamera() {
         try {
+          modeKamera = true;
+
+          // Ganti teks tips
+          document.getElementById("tipsBox").innerHTML = `
+            <i class="bi bi-lightbulb-fill"></i>
+            <strong>Tips kamera:</strong>
+            Arahkan kamera satu per satu ke bahan Anda.
+            Bahan akan otomatis ditambahkan saat keyakinan ≥ ${AUTO_ADD_THRESH}%.
+          `;
+
           const constraints = {
-            video: {
-              facingMode: { ideal: "environment" },
-              width: { ideal: 1280 },
-              height: { ideal: 720 },
-            },
-            audio: false,
+            video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
+            audio: false
           };
 
           stream = await navigator.mediaDevices.getUserMedia(constraints);
           VIDEO.srcObject = stream;
-
-          await new Promise((resolve) => (VIDEO.onloadedmetadata = resolve));
+          await new Promise(resolve => VIDEO.onloadedmetadata = resolve);
           await VIDEO.play();
-          if (!tmModel) {
-            await loadTMModel();
-          }
+
+          if (!tmModel) await loadTMModel();
 
           VIDEO.style.display = "block";
           document.getElementById("placeholder-kamera").style.display = "none";
           document.getElementById("btnAktifkan").style.display = "none";
-          document.getElementById("btnAmbil").style.display = "none";
+          document.getElementById("btnAmbil").style.display   = "none";   // tidak perlu tombol ambil foto
           document.getElementById("statusDot").classList.add("aktif");
-          document.getElementById("statusTeks").textContent = "Kamera aktif";
+          document.getElementById("statusTeks").textContent = "Kamera aktif — arahkan ke bahan";
+          document.getElementById("livePredBar").classList.add("show");
 
           scanRealtime();
 
         } catch (err) {
           let pesan = "Tidak bisa akses kamera.";
-          if (err.name === "NotAllowedError") pesan = "Izin kamera ditolak. Izinkan akses kamera di browser.";
-          if (err.name === "NotFoundError") pesan = "Kamera tidak ditemukan di perangkat ini.";
-          
+          if (err.name === "NotAllowedError") pesan = "Izin kamera ditolak.";
+          if (err.name === "NotFoundError")   pesan = "Kamera tidak ditemukan.";
           document.getElementById("placeholder-kamera").innerHTML = `
             <i class="bi bi-exclamation-triangle" style="font-size:48px;color:#e53935"></i>
             <p style="color:#e53935;margin-top:12px">${pesan}</p>
@@ -539,92 +423,274 @@
         }
       }
 
+
+      // ============================================================
+      // SCAN REALTIME — loop prediksi tiap SCAN_INTERVAL ms
+      // ============================================================
+      function scanRealtime() {
+        setInterval(async () => {
+          if (!tmModel || !VIDEO.videoWidth || !modeKamera) return;
+
+          const prediction = await tmModel.predict(VIDEO);
+
+          const prediksiTerbaik = prediction.reduce(
+            (best, item) =>
+              item.probability > best.probability ? item : best,
+            prediction[0]
+          );
+
+          const nama = prediksiTerbaik.className;
+          const conf = prediksiTerbaik.probability * 100;
+
+          const namaLower = nama.toLowerCase();
+
+          // Semua class yang tidak boleh masuk ke list bahan
+          const isUnknown =
+            namaLower === "unknow" ||
+            namaLower.includes("unknow") ||
+            namaLower.includes("background") ||
+            namaLower.includes("tidak");
+
+          // Update live bar
+          document.getElementById("livePredLabel").textContent =
+            isUnknown ? "Objek tidak dikenali" : nama;
+
+          document.getElementById("livePredFill").style.width =
+            conf.toFixed(0) + "%";
+
+          document.getElementById("livePredConf").textContent =
+            conf.toFixed(0) + "%";
+
+          document.getElementById("livePredFill").style.background =
+            isUnknown
+              ? "#bbb"
+              : (conf >= AUTO_ADD_THRESH ? "#00c53b" : "#ffa726");
+
+          // DEBUG (boleh dihapus nanti)
+          console.log("CLASS:", nama, "CONF:", conf);
+
+          // ==========================
+          // UNKNOWN TIDAK BOLEH MASUK LIST
+          // ==========================
+          if (isUnknown) {
+            return;
+          }
+
+          // ==========================
+          // AUTO ADD KE LIST VALID
+          // ==========================
+          if (conf >= AUTO_ADD_THRESH) {
+
+            const now = Date.now();
+
+            if (now - lastAutoAdd < COOLDOWN_MS) {
+              return;
+            }
+
+            const namaBersih = nama.replace(/_/g, " ");
+            const slug = _slugify(nama);
+
+            // Double protection
+            if (
+              namaBersih.toLowerCase().includes("unknow") ||
+              namaBersih.toLowerCase().includes("background")
+            ) {
+              return;
+            }
+
+            // Jangan tambah jika sudah ada
+            if (document.getElementById(`valid-${slug}`)) {
+              return;
+            }
+
+            lastAutoAdd = now;
+
+            _tambahKeValid(
+              namaBersih,
+              slug,
+              conf.toFixed(1) + "%"
+            );
+
+            _tampilNotifAutoAdd();
+          }
+
+        }, SCAN_INTERVAL);
+      }
+
+
+      // ============================================================
+      // HELPER: Tambah bahan ke list valid
+      // ============================================================
+      function _tambahKeValid(nama, slug, confStr) {
+
+        const namaLower = String(nama).toLowerCase().trim();
+
+        // Jangan pernah tampilkan Unknown
+        if (
+          namaLower === "unknow" ||
+          namaLower.includes("unknow") ||
+          namaLower.includes("background") ||
+          namaLower.includes("tidak")
+        ) {
+          console.log("SKIP UNKNOWN:", nama);
+          return;
+        }
+
+        document.getElementById("hasilPlaceholder").style.display = "none";
+        document.getElementById("hasilKonten").style.display = "block";
+
+        const html = `
+          <div class="bahan-item valid"
+              id="valid-${slug}"
+              data-nama="${nama}"
+              data-conf="${confStr}">
+            ${nama}
+            <span class="badge-conf">${confStr}</span>
+            <button
+              class="btn-hapus-bahan"
+              title="Hapus"
+              onclick="hapusBahanHasil('${slug}','valid')">
+              ✕
+            </button>
+          </div>`;
+
+        document
+          .getElementById("listBahanValid")
+          .insertAdjacentHTML("beforeend", html);
+
+        _updateCounter();
+      }
+
+
+      // ============================================================
+      // HELPER: Notif auto-add
+      // ============================================================
+      function _tampilNotifAutoAdd() {
+        const el = document.getElementById("notifAutoAdd");
+        el.classList.add("show");
+        setTimeout(() => el.classList.remove("show"), 2500);
+      }
+
+
+      // ============================================================
+      // AMBIL FOTO (untuk mode kamera manual — tidak dipakai di live mode)
+      // ============================================================
       function ambilFoto() {
-        CANVAS.width = VIDEO.videoWidth;
+        CANVAS.width  = VIDEO.videoWidth;
         CANVAS.height = VIDEO.videoHeight;
         CANVAS.getContext("2d").drawImage(VIDEO, 0, 0);
 
-        CANVAS.toBlob((blob) => {
+        CANVAS.toBlob(blob => {
           if (!blob || blob.size === 0) return;
-
           PREVIEW.src = URL.createObjectURL(blob);
           VIDEO.style.display = "none";
           document.getElementById("preview-wrapper").style.display = "block";
-          document.getElementById("btnAmbil").style.display = "none";
-          document.getElementById("btnUlang").style.display = "block";
-
-          if (stream) stream.getTracks().forEach((t) => t.stop());
+          document.getElementById("btnAmbil").style.display  = "none";
+          document.getElementById("btnUlang").style.display  = "block";
+          if (stream) stream.getTracks().forEach(t => t.stop());
           prediksiTeachableMachine();
         }, "image/jpeg", 0.9);
       }
 
+
+      // ============================================================
+      // PREDIKSI TEACHABLE MACHINE (foto statis — dipakai setelah ambil foto)
+      // ============================================================
       async function prediksiTeachableMachine() {
         try {
-          
           OVERLAY.classList.add("show");
-          
-          const prediction = await tmModel.predict(CANVAS);
-          
-          console.log(prediction);
-          
+          const prediction      = await tmModel.predict(CANVAS);
+          const prediksiTerbaik = prediction.reduce(
+            (best, item) => item.probability > best.probability ? item : best,
+            prediction[0]
+          );
           OVERLAY.classList.remove("show");
-          
-          let prediksiTerbaik = null;
-          
-          prediction.forEach(item => {
-            if (
-              !prediksiTerbaik ||
-              item.probability > prediksiTerbaik.probability
-            ) {
-              prediksiTerbaik = item;
-            }
-          });
-          
-          if (
-            !prediksiTerbaik ||
-            prediksiTerbaik.className.toLowerCase() === "unknown" ||
-            prediksiTerbaik.probability < 0.8
-          ) {
-            tampilkanError(
-              "Bahan tidak dikenali oleh Teachable Machine"
-            );
+
+          const isUnknown = prediksiTerbaik.className.toLowerCase() === "unknow";
+          const conf      = prediksiTerbaik.probability * 100;
+
+          if (isUnknown || conf < 80) {
+            // Tampilkan "tidak dikenali" di panel — BUKAN error merah
+            document.getElementById("hasilPlaceholder").style.display = "none";
+            document.getElementById("hasilKonten").style.display       = "block";
+            document.getElementById("listBahanValid").innerHTML = `
+              <div class="tidak-dikenali">
+                <i class="bi bi-question-circle" style="font-size:28px;display:block;margin-bottom:8px"></i>
+                Objek tidak dikenali
+              </div>`;
+            document.getElementById("listBahanRagu").innerHTML = "";
+            _updateCounter();
             return;
           }
-          
+
+          const nama = prediksiTerbaik.className.replace(/_/g, " ");
+          const slug = _slugify(prediksiTerbaik.className);
           tampilkanHasil({
-            bahan_valid: [
-              {
-                nama: prediksiTerbaik.className,
-                confidence: (
-                  prediksiTerbaik.probability * 100
-                ).toFixed(1)
-              }
-            ],
-            bahan_ragu: [],
-            bbox_data: []
+            bahan_valid: [{ nama, confidence: conf.toFixed(1) }],
+            bahan_ragu : [],
+            bbox_data  : []
           });
-          
-          console.log(
-            "Teachable Machine:",
-            prediksiTerbaik.className
-          );
-        
+
         } catch (err) {
           OVERLAY.classList.remove("show");
           console.error(err);
-          tampilkanError(
-            "Gagal menjalankan Teachable Machine"
-          );
+          tampilkanError("Gagal menjalankan Teachable Machine");
         }
       }
 
+
+      // ============================================================
+      // UPLOAD FOTO → kirim ke Roboflow via /api/scan
+      // ============================================================
+      function handleUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+          alert("File harus berupa gambar (JPG, PNG, dll).");
+          return;
+        }
+
+        modeKamera = false;
+
+        // Ganti tips kembali ke tips upload
+        document.getElementById("tipsBox").innerHTML = `
+          <i class="bi bi-lightbulb-fill"></i>
+          <strong>Tips foto yang baik:</strong>
+          Letakkan semua bahan di permukaan datar, pastikan pencahayaan cukup, dan ambil foto lurus dari atas.
+        `;
+
+        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+
+        const url = URL.createObjectURL(file);
+        PREVIEW.src = url;
+        VIDEO.style.display = "none";
+        document.getElementById("placeholder-kamera").style.display = "none";
+        document.getElementById("preview-wrapper").style.display    = "block";
+        document.getElementById("livePredBar").classList.remove("show");
+
+        document.getElementById("btnAktifkan").style.display = "none";
+        document.getElementById("btnAmbil").style.display    = "none";
+        document.getElementById("btnUpload").style.display   = "none";
+        document.getElementById("btnUlang").style.display    = "block";
+
+        document.getElementById("statusDot").classList.add("aktif");
+        document.getElementById("statusTeks").textContent = "Foto dari galeri";
+
+        event.target.value = "";
+        kirimKeScan(file);
+      }
+
+
+      // ============================================================
+      // KIRIM KE /api/scan (Roboflow YOLO — untuk upload)
+      // ============================================================
       async function kirimKeScan(blob) {
         OVERLAY.classList.add("show");
         const formData = new FormData();
         formData.append("foto", blob, "foto.jpg");
 
         try {
-          const res = await fetch("/api/scan", { method: "POST", body: formData });
+          const res  = await fetch("/api/scan", { method: "POST", body: formData });
           const data = await res.json();
           OVERLAY.classList.remove("show");
 
@@ -636,92 +702,81 @@
           hasilScan = data;
           tampilkanHasil(data);
           gambarBoundingBox(data.bbox_data);
+
         } catch (err) {
           OVERLAY.classList.remove("show");
           tampilkanError("Gagal terhubung ke server: " + err.message);
         }
       }
 
+
+      // ============================================================
+      // TAMPILKAN HASIL (dari upload/YOLO)
+      // ============================================================
       function tampilkanHasil(data) {
         document.getElementById("hasilPlaceholder").style.display = "none";
-        document.getElementById("hasilKonten").style.display = "block";
+        document.getElementById("hasilKonten").style.display       = "block";
 
         const valid = data.bahan_valid || [];
-        const ragu = data.bahan_ragu || [];
+        const ragu  = data.bahan_ragu  || [];
 
-        const validUnik = [];
-        const validNama = new Set();
-        valid.forEach((b) => {
-          const key = b.nama.toLowerCase().replace(/_/g, " ");
-          if (!validNama.has(key)) {
-            validNama.add(key);
-            validUnik.push(b);
-          }
+        // Deduplikasi valid
+        const validUnik = []; const validNama = new Set();
+        valid.forEach(b => {
+          const key = b.nama.toLowerCase().replace(/_/g," ");
+          if (!validNama.has(key)) { validNama.add(key); validUnik.push(b); }
         });
 
-        const raguUnik = [];
-        const raguNama = new Set();
-        ragu.forEach((b) => {
-          const key = b.nama.toLowerCase().replace(/_/g, " ");
-          if (!validNama.has(key) && !raguNama.has(key)) {
-            raguNama.add(key);
-            raguUnik.push(b);
-          }
+        // Deduplikasi ragu
+        const raguUnik = []; const raguNama = new Set();
+        ragu.forEach(b => {
+          const key = b.nama.toLowerCase().replace(/_/g," ");
+          if (!validNama.has(key) && !raguNama.has(key)) { raguNama.add(key); raguUnik.push(b); }
         });
+        
 
-        // Merender elemen valid
-        let htmlValid = "";
-        validUnik.forEach((b) => {
+        // Render valid
+        document.getElementById("listBahanValid").innerHTML = validUnik.map(b => {
           const conf = b.confidence ? `${b.confidence}%` : "100%";
-          htmlValid += `
-            <div class="bahan-item valid" id="valid-${_slugify(b.nama)}" data-nama="${b.nama}" data-conf="${conf}">
-              ${b.nama.replace(/_/g, " ")}
+          const slug = _slugify(b.nama);
+          return `
+            <div class="bahan-item valid" id="valid-${slug}" data-nama="${b.nama}" data-conf="${conf}">
+              ${b.nama.replace(/_/g," ")}
               <span class="badge-conf">${conf}</span>
-              <button class="btn-hapus-bahan" title="Hapus bahan" onclick="hapusBahanHasil('${_slugify(b.nama)}', 'valid')">✕</button>
+              <button class="btn-hapus-bahan" title="Hapus" onclick="hapusBahanHasil('${slug}','valid')">✕</button>
             </div>`;
-        });
-        document.getElementById("listBahanValid").innerHTML = htmlValid;
+        }).join("");
 
-        // Merender elemen ragu
-        let htmlRagu = "";
-        raguUnik.forEach((b) => {
+        // Render ragu
+        document.getElementById("listBahanRagu").innerHTML = raguUnik.map(b => {
           const conf = b.confidence ? `${b.confidence}%` : "-";
-          htmlRagu += `
-            <div class="bahan-item ragu" id="ragu-${_slugify(b.nama)}" data-nama="${b.nama}" data-conf="${conf}">
-              ${b.nama.replace(/_/g, " ")}
+          const slug = _slugify(b.nama);
+          return `
+            <div class="bahan-item ragu" id="ragu-${slug}" data-nama="${b.nama}" data-conf="${conf}">
+              ${b.nama.replace(/_/g," ")}
               <div class="aksi-ragu">
-                <button class="btn-yakin" onclick="konfirmasiBahan('${_slugify(b.nama)}', '${b.nama}', '${conf}')">✓</button>
-                <button class="btn-hapus-bahan" onclick="hapusBahanHasil('${_slugify(b.nama)}', 'ragu')">✕</button>
+                <button class="btn-yakin" onclick="konfirmasiBahan('${slug}','${b.nama}','${conf}')">✓</button>
+                <button class="btn-hapus-bahan" onclick="hapusBahanHasil('${slug}','ragu')">✕</button>
               </div>
             </div>`;
-        });
-        document.getElementById("listBahanRagu").innerHTML = htmlRagu;
+        }).join("");
 
         _updateCounter();
       }
 
+
+      // ============================================================
+      // HELPERS: operasi bahan
+      // ============================================================
       function _slugify(nama) {
-        return nama.toLowerCase().replace(/[\s_]+/g, "-").replace(/[^a-z0-9-]/g, "");
+        return nama.toLowerCase().replace(/[\s_]+/g,"-").replace(/[^a-z0-9-]/g,"");
       }
 
       function konfirmasiBahan(slug, nama, conf) {
         const elRagu = document.getElementById(`ragu-${slug}`);
         if (elRagu) elRagu.remove();
-
-        if (document.getElementById(`valid-${slug}`)) {
-          _updateCounter();
-          return;
-        }
-
-        const htmlBaru = `
-          <div class="bahan-item valid" id="valid-${slug}" data-nama="${nama}" data-conf="${conf}">
-            ${nama.replace(/_/g, " ")}
-            <span class="badge-conf">${conf}</span>
-            <button class="btn-hapus-bahan" title="Hapus bahan" onclick="hapusBahanHasil('${slug}', 'valid')">✕</button>
-          </div>`;
-        
-        document.getElementById("listBahanValid").insertAdjacentHTML("beforeend", htmlBaru);
-        _updateCounter();
+        if (document.getElementById(`valid-${slug}`)) { _updateCounter(); return; }
+        _tambahKeValid(nama.replace(/_/g," "), slug, conf);
       }
 
       function hapusBahanHasil(slug, dari) {
@@ -730,102 +785,100 @@
         _updateCounter();
       }
 
-      // FITUR BARU: Aksi Massal Setuju Semua
       function setujuiSemuaRagu() {
-        const itemsRagu = document.querySelectorAll("#listBahanRagu .bahan-item.ragu");
-        itemsRagu.forEach((el) => {
-          const slug = el.id.replace("ragu-", "");
+        document.querySelectorAll("#listBahanRagu .bahan-item.ragu").forEach(el => {
+          const slug = el.id.replace("ragu-","");
           const nama = el.getAttribute("data-nama");
           const conf = el.getAttribute("data-conf");
-          
-          if (!document.getElementById(`valid-${slug}`)) {
-            const htmlBaru = `
-              <div class="bahan-item valid" id="valid-${slug}" data-nama="${nama}" data-conf="${conf}">
-                ${nama.replace(/_/g, " ")}
-                <span class="badge-conf">${conf}</span>
-                <button class="btn-hapus-bahan" title="Hapus bahan" onclick="hapusBahanHasil('${slug}', 'valid')">✕</button>
-              </div>`;
-            document.getElementById("listBahanValid").insertAdjacentHTML("beforeend", htmlBaru);
-          }
+          if (!document.getElementById(`valid-${slug}`))
+            _tambahKeValid(nama.replace(/_/g," "), slug, conf);
           el.remove();
         });
         _updateCounter();
       }
 
-      // FITUR BARU: Aksi Massal Batal/Hapus Semua Ragu
       function batalSemuaRagu() {
         document.getElementById("listBahanRagu").innerHTML = "";
         _updateCounter();
       }
 
       function _updateCounter() {
-        const jmlValid = document.querySelectorAll("#listBahanValid .bahan-item.valid").length;
-        const jmlRagu = document.querySelectorAll("#listBahanRagu .bahan-item.ragu").length;
 
-        // Kontrol tampilan header komponen valid
-        if (jmlValid > 0) {
-          document.getElementById("headerValid").style.display = "flex";
-          document.getElementById("titleValid").textContent = `TERKONFIRMASI (${jmlValid})`;
-          document.getElementById("btnKonfirmasi").classList.add("show");
-        } else {
-          document.getElementById("headerValid").style.display = "none";
-          document.getElementById("btnKonfirmasi").classList.remove("show");
-        }
+        // Hapus otomatis jika ada Unknown yang nyasar
+        document
+          .querySelectorAll("#listBahanValid .bahan-item")
+          .forEach(el => {
 
-        // Kontrol tampilan header komponen ragu
-        if (jmlRagu > 0) {
-          document.getElementById("headerRagu").style.display = "flex";
-          document.getElementById("titleRagu").textContent = `KONFIRMASI (${jmlRagu})`;
-        } else {
-          document.getElementById("headerRagu").style.display = "none";
-        }
+            const nama = (el.dataset.nama || "")
+              .toLowerCase()
+              .trim();
+
+            if (
+              nama === "unknow" ||
+              nama.includes("unknow") ||
+              nama.includes("background")
+            ) {
+              el.remove();
+            }
+          });
+
+        const jmlValid =
+          document.querySelectorAll(
+            "#listBahanValid .bahan-item.valid"
+          ).length;
+
+        const jmlRagu =
+          document.querySelectorAll(
+            "#listBahanRagu .bahan-item.ragu"
+          ).length;
+
+        // kode lama lanjut di bawah...
       }
 
+
+      // ============================================================
+      // KONFIRMASI & REDIRECT KE HALAMAN UTAMA
+      // ============================================================
       function konfirmasiDanCariResep() {
         const bahanValid = [];
-        document.querySelectorAll("#listBahanValid .bahan-item.valid").forEach((el) => {
-          const nama = el.getAttribute("data-nama").replace(/_/g, " ");
+        document.querySelectorAll("#listBahanValid .bahan-item.valid").forEach(el => {
+          const nama = el.getAttribute("data-nama").replace(/_/g," ");
           if (nama) bahanValid.push(nama);
         });
-
         if (bahanValid.length === 0) {
           alert("Tidak ada bahan yang valid untuk dicari resepnya.");
           return;
         }
-
         localStorage.setItem("hasilScan", JSON.stringify(bahanValid));
         window.location.href = "/?mode=scan";
       }
 
+
+      // ============================================================
+      // GAMBAR BOUNDING BOX (untuk mode upload)
+      // ============================================================
       function gambarBoundingBox(bboxData) {
         if (!bboxData || !bboxData.length) return;
-
         const img = PREVIEW;
         img.onload = () => {
-          BBOX_CVS.width = img.naturalWidth;
+          BBOX_CVS.width  = img.naturalWidth;
           BBOX_CVS.height = img.naturalHeight;
-          BBOX_CVS.style.width = "100%";
+          BBOX_CVS.style.width  = "100%";
           BBOX_CVS.style.height = "100%";
-
           const ctx = BBOX_CVS.getContext("2d");
           ctx.clearRect(0, 0, BBOX_CVS.width, BBOX_CVS.height);
-
-          bboxData.forEach((item) => {
+          bboxData.forEach(item => {
             const { bbox, nama, status, confidence } = item;
             const color = status === "valid" ? "#00c53b" : "#ffa726";
-
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 4;
+            ctx.strokeStyle = color; ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.rect(bbox.x1, bbox.y1, bbox.x2 - bbox.x1, bbox.y2 - bbox.y1);
             ctx.stroke();
-
-            const label = `${nama.replace(/_/g, " ")}${confidence ? " " + confidence + "%" : ""}`;
+            const label = `${nama.replace(/_/g," ")}${confidence ? " "+confidence+"%" : ""}`;
             ctx.font = "bold 14px Nunito, sans-serif";
             const tw = ctx.measureText(label).width;
             ctx.fillStyle = color;
             ctx.fillRect(bbox.x1, bbox.y1 - 24, tw + 12, 24);
-
             ctx.fillStyle = "white";
             ctx.fillText(label, bbox.x1 + 6, bbox.y1 - 6);
           });
@@ -833,106 +886,51 @@
         if (img.complete) img.onload();
       }
 
+
+      // ============================================================
+      // ULANGI — reset semua state
+      // ============================================================
       function ulangi() {
-        hasilScan = null;
-        document.getElementById("preview-wrapper").style.display = "none";
+        hasilScan  = null;
+        modeKamera = false;
+
+        document.getElementById("preview-wrapper").style.display    = "none";
         document.getElementById("placeholder-kamera").style.display = "block";
-        document.getElementById("btnUlang").style.display = "none";
+        document.getElementById("btnUlang").style.display   = "none";
         document.getElementById("btnAktifkan").style.display = "block";
-        document.getElementById("btnUpload").style.display = "block";
+        document.getElementById("btnUpload").style.display   = "block";
         document.getElementById("hasilPlaceholder").style.display = "block";
-        document.getElementById("hasilKonten").style.display = "none";
+        document.getElementById("hasilKonten").style.display      = "none";
         document.getElementById("statusDot").classList.remove("aktif");
         document.getElementById("statusTeks").textContent = "Kamera belum aktif";
+        document.getElementById("livePredBar").classList.remove("show");
+
+        // Kembalikan tips ke default
+        document.getElementById("tipsBox").innerHTML = `
+          <i class="bi bi-lightbulb-fill"></i>
+          <strong>Tips foto yang baik:</strong>
+          Letakkan semua bahan di permukaan datar, pastikan pencahayaan cukup, dan ambil foto lurus dari atas.
+        `;
 
         const ctx = BBOX_CVS.getContext("2d");
         ctx.clearRect(0, 0, BBOX_CVS.width, BBOX_CVS.height);
       }
 
+
+      // ============================================================
+      // ERROR
+      // ============================================================
       function tampilkanError(pesan) {
         document.getElementById("hasilPlaceholder").style.display = "none";
-        document.getElementById("hasilKonten").style.display = "block";
+        document.getElementById("hasilKonten").style.display       = "block";
         document.getElementById("headerValid").style.display = "none";
-        document.getElementById("headerRagu").style.display = "none";
+        document.getElementById("headerRagu").style.display  = "none";
         document.getElementById("listBahanValid").innerHTML = `
           <div style="text-align:center;padding:20px;color:#c62828">
             <i class="bi bi-exclamation-triangle" style="font-size:32px;display:block;margin-bottom:8px"></i>
             <p>${pesan}</p>
           </div>`;
         document.getElementById("listBahanRagu").innerHTML = "";
-      }
-      
-      async function scanRealtime() {
-        setInterval(async () => {
-          if (!tmModel || !VIDEO.videoWidth) return;
-          const prediction = await tmModel.predict(VIDEO);
-          let prediksiTerbaik = null;
-          prediction.forEach(item => {
-            if (
-              !prediksiTerbaik ||
-              item.probability > prediksiTerbaik.probability
-            ) {
-              prediksiTerbaik = item;
-            }
-          });
-          if (
-            prediksiTerbaik &&
-            prediksiTerbaik.className !== "Unknown" &&
-            prediksiTerbaik.probability > 0.8
-          ) {
-            tampilkanHasil({
-              bahan_valid: [{
-                nama: prediksiTerbaik.className,
-                confidence: (
-                  prediksiTerbaik.probability * 100
-                ).toFixed(1)
-              }],
-              bahan_ragu: [],
-              bbox_data: []
-            });
-          }
-        }, 1000);
-      }
-
-      function handleUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-
-        // Validasi tipe file
-        if (!file.type.startsWith("image/")) {
-          alert("File harus berupa gambar (JPG, PNG, dll).");
-          return;
-        }
-
-        // Hentikan kamera kalau sedang aktif
-        if (stream) {
-          stream.getTracks().forEach((t) => t.stop());
-          stream = null;
-        }
-
-        // Tampilkan preview gambar yang diupload
-        const url = URL.createObjectURL(file);
-        PREVIEW.src = url;
-        VIDEO.style.display = "none";
-        document.getElementById("placeholder-kamera").style.display = "none";
-        document.getElementById("preview-wrapper").style.display = "block";
-
-        // Sembunyikan tombol kamera, tampilkan tombol ulang
-        document.getElementById("btnAktifkan").style.display = "none";
-        document.getElementById("btnAmbil").style.display = "none";
-        document.getElementById("btnUpload").style.display = "none";
-        document.getElementById("btnUlang").style.display = "block";
-
-        // Update status
-        document.getElementById("statusDot").classList.add("aktif");
-        document.getElementById("statusTeks").textContent = "Foto dari galeri";
-
-        // Reset input file agar file yang sama bisa diupload ulang
-        event.target.value = "";
-
-        // Kirim ke server untuk dianalisa
-        kirimKeScan(file);
       }
     </script>
   </body>
