@@ -8,7 +8,7 @@ let lastAutoAdd = 0;
 let realtimeTimer = null;
 
 const TM_URL = "https://teachablemachine.withgoogle.com/models/CLV_1ruvN/";
-const AUTO_ADD_THRESH = 98;
+const AUTO_ADD_THRESH = 50;
 const SCAN_INTERVAL = 1000;
 const COOLDOWN_MS = 3000;
 
@@ -374,14 +374,18 @@ function scanRealtime() {
     const conf = best.probability * 100;
     const isUnknown = isUnknownLabel(nama);
 
+    // ── Update live bar ──
     setText("livePredLabel", isUnknown ? "Objek tidak dikenali" : nama);
     const fill = document.getElementById("livePredFill");
     if (fill) {
       fill.style.width = `${conf.toFixed(0)}%`;
-      fill.style.background = isUnknown ? "#bbb" : (conf >= AUTO_ADD_THRESH ? "#00c53b" : "#ffa726");
+      fill.style.background = isUnknown
+        ? "#bbb"
+        : conf >= AUTO_ADD_THRESH ? "#00c53b" : "#ffa726";
     }
     setText("livePredConf", `${conf.toFixed(0)}%`);
 
+    // ── Auto-add hanya kalau bukan unknown dan conf cukup ──
     if (isUnknown || conf < AUTO_ADD_THRESH) return;
 
     const now = Date.now();
@@ -549,6 +553,7 @@ function dedupeScanItems(items, existing = new Set()) {
 
   items.forEach(item => {
     const key = normalizeName(item.nama);
+    // Buang item kosong atau yang terdeteksi sebagai unknown
     if (!key || isUnknownLabel(key) || seen.has(key)) return;
     seen.add(key);
     unique.push(item);
@@ -558,6 +563,7 @@ function dedupeScanItems(items, existing = new Set()) {
 }
 
 function _tambahKeValid(nama, slug, confStr) {
+  // Blokir unknown sebelum ditambahkan
   if (isUnknownLabel(nama)) return;
 
   showScanContent();
@@ -613,12 +619,13 @@ function batalSemuaRagu() {
 }
 
 function _updateCounter() {
+  // Bersihkan sisa unknown yang lolos masuk DOM
   document.querySelectorAll("#listBahanValid .bahan-item").forEach(el => {
     if (isUnknownLabel(el.dataset.nama || "")) el.remove();
   });
 
   const jmlValid = document.querySelectorAll("#listBahanValid .bahan-item.valid").length;
-  const jmlRagu = document.querySelectorAll("#listBahanRagu .bahan-item.ragu").length;
+  const jmlRagu  = document.querySelectorAll("#listBahanRagu .bahan-item.ragu").length;
 
   setText("titleValid", `TERDETEKSI (${jmlValid})`);
   setText("titleRagu", `TIDAK YAKIN (${jmlRagu})`);
@@ -650,8 +657,10 @@ function gambarBoundingBox(bboxData) {
   if (!img || !canvas) return;
 
   img.onload = () => {
-    canvas.width = img.naturalWidth;
+    canvas.width  = img.naturalWidth;
     canvas.height = img.naturalHeight;
+    canvas.style.width  = "100%";
+    canvas.style.height = "100%";
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -678,7 +687,7 @@ function gambarBoundingBox(bboxData) {
 }
 
 function ulangi() {
-  hasilScan = null;
+  hasilScan  = null;
   modeKamera = false;
   stopCameraStream();
   if (realtimeTimer) {
@@ -763,9 +772,16 @@ function stopCameraStream() {
   }
 }
 
+// ── Cek apakah label adalah "unknown" dalam berbagai variasi ──
 function isUnknownLabel(value) {
   const name = normalizeName(value);
-  return name === "unknow" || name.includes("unknow") || name.includes("unknown") || name.includes("background") || name.includes("tidak");
+  return (
+    name === "unknow" ||
+    name.includes("unknow") ||
+    name.includes("unknown") ||
+    name.includes("background") ||
+    name.includes("tidak")
+  );
 }
 
 function normalizeName(value) {
