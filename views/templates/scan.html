@@ -470,14 +470,33 @@
     <canvas id="canvasCapture" style="display: none"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
     <script>
       let stream = null;
       let hasilScan = null;
+      
+      const TM_URL = "https://teachablemachine.withgoogle.com/models/CLV_1ruvN/";
+      
+      let tmModel = null;
+      let maxPredictions = 0;
+      
       const VIDEO = document.getElementById("videoEl");
       const CANVAS = document.getElementById("canvasCapture");
       const BBOX_CVS = document.getElementById("canvasBbox");
       const PREVIEW = document.getElementById("imgPreview");
       const OVERLAY = document.getElementById("loading-overlay");
+
+      async function loadTMModel() {
+        const modelURL = TM_URL + "model.json";
+        const metadataURL = TM_URL + "metadata.json";
+        
+        tmModel = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = tmModel.getTotalClasses();
+        
+        console.log("Model Teachable Machine berhasil dimuat");
+      }
 
       async function aktifkanKamera() {
         try {
@@ -495,13 +514,19 @@
 
           await new Promise((resolve) => (VIDEO.onloadedmetadata = resolve));
           await VIDEO.play();
+          if (!tmModel) {
+            await loadTMModel();
+          }
 
           VIDEO.style.display = "block";
           document.getElementById("placeholder-kamera").style.display = "none";
           document.getElementById("btnAktifkan").style.display = "none";
-          document.getElementById("btnAmbil").style.display = "block";
+          document.getElementById("btnAmbil").style.display = "none";
           document.getElementById("statusDot").classList.add("aktif");
           document.getElementById("statusTeks").textContent = "Kamera aktif";
+
+          scanRealtime();
+
         } catch (err) {
           let pesan = "Tidak bisa akses kamera.";
           if (err.name === "NotAllowedError") pesan = "Izin kamera ditolak. Izinkan akses kamera di browser.";
@@ -529,8 +554,68 @@
           document.getElementById("btnUlang").style.display = "block";
 
           if (stream) stream.getTracks().forEach((t) => t.stop());
-          kirimKeScan(blob);
+          prediksiTeachableMachine();
         }, "image/jpeg", 0.9);
+      }
+
+      async function prediksiTeachableMachine() {
+        try {
+          
+          OVERLAY.classList.add("show");
+          
+          const prediction = await tmModel.predict(CANVAS);
+          
+          console.log(prediction);
+          
+          OVERLAY.classList.remove("show");
+          
+          let prediksiTerbaik = null;
+          
+          prediction.forEach(item => {
+            if (
+              !prediksiTerbaik ||
+              item.probability > prediksiTerbaik.probability
+            ) {
+              prediksiTerbaik = item;
+            }
+          });
+          
+          if (
+            !prediksiTerbaik ||
+            prediksiTerbaik.className.toLowerCase() === "unknown" ||
+            prediksiTerbaik.probability < 0.8
+          ) {
+            tampilkanError(
+              "Bahan tidak dikenali oleh Teachable Machine"
+            );
+            return;
+          }
+          
+          tampilkanHasil({
+            bahan_valid: [
+              {
+                nama: prediksiTerbaik.className,
+                confidence: (
+                  prediksiTerbaik.probability * 100
+                ).toFixed(1)
+              }
+            ],
+            bahan_ragu: [],
+            bbox_data: []
+          });
+          
+          console.log(
+            "Teachable Machine:",
+            prediksiTerbaik.className
+          );
+        
+        } catch (err) {
+          OVERLAY.classList.remove("show");
+          console.error(err);
+          tampilkanError(
+            "Gagal menjalankan Teachable Machine"
+          );
+        }
       }
 
       async function kirimKeScan(blob) {
@@ -776,10 +861,43 @@
           </div>`;
         document.getElementById("listBahanRagu").innerHTML = "";
       }
+      
+      async function scanRealtime() {
+        setInterval(async () => {
+          if (!tmModel || !VIDEO.videoWidth) return;
+          const prediction = await tmModel.predict(VIDEO);
+          let prediksiTerbaik = null;
+          prediction.forEach(item => {
+            if (
+              !prediksiTerbaik ||
+              item.probability > prediksiTerbaik.probability
+            ) {
+              prediksiTerbaik = item;
+            }
+          });
+          if (
+            prediksiTerbaik &&
+            prediksiTerbaik.className !== "Unknown" &&
+            prediksiTerbaik.probability > 0.8
+          ) {
+            tampilkanHasil({
+              bahan_valid: [{
+                nama: prediksiTerbaik.className,
+                confidence: (
+                  prediksiTerbaik.probability * 100
+                ).toFixed(1)
+              }],
+              bahan_ragu: [],
+              bbox_data: []
+            });
+          }
+        }, 1000);
+      }
 
       function handleUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
+
 
         // Validasi tipe file
         if (!file.type.startsWith("image/")) {
