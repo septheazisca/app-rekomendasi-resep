@@ -23,7 +23,7 @@ load_dotenv(dotenv_path=_env_path)
 # ============================================================
 
 ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY", "P7bVT2jsgG70IbhqrCll")
-MODEL_ID         = "vegetables-el4g6/1"
+MODEL_ID = os.getenv("MODEL_ID", "vegetables-el4g6/1")
 ROBOFLOW_URL     = f"https://detect.roboflow.com/{MODEL_ID}"
 YOLO_THRESHOLD   = 0.40   # confidence minimum agar dianggap valid
 
