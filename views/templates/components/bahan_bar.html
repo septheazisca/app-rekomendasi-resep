@@ -1,36 +1,15 @@
-<!-- ── Bahan Bar ── -->
 <div class="container mt-3">
-  <div
-    class="bg-white shadow-sm rounded-4 rk-bahan-bar-border"
-    style="box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px"
-  >
+  <div class="bg-white shadow-sm rounded-4 rk-bahan-bar">
     <div class="container py-3">
       <div class="d-flex align-items-center gap-2 flex-wrap">
-        <span class="small fw-semibold" style="color: #0c3318"
-          >Bahan dipilih:</span
-        >
+        <span class="small fw-semibold rk-bahan-label">Bahan dipilih:</span>
         <div id="bahanTags" class="d-flex flex-wrap gap-2 flex-grow-1">
           <span class="text-muted fst-italic small">Pilih bahan di bawah</span>
         </div>
         <div class="d-flex gap-2">
-          <button
-            class="btn btn-md fw-bold btn-reset"
-            onclick="resetBahan()"
-            style="border: 1px solid #00c53b; color: #00c53b"
-          >
-            Batal
-          </button>
-          <!-- KAMERA -->
-          <a href="/scan" class="btn btn-md fw-bold btn-cari" style="background-color: #00c53b; color: white; border: none">
-            Scan Bahan
-          </a>
-          <button
-            class="btn btn-md fw-bold btn-cari"
-            id="btnCari"
-            onclick="cariResep()"
-            disabled
-            style="background-color: #00c53b; color: white; border: none"
-          >
+          <button class="btn btn-md fw-bold btn-reset" onclick="resetBahan()">Batal</button>
+          <a href="/scan" class="btn btn-md fw-bold btn-cari">Scan Bahan</a>
+          <button class="btn btn-md fw-bold btn-cari" id="btnCari" onclick="cariResep()" disabled>
             Cari
           </button>
         </div>

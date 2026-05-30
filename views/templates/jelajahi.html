@@ -4,141 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reseep - Jelajahi Kuliner</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
-
-  <style>
-    /* ── Utilities & Variables ── */
-    :root {
-      --primary-dark: #0c3318;
-      --primary-green: #00c53b;
-      --accent-light: #80F6A3;
-    }
-
-    body {
-      font-family: 'Nunito', sans-serif;
-    }
-
-    /* ── Filter Bar Styling ── */
-    #inputCariBahan:focus, 
-    #filterKategori:focus {
-      background-color: #f1f5f9 !important;
-      border: 1px solid var(--accent-light) !important;
-    }
-    
-    .form-select {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%230c3318' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
-    }
-
-    /* ── Recipe Premium Cards ── */
-    .recipe-card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      background-color: #ffffff;
-    }
-    
-    .recipe-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
-    }
-
-    .img-container {
-      overflow: hidden;
-    }
-
-    .img-container .recipe-img {
-      transition: transform 0.5s ease;
-    }
-    
-    .recipe-card:hover .recipe-img {
-      transform: scale(1.08);
-    }
-
-    .bg-blur {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(4px);
-    }
-
-    /* ── Line Clamping UI Text Limiters ── */
-    .text-truncate-2 {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;  
-      overflow: hidden;
-    }
-    
-    .text-truncate-3 {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;  
-      overflow: hidden;
-    }
-
-    /* ── Premium Black Text Buttons ── */
-    .btn-recipe-primary {
-      background: linear-gradient(150deg, var(--accent-light), #56e681);
-      border: none;
-      color: var(--primary-dark) !important;
-      font-size: 14px;
-    }
-    
-    .btn-recipe-primary:hover {
-      background: linear-gradient(140deg, #4cec7c, #4fd677);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 197, 59, 0.25);
-      color: #000000 !important;
-    }
-
-    /* ── Back to Top Button ── */
-    #btnTop {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
-      display: none;
-      z-index: 99;
-      width: 45px;
-      height: 45px;
-      line-height: 45px;
-      text-align: center;
-      padding: 0;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 
 <body class="bg-white">
-
-  {% include 'components/navbar.html' %} 
+  {% include 'components/navbar.html' %}
   {% include 'components/hero.html' %}
 
   <div class="container mt-3">
-    <div class="bg-white shadow-sm rounded-4 border border-light-subtle" style="box-shadow: rgba(17, 12, 46, 0.05) 0px 4px 20px 0px;">
+    <div class="bg-white shadow-sm rounded-4 border border-light-subtle catalog-filter-box">
       <div class="container py-3">
         <div class="row g-3 align-items-center">
-          
           <div class="col-12 col-md-5">
             <div class="input-group">
-              <span class="input-group-text bg-light border-0 text-muted" style="border-radius: 12px 0 0 12px;">
+              <span class="input-group-text bg-light border-0 text-muted catalog-input-left">
                 <i class="bi bi-search"></i>
               </span>
-              <input 
-                type="text" 
-                id="inputCariBahan" 
-                class="form-control bg-light border-0 py-2" 
-                placeholder="Cari nama atau deskripsi resep masakan..." 
+              <input
+                type="text"
+                id="inputCariResep"
+                class="form-control bg-light border-0 py-2 catalog-input"
+                placeholder="Cari nama atau deskripsi resep masakan..."
                 onkeyup="jalankanLiveSearch()"
-                style="border-radius: 0 12px 12px 0; font-size: 0.95rem; box-shadow: none;"
-              >
+              />
             </div>
           </div>
 
           <div class="col-12 col-md-3">
-            <select 
-              id="filterKategori" 
-              class="form-select bg-light border-0 py-2 text-dark" 
+            <select
+              id="filterKategori"
+              class="form-select bg-light border-0 py-2 text-dark catalog-select"
               onchange="jalankanLiveSearch()"
-              style="border-radius: 12px; font-size: 0.95rem; box-shadow: none;"
             >
               <option value="semua">Semua Kategori</option>
               {% for kat in daftar_kategori %}
@@ -148,51 +47,40 @@
           </div>
 
           <div class="col-12 col-md-4 text-md-end d-flex gap-2 justify-content-end">
-            <button
-              class="btn btn-md fw-bold px-3 w-50"
-              onclick="resetFilter()"
-              style="border: 1px solid var(--primary-green); color: var(--primary-green); border-radius: 12px; font-size: 0.9rem;"
-            >
+            <button class="btn btn-md fw-bold px-3 w-50 catalog-reset-button" onclick="resetFilter()">
               Reset Filter
             </button>
-            
-            <a 
-              href="/scan" 
-              class="btn btn-md fw-bold px-3 d-flex align-items-center gap-2 w-50 justify-content-center" 
-              style="background-color: var(--primary-green); color: white; border: none; border-radius: 12px; font-size: 0.9rem;"
-            >
+            <a href="/scan" class="btn btn-md fw-bold px-3 d-flex align-items-center gap-2 w-50 justify-content-center catalog-scan-button">
               <i class="bi bi-camera-fill"></i> Scan Bahan
             </a>
           </div>
-
         </div>
       </div>
     </div>
   </div>
 
   <main class="container my-5">
-    
     <div id="pesanKosong" class="text-center my-5 d-none">
-      <i class="bi bi-egg-fried text-muted" style="font-size: 3rem;"></i>
+      <i class="bi bi-egg-fried text-muted catalog-empty-icon"></i>
       <h5 class="fw-bold text-secondary mt-3">Resep tidak ditemukan</h5>
       <p class="text-muted small">Coba cari kata kunci resep kuliner nusantara lainnya.</p>
     </div>
 
     <div class="row g-4" id="containerKatalogResep">
       {% for resep in daftar_resep %}
-      <div class="col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch item-kartu-resep" 
-           data-nama="{{ resep.nama_resep | lower }}" 
-           data-deskripsi="{{ resep.deskripsi | lower }}" 
-           data-kategori="{{ resep.kategori | lower }}">
-        
+      <div
+        class="col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch item-kartu-resep"
+        data-nama="{{ resep.nama_resep | lower }}"
+        data-deskripsi="{{ resep.deskripsi | lower }}"
+        data-kategori="{{ resep.kategori | lower }}"
+      >
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden w-100 recipe-card">
-          
           <div class="position-relative overflow-hidden img-container">
-            <img src="https://assets.unileversolutions.com/recipes-v3/230915-default.jpg" 
-                 class="card-img-top img-fluid recipe-img" 
-                 alt="{{ resep.nama_resep }}"
-                 style="height: 200px; object-fit: cover;">
-            
+            <img
+              src="https://assets.unileversolutions.com/recipes-v3/230915-default.jpg"
+              class="card-img-top img-fluid recipe-img"
+              alt="{{ resep.nama_resep }}"
+            />
             <span class="badge bg-blur text-dark position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill shadow-sm small fw-semibold">
               {{ resep.kategori }}
             </span>
@@ -205,12 +93,10 @@
             <p class="card-text text-muted small flex-grow-1 text-truncate-3 mb-4">
               {{ resep.deskripsi }}
             </p>
-            
             <a href="/resep/{{ resep.id_resep }}" class="btn btn-recipe-primary w-100 py-2 rounded-3 fw-bold mt-auto text-center">
-                Lihat Resep
+              Lihat Resep
             </a>
           </div>
-          
         </div>
       </div>
       {% endfor %}
@@ -219,73 +105,11 @@
 
   {% include 'components/footer.html' %}
 
-  <button id="btnTop" class="btn btn-success rounded-circle shadow" onclick="scrollKeAtas()">
+  <button id="btnTop" class="btn btn-success rounded-circle shadow">
     <i class="bi bi-chevron-up"></i>
   </button>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-  
-  <script>
-    // Fungsi Inti Live Search dengan Kolaborasi Filter Kategori
-    function jalankanLiveSearch() {
-      const kataKunci = document.getElementById("inputCariBahan").value.toLowerCase().trim();
-      const kategoriTerpilih = document.getElementById("filterKategori").value.toLowerCase();
-      const sekatKartuResep = document.getElementsByClassName("item-kartu-resep");
-      let jumlahDitemukan = 0;
-
-      for (let i = 0; i < sekatKartuResep.length; i++) {
-        const item = sekatKartuResep[i];
-        const nama = item.getAttribute("data-nama") || "";
-        const deskripsi = item.getAttribute("data-deskripsi") || "";
-        const kategori = item.getAttribute("data-kategori") || "";
-
-        // Validasi kecocokan teks pencarian dan kategori
-        const cocokTeks = nama.includes(kataKunci) || deskripsi.includes(kataKunci);
-        const cocokKategori = (kategoriTerpilih === "semua") || (kategori === kategoriTerpilih);
-
-        if (cocokTeks && cocokKategori) {
-          item.classList.add('d-flex'); // FIXED: Menggunakan .add() bukan .set()
-          item.classList.remove('d-none'); // Memastikan utility 'd-none' hilang
-          jumlahDitemukan++;
-        } else {
-          item.classList.remove('d-flex');
-          item.classList.add('d-none'); // Memanfaatkan kelas Bootstrap d-none untuk menyembunyikan elemen secara absolut
-        }
-      }
-
-      // Tampilkan notifikasi jika hasil pencarian kosong
-      const boxPesan = document.getElementById("pesanKosong");
-      if (jumlahDitemukan === 0) {
-        boxPesan.classList.remove("d-none");
-      } else {
-        boxPesan.classList.add("d-none");
-      }
-    }
-
-    // Fungsi Reset Filter Kontrol
-    function resetFilter() {
-      document.getElementById("inputCariBahan").value = "";
-      document.getElementById("filterKategori").value = "semua";
-      jalankanLiveSearch();
-    }
-
-    // Mengelola Visibilitas Tombol Scroll Up
-    const btnTop = document.getElementById("btnTop");
-    window.onscroll = function () {
-      if (document.documentElement.scrollTop > 200 || document.body.scrollTop > 200) {
-        btnTop.style.display = "block";
-      } else {
-        btnTop.style.display = "none";
-      }
-    };
-
-    function scrollKeAtas() {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
-  </script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=refactor"></script>
 </body>
 </html>

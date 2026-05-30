@@ -4,67 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ResepKu</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
   </head>
   <body class="bg-white">
-    {% include 'components/navbar.html' %} {% include 'components/hero.html' %}
+    {% include 'components/navbar.html' %}
+    {% include 'components/hero.html' %}
     {% include 'components/bahan_bar.html' %}
 
-    <!-- ── Main Content ── -->
     <main class="container my-4">
       <div class="row g-4 align-items-start">
-        {% include 'components/panel_bahan.html' %} {% include
-        'components/panel_resep.html' %}
+        {% include 'components/panel_bahan.html' %}
+        {% include 'components/panel_resep.html' %}
       </div>
     </main>
 
     {% include 'components/footer.html' %}
 
-    <!-- Tombol scroll ke atas -->
-    <button
-      id="btnTop"
-      class="btn btn-success rounded-circle shadow"
-      onclick="scrollKeAtas()"
-      style="
-        display: none;
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 999;
-        width: 44px;
-        height: 44px;
-      "
-    >
+    <button id="btnTop" class="btn btn-success rounded-circle shadow">
       <i class="bi bi-chevron-up"></i>
     </button>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-    <script>
-      // Scroll to top button
-      const btnTop = document.getElementById("btnTop");
-      window.onscroll = function () {
-        btnTop.style.display =
-          document.documentElement.scrollTop > 200 ? "block" : "none";
-      };
-      function scrollKeAtas() {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    </script>
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=refactor"></script>
   </body>
 </html>

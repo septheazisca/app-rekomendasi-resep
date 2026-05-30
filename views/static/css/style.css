@@ -1,40 +1,110 @@
-/* ── Reset ── */
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* ── Variables ── */
 :root {
-  --hijau:    #80F6A3;
-  --hijau-2:  #009B2E;
-  --hijau-bg: #9FFFBB;
-  --teks:     #1a1a1a;
-  --teks-2:   #555;
-  --border:   #e0e0e0;
-  --putih:    #ffffff;
-  --kuning:   #EF9F27;
-  --merah:    #D85A30;
+  --hijau: #80f6a3;
+  --hijau-2: #009b2e;
+  --hijau-tua: #0c3318;
+  --hijau-muda: #00c53b;
+  --hijau-bg: #e8f5e9;
+  --hijau-bg-2: #9fffbb;
+  --teks: #1a1a1a;
+  --teks-2: #555;
+  --border: #e0e0e0;
+  --putih: #ffffff;
+  --kuning: #ef9f27;
+  --merah: #d85a30;
+  --primary-dark: #0c3318;
+  --primary-green: #00c53b;
+  --accent-light: #80f6a3;
 }
 
-/* ── Body ── */
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
   color: var(--teks);
+  font-family: "Nunito", "Segoe UI", Arial, sans-serif;
 }
 
-/* ── Header ── */
 .header {
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-/* ── Hero ── */
-.rk-hero-sub {
-  color: #0C3318;
+.rk-brand,
+.rk-nav-link {
+  color: var(--hijau-tua);
 }
 
-/* ── Accordion Fix ── */
+.rk-nav-link {
+  font-size: 15px;
+}
+
+.rk-footer {
+  background-color: var(--hijau);
+  color: var(--hijau-tua);
+}
+
+.rk-hero {
+  background: linear-gradient(135deg, #80f6a3 0%, #4ade80 90%, #22c55e 100%);
+  min-height: 250px;
+}
+
+.rk-hero-decor {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  pointer-events: none;
+}
+
+.rk-hero-decor-1 { width: 180px; height: 180px; top: -60px; right: 120px; }
+.rk-hero-decor-2 { width: 100px; height: 100px; bottom: -30px; right: 60px; }
+.rk-hero-decor-3 { width: 90px; height: 90px; bottom: 80px; right: -20px; }
+.rk-hero-decor-4 { width: 50px; height: 50px; bottom: 50px; right: -20px; }
+.rk-hero-decor-5 { width: 60px; height: 60px; top: 20px; right: 280px; opacity: 0.72; }
+.rk-hero-decor-6 { width: 60px; height: 60px; top: 1px; right: 20px; opacity: 0.72; }
+.rk-hero-decor-7 { width: 60px; height: 60px; top: 90px; right: 80px; opacity: 0.72; }
+
+.rk-hero-media,
+.rk-hero-copy {
+  z-index: 2;
+}
+
+.rk-group {
+  max-height: clamp(120px, 30vw, 250px);
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1));
+}
+
+.rk-hero-title {
+  color: #14532d;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+}
+
+.rk-hero-sub {
+  color: var(--hijau-tua);
+}
+
+.rk-bahan-bar {
+  box-shadow: rgba(17, 12, 46, 0.15) 0 48px 100px 0;
+}
+
+.rk-bahan-label {
+  color: var(--hijau-tua);
+}
+
+.btn-reset {
+  border: 1px solid var(--hijau-muda);
+  color: var(--hijau-muda);
+}
+
+.btn-cari {
+  background-color: var(--hijau-muda);
+  border: none;
+  color: var(--putih);
+}
+
 .accordion-button {
   display: flex !important;
   justify-content: space-between !important;
@@ -45,6 +115,13 @@ body {
   display: none !important;
 }
 
+.rk-accordion-button {
+  background-color: var(--hijau);
+  color: var(--teks);
+  box-shadow: none;
+  padding: 12px 16px;
+}
+
 .icon-panah {
   transition: transform 0.3s ease;
 }
@@ -53,14 +130,12 @@ body {
   transform: rotate(180deg);
 }
 
-/* ── Bahan Grid ── */
 .bahan-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 10px;
 }
 
-/* ── Bahan Card ── */
 .bahan-card {
   display: flex;
   flex-direction: column;
@@ -68,23 +143,19 @@ body {
   padding: 10px 6px;
   border: 2px solid var(--border);
   border-radius: 10px;
-  background: white;
+  background: var(--putih);
   cursor: pointer;
   transition: 0.15s;
 }
 
 .bahan-card:hover {
   border-color: var(--hijau);
-  background: var(--hijau-bg);
+  background: var(--hijau-bg-2);
 }
 
 .bahan-card.aktif {
   border-color: var(--hijau);
   background: #f6fff9;
-}
-
-.bahan-card .ikon {
-  font-size: 26px;
 }
 
 .bahan-card .nama {
@@ -97,7 +168,6 @@ body {
   font-weight: 700;
 }
 
-/* ── Bahan Tag (dipakai JS) ── */
 .bahan-tag {
   display: inline-flex;
   align-items: center;
@@ -127,7 +197,6 @@ body {
   color: var(--merah);
 }
 
-/* ── Resep Card ── */
 .resep-card {
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -136,16 +205,29 @@ body {
   cursor: pointer;
   transition: all 0.15s;
   position: relative;
-  display: block;             
-  text-decoration: none;      
-  color: inherit;            
-  }
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
 
-.resep-card:hover { border-color: var(--hijau-2); box-shadow: 0 2px 10px rgba(127,119,221,0.15); }
+.resep-card:hover {
+  border-color: var(--hijau-2);
+  box-shadow: 0 2px 10px rgba(127, 119, 221, 0.15);
+}
 
-.resep-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.resep-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
 
-.resep-nama { font-size: 15px; font-weight: 700; color: var(--teks); }
+.resep-nama {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--teks);
+}
+
 .resep-kategori {
   font-size: 11px;
   font-weight: 600;
@@ -156,14 +238,43 @@ body {
   white-space: nowrap;
 }
 
-.resep-deskripsi { font-size: 12px; color: var(--teks-2); margin: 6px 0 8px; }
+.resep-deskripsi {
+  font-size: 12px;
+  color: var(--teks-2);
+  margin: 6px 0 8px;
+}
 
-.resep-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.resep-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
-.skor-bar-wrap { flex: 1; min-width: 80px; }
-.skor-label { font-size: 11px; color: var(--teks-2); margin-bottom: 3px; }
-.skor-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.skor-bar-fill { height: 100%; border-radius: 3px; background: var(--hijau); transition: width 0.5s ease; }
+.skor-bar-wrap {
+  flex: 1;
+  min-width: 80px;
+}
+
+.skor-label {
+  font-size: 11px;
+  color: var(--teks-2);
+  margin-bottom: 3px;
+}
+
+.skor-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.skor-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--hijau);
+  transition: width 0.5s ease;
+}
 
 .skor-persen {
   font-size: 13px;
@@ -171,22 +282,37 @@ body {
   color: var(--hijau-2);
 }
 
-.bahan-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.bahan-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
 .badge {
   font-size: 11px;
   padding: 2px 7px;
   border-radius: 6px;
   font-weight: 500;
 }
-.badge-ada    { background: var(--hijau-bg); color: var(--hijau-2); }
-.badge-kurang { background: #FEF3C7; color: #92400E; border: 1px dashed #F59E0B; }
+
+.badge-ada {
+  background: var(--hijau-bg-2);
+  color: var(--hijau-2);
+}
+
+.badge-kurang {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px dashed #f59e0b;
+}
 
 .resep-ranking {
   position: absolute;
   top: -8px;
   left: 12px;
   background: var(--hijau);
-  color: white;
+  color: var(--putih);
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
@@ -194,23 +320,41 @@ body {
 }
 
 .resep-ranking.rank-1 { background: var(--kuning); color: #7c4a00; }
-.resep-ranking.rank-2 { background: #aaa; color: white; }
-.resep-ranking.rank-3 { background: #c07850; color: white; }
+.resep-ranking.rank-2 { background: #aaa; color: var(--putih); }
+.resep-ranking.rank-3 { background: #c07850; color: var(--putih); }
 
-/* Judul hasil */
 .hasil-title {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 14px;
   padding-bottom: 10px;
-  border-bottom: 2px solid var(--abu);
+  border-bottom: 2px solid var(--border);
 }
 
-/* Loading spinner */
+.hasil-placeholder {
+  text-align: center;
+  color: #aaa;
+  padding: 40px 20px;
+}
+
+.panel-placeholder-icon {
+  font-size: 48px;
+}
+
+.placeholder-icon {
+  font-size: 32px;
+}
+
 .loading {
   text-align: center;
   padding: 30px;
   color: var(--teks-2);
+}
+
+.spinner,
+.spinner-scan {
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 .spinner {
@@ -218,30 +362,631 @@ body {
   height: 32px;
   border: 3px solid var(--border);
   border-top-color: var(--hijau);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
   margin: 0 auto 12px;
 }
 
+#btnTop {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: none;
+  z-index: 999;
+  width: 44px;
+  height: 44px;
+}
+
+#btnTop.show {
+  display: block;
+}
+
+.detail-back-button {
+  background-color: var(--hijau-bg-2);
+  color: var(--hijau-2);
+}
+
+.detail-card,
+.detail-langkah {
+  background: var(--putih);
+  border: 1px solid #eef2f0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 18px rgba(12, 51, 24, 0.06);
+}
+
+.detail-judul {
+  margin: 16px 0 8px;
+  font-weight: 800;
+  color: var(--hijau-tua);
+}
+
+.detail-deskripsi {
+  color: var(--teks-2);
+  margin: 0;
+}
+
+.langkah-item,
+.bahan-list .bahan-item {
+  margin-bottom: 10px;
+}
+
+.catalog-filter-box {
+  box-shadow: rgba(17, 12, 46, 0.05) 0 4px 20px 0;
+}
+
+.catalog-input-left {
+  border-radius: 12px 0 0 12px;
+}
+
+.catalog-input {
+  border-radius: 0 12px 12px 0;
+  font-size: 0.95rem;
+  box-shadow: none;
+}
+
+.catalog-select {
+  border-radius: 12px;
+  font-size: 0.95rem;
+  box-shadow: none;
+}
+
+#inputCariResep:focus,
+#filterKategori:focus {
+  background-color: #f1f5f9 !important;
+  border: 1px solid var(--accent-light) !important;
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%230c3318' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.catalog-reset-button {
+  border: 1px solid var(--primary-green);
+  color: var(--primary-green);
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.catalog-scan-button {
+  background-color: var(--primary-green);
+  color: var(--putih);
+  border: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.catalog-empty-icon {
+  font-size: 3rem;
+}
+
+.recipe-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--putih);
+}
+
+.recipe-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+.img-container {
+  overflow: hidden;
+}
+
+.recipe-img {
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.recipe-card:hover .recipe-img {
+  transform: scale(1.08);
+}
+
+.bg-blur {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+.text-truncate-2,
+.text-truncate-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-truncate-2 { -webkit-line-clamp: 2; }
+.text-truncate-3 { -webkit-line-clamp: 3; }
+
+.btn-recipe-primary {
+  background: linear-gradient(150deg, var(--accent-light), #56e681);
+  border: none;
+  color: var(--primary-dark) !important;
+  font-size: 14px;
+}
+
+.btn-recipe-primary:hover {
+  background: linear-gradient(140deg, #4cec7c, #4fd677);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 197, 59, 0.25);
+  color: #000000 !important;
+}
+
+.scan-page {
+  background: #fcfffc;
+}
+
+.scan-wrapper {
+  max-width: 960px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.kamera-box,
+.hasil-box {
+  background: var(--putih);
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.kamera-header {
+  background: var(--hijau-bg-2);
+  color: var(--teks);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kamera-header h5 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #888;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.status-dot.aktif {
+  background: var(--hijau-muda);
+  animation: pulse 1.2s infinite;
+}
+
+.status-text,
+.scan-small-text {
+  font-size: 13px;
+}
+
+#canvas-wrapper {
+  position: relative;
+  width: 100%;
+  background: #111;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#videoEl {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  display: block;
+}
+
+#placeholder-kamera {
+  text-align: center;
+  color: #aaa;
+  padding: 60px 20px;
+}
+
+#placeholder-kamera i {
+  font-size: 56px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+#preview-wrapper {
+  position: relative;
+}
+
+#imgPreview {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+  background: #111;
+}
+
+#canvasBbox {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#livePredBar {
+  display: none;
+  padding: 10px 20px;
+  background: #f0fff4;
+  border-top: 1px solid #c8e6c9;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--hijau-tua);
+  align-items: center;
+  gap: 10px;
+}
+
+#livePredBar.show {
+  display: flex;
+}
+
+.live-label {
+  flex: 1;
+}
+
+.live-bar-wrap {
+  flex: 2;
+  background: #ddd;
+  border-radius: 20px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.live-bar-fill {
+  height: 100%;
+  border-radius: 20px;
+  background: var(--hijau-muda);
+  transition: width 0.3s ease;
+}
+
+.live-conf {
+  min-width: 44px;
+  text-align: right;
+}
+
+#notifAutoAdd {
+  display: none;
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--hijau-tua);
+  color: var(--putih);
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 20;
+  animation: fadeInUp 0.3s ease;
+}
+
+#notifAutoAdd.show {
+  display: block;
+}
+
+.kamera-controls {
+  padding: 20px 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-ambil,
+.btn-ulang,
+.btn-upload {
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.btn-ambil {
+  background: var(--hijau-muda);
+  color: var(--putih);
+  border: none;
+  padding-inline: 32px;
+  flex: 1;
+}
+
+.btn-ambil:hover {
+  background: #00a832;
+  transform: translateY(-1px);
+}
+
+.btn-ulang,
+.btn-upload {
+  background: var(--putih);
+  color: var(--hijau-tua);
+  border: 2px solid var(--hijau-tua);
+}
+
+.btn-ulang:hover,
+.btn-upload:hover {
+  background: var(--hijau-bg);
+}
+
+#loading-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 51, 24, 0.85);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: var(--putih);
+  gap: 14px;
+  z-index: 10;
+}
+
+#loading-overlay.show {
+  display: flex;
+}
+
+.spinner-scan {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: var(--hijau-muda);
+}
+
+.loading-text {
+  font-weight: 700;
+}
+
+.hasil-header {
+  background: var(--hijau-bg-2);
+  padding: 16px 24px;
+  border-bottom: 1px solid #c8e6c9;
+}
+
+.hasil-header h6 {
+  margin: 0;
+  font-weight: 700;
+  color: var(--hijau-tua);
+}
+
+.hasil-body {
+  padding: 20px 24px;
+}
+
+.seksi-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.label-seksi {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin: 0;
+  color: #555;
+}
+
+.bulk-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-bulk-setuju,
+.btn-bulk-batal {
+  background: none;
+  border: none;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.btn-bulk-setuju {
+  color: #2e7d32;
+}
+
+.btn-bulk-setuju:hover {
+  background: #e8f5e9;
+}
+
+.btn-bulk-batal {
+  color: #c62828;
+}
+
+.btn-bulk-batal:hover {
+  background: #ffebee;
+}
+
+.bahan-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.bahan-item.valid {
+  background: #ebfff1;
+  color: var(--teks);
+  border: 1px solid var(--hijau-muda);
+}
+
+.bahan-item.ragu {
+  background: #fff8e1;
+  color: #f57f17;
+  border: 1px solid #ffe082;
+}
+
+.badge-conf {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.05);
+  color: inherit;
+}
+
+.aksi-ragu {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.btn-yakin {
+  background: var(--hijau-muda);
+  color: var(--putih);
+  border: none;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+
+.btn-yakin:hover {
+  background: #05a134;
+}
+
+.btn-hapus-bahan {
+  background: #c50000;
+  color: var(--putih);
+  border: none;
+  border-radius: 8px;
+  width: 26px;
+  height: 26px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.btn-hapus-bahan:hover {
+  background: #9a0000;
+}
+
+.valid .btn-hapus-bahan {
+  margin-left: 10px;
+}
+
+.btn-konfirmasi {
+  background: var(--hijau-muda);
+  color: var(--putih);
+  border: none;
+  border-radius: 50px;
+  padding: 14px 32px;
+  font-weight: 800;
+  font-size: 15px;
+  width: 100%;
+  margin-top: 16px;
+  transition: all 0.2s;
+  display: none;
+}
+
+.btn-konfirmasi:hover {
+  background: #00a231;
+  transform: translateY(-2px);
+}
+
+.btn-konfirmasi.show {
+  display: block;
+}
+
+.tips-box {
+  background: var(--hijau-bg);
+  border-radius: 14px;
+  padding: 16px 20px;
+  font-size: 13px;
+  color: #2e7d32;
+}
+
+.tips-box i {
+  margin-right: 6px;
+}
+
+.tidak-dikenali {
+  text-align: center;
+  padding: 16px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  color: #888;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px dashed #ddd;
+}
+
+.scan-empty-icon {
+  font-size: 28px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.scan-placeholder {
+  text-align: center;
+  padding: 40px 20px;
+  color: #aaa;
+}
+
+.scan-placeholder-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.scan-placeholder-text {
+  font-size: 14px;
+}
+
+.scan-error {
+  text-align: center;
+  padding: 20px;
+  color: #c62828;
+}
+
+.scan-error-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.camera-error-icon {
+  font-size: 48px !important;
+  color: #e53935;
+}
+
+.camera-error-text {
+  color: #e53935;
+  margin-top: 12px;
+}
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* ── Back To Top ── */
-#btnTop {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  display: none;
-  z-index: 999;
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
-/* ── Animasi ── */
-@keyframes spin    { to { transform: rotate(360deg); } }
-@keyframes fadeIn  { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
 
-/* ── Responsif ── */
 @media (max-width: 900px) {
   .main .container { grid-template-columns: 1fr; }
   .panel-hasil { position: static; }

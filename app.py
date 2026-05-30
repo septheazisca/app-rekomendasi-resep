@@ -1,144 +1,134 @@
-from flask import Flask, request, jsonify, render_template
-import sys, os, uuid
+import csv
+import os
+import sys
+import uuid
+
 import pandas as pd
 from dotenv import load_dotenv
+from flask import Flask, jsonify, render_template, request
 
-load_dotenv()  # Load .env
+load_dotenv()
 
-# Tambahkan folder backend ke path agar bisa import recommender
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "services"))
-from recommender import rekomendasikan, df_bahan, df_resep
-from vision_service import proses_foto   # ← tambahan baru
- 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static/uploads")
+BASE_DIR = os.path.dirname(__file__)
+sys.path.insert(0, os.path.join(BASE_DIR, "services"))
+
+from recommender import rekomendasikan  # noqa: E402
+from vision_service import proses_foto  # noqa: E402
+
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "views", "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
- 
+
 app = Flask(
     __name__,
     template_folder="views/templates",
-    static_folder="views/static"
+    static_folder="views/static",
 )
-app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # max 16MB
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 
 
-# ── Halaman Utama ──
 @app.route("/")
 def index():
     return render_template("index.html", halaman="index")
 
 
-# ── Tambahan agar scan bisa dibuka ──
 @app.route("/scan")
 def scan():
     return render_template("scan.html")
 
 
-# ── API: Ambil semua bahan berdasarkan kategori ──
+@app.route("/jelajahi")
+def jelajahi():
+    df = pd.read_csv("data/resep.csv", sep=";")
+    daftar_resep = df.to_dict(orient="records")
+    daftar_kategori = sorted(df["kategori"].dropna().unique().tolist())
+
+    return render_template(
+        "jelajahi.html",
+        daftar_resep=daftar_resep,
+        daftar_kategori=daftar_kategori,
+        halaman="jelajah",
+    )
+
+
+@app.route("/resep/<int:id_resep>")
+def detail_resep(id_resep):
+    df_resep = pd.read_csv("data/resep.csv", sep=";")
+    df_bahan = pd.read_csv("data/resep_bahan.csv")
+
+    resep = df_resep[df_resep["id_resep"] == id_resep]
+    if resep.empty:
+        return "Resep tidak ditemukan", 404
+
+    resep = resep.iloc[0]
+    langkah_list = [langkah.strip() for langkah in resep["langkah"].split("|")]
+
+    bahan_baris = df_bahan[df_bahan["id_resep"] == id_resep]
+    bahan_list = []
+    if not bahan_baris.empty:
+        bahan_list = [
+            bahan.strip()
+            for bahan in bahan_baris.iloc[0]["bahan_utama"].split(",")
+        ]
+
+    return render_template(
+        "detail.html",
+        id_resep=int(resep["id_resep"]),
+        nama_resep=resep["nama_resep"],
+        kategori=resep["kategori"],
+        deskripsi=resep["deskripsi"],
+        bahan=bahan_list,
+        langkah=langkah_list,
+        halaman="detail",
+    )
+
+
 @app.route("/api/bahan")
 def get_bahan():
-    """
-    Mengembalikan semua bahan yang tersedia, dikelompokkan per kategori.
-    Dibaca dinamis dari data/bahan.csv — tinggal edit CSV untuk tambah/ubah bahan.
-    """
-    import csv
-
     bahan_list = []
-    with open("data/bahan.csv", encoding="utf-8") as f:
-        # reader = csv.DictReader(f)
-        reader = csv.DictReader(f, delimiter=";")
+    with open("data/bahan.csv", encoding="utf-8") as file:
+        reader = csv.DictReader(file, delimiter=";")
         for row in reader:
             bahan_list.append({
-                "id"      : int(row["id"]),
-                "nama"    : row["nama"],
+                "id": int(row["id"]),
+                "nama": row["nama"],
                 "kategori": row["kategori"],
             })
 
-    # Kelompokkan berdasarkan kategori
     kategori_dict = {}
-    for b in bahan_list:
-        kat = b["kategori"]
-        if kat not in kategori_dict:
-            kategori_dict[kat] = []
-        kategori_dict[kat].append(b)
+    for bahan in bahan_list:
+        kategori_dict.setdefault(bahan["kategori"], []).append(bahan)
 
     return jsonify({"status": "ok", "data": kategori_dict})
 
 
-# ── API: Rekomendasikan resep berdasarkan bahan dipilih ──
 @app.route("/api/rekomendasi", methods=["POST"])
 def get_rekomendasi():
-    """
-    Menerima POST JSON: {"bahan": ["ayam", "bawang putih", "kecap manis"]}
-    Mengembalikan daftar resep yang direkomendasikan.
-    """
     data = request.get_json()
-
     if not data or "bahan" not in data:
         return jsonify({"status": "error", "pesan": "Kirim data JSON dengan key 'bahan'"}), 400
 
     bahan_dipilih = data["bahan"]
-
     if len(bahan_dipilih) == 0:
         return jsonify({"status": "error", "pesan": "Pilih minimal 1 bahan"}), 400
 
     hasil = rekomendasikan(bahan_dipilih, top_n=6)
-
     if not hasil:
         return jsonify({
             "status": "ok",
             "pesan": "Tidak ada resep yang cocok dengan bahan tersebut",
-            "data": []
+            "data": [],
         })
 
     return jsonify({
         "status": "ok",
         "bahan_dipilih": bahan_dipilih,
         "jumlah_hasil": len(hasil),
-        "data": hasil
+        "data": hasil,
     })
-
-
-@app.route("/resep/<int:id_resep>")
-def detail_resep(id_resep):
-    df = pd.read_csv("data/resep.csv", sep=";")
-    df_bahan = pd.read_csv("data/resep_bahan.csv")
-    # df_bahan = pd.read_csv("data/resep_bahan.csv")
-
-
-    resep = df[df["id_resep"] == id_resep]
-
-    if resep.empty:
-        return "Resep tidak ditemukan", 404
-
-    resep = resep.iloc[0]
-
-    langkah_list = [l.strip() for l in resep["langkah"].split("|")]
-    
-    bahan_baris = df_bahan[df_bahan["id_resep"] == id_resep]
-
-    if not bahan_baris.empty:
-        bahan_list = [b.strip() for b in bahan_baris.iloc[0]["bahan_utama"].split(",")]
-    else:
-        bahan_list = []
-
-    return render_template("detail.html",
-        id_resep   = int(resep["id_resep"]),
-        nama_resep = resep["nama_resep"],
-        kategori   = resep["kategori"],
-        deskripsi  = resep["deskripsi"],
-        bahan      = bahan_list,
-        langkah    = langkah_list,
-        halaman    = "detail"
-    )
 
 
 @app.route("/api/scan", methods=["POST"])
 def api_scan():
-    """
-    Endpoint utama scan foto.
-    Menerima: multipart/form-data dengan field 'foto'
-    Mengembalikan: hasil deteksi Layer 1 + Layer 2
-    """
     if "foto" not in request.files:
         return jsonify({"status": "error", "pesan": "Tidak ada file foto"}), 400
 
@@ -146,78 +136,36 @@ def api_scan():
     if file.filename == "":
         return jsonify({"status": "error", "pesan": "File kosong"}), 400
 
-    # Baca bytes foto
     image_bytes = file.read()
-
-    # Simpan foto untuk ditampilkan di frontend (opsional)
-    ext       = os.path.splitext(file.filename)[1] or ".jpg"
+    ext = os.path.splitext(file.filename)[1] or ".jpg"
     nama_file = f"{uuid.uuid4().hex}{ext}"
     path_file = os.path.join(UPLOAD_FOLDER, nama_file)
-    with open(path_file, "wb") as f_out:
-        f_out.write(image_bytes)
 
-    # Jalankan Layer 1 + Layer 2
+    with open(path_file, "wb") as output:
+        output.write(image_bytes)
+
     hasil = proses_foto(image_bytes)
-
-    # Tambahkan URL foto ke response
     hasil["foto_url"] = f"/static/uploads/{nama_file}"
 
-    return jsonify({
-        "status": "ok",
-        **hasil
-    })
+    return jsonify({"status": "ok", **hasil})
 
 
 @app.route("/api/scan-result", methods=["POST"])
 def api_scan_result():
-    """
-    Endpoint opsional: langsung scan + rekomendasikan resep sekaligus.
-    Untuk flow yang lebih cepat tanpa 2 request terpisah.
-    """
     if "foto" not in request.files:
         return jsonify({"status": "error", "pesan": "Tidak ada file foto"}), 400
 
-    file        = request.files["foto"]
-    image_bytes = file.read()
-
-    # Layer 1 + 2
+    image_bytes = request.files["foto"].read()
     hasil_scan = proses_foto(image_bytes)
-
-    # Ambil nama bahan yang valid
-    bahan_valid = [b["nama"] for b in hasil_scan.get("bahan_valid", [])]
-
-    # Layer 3: Rekomendasi
-    if bahan_valid:
-        rekomendasi = rekomendasikan(bahan_valid, top_n=6)
-    else:
-        rekomendasi = []
+    bahan_valid = [bahan["nama"] for bahan in hasil_scan.get("bahan_valid", [])]
+    rekomendasi = rekomendasikan(bahan_valid, top_n=6) if bahan_valid else []
 
     return jsonify({
-        "status"      : "ok",
-        "scan"        : hasil_scan,
-        "rekomendasi" : rekomendasi
+        "status": "ok",
+        "scan": hasil_scan,
+        "rekomendasi": rekomendasi,
     })
 
-# print("API KEY 1:", os.getenv("GEMINI_API_KEY_1"))
 
-
-# ── Halaman Utama ──
-@app.route("/jelajahi")
-def jelajahi():
-    df = pd.read_csv("data/resep.csv", sep=";")
-    #Pastikan kolom nama dan deskripsi ada, konversi ke list of dict
-    daftar_resep = df.to_dict(orient="records")
-    
-    # 2. Ambil list kategori unik secara dinamis, hapus nilai kosong, lalu urutkan
-    kategori_unik = sorted(df["kategori"].dropna().unique().tolist())
-    
-    return render_template(
-        "jelajahi.html", 
-        daftar_resep=daftar_resep, 
-        daftar_kategori=kategori_unik, 
-        halaman="jelajah"
-    )
-
-    
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
