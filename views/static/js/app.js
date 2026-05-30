@@ -544,6 +544,8 @@ function tampilkanHasilScan(data) {
       </div>`;
   }).join("");
 
+  valid.forEach(b => _aktifkanBahanDiAccordion(b.nama));
+
   _updateCounter();
 }
 
@@ -563,7 +565,6 @@ function dedupeScanItems(items, existing = new Set()) {
 }
 
 function _tambahKeValid(nama, slug, confStr) {
-  // Blokir unknown sebelum ditambahkan
   if (isUnknownLabel(nama)) return;
 
   showScanContent();
@@ -574,7 +575,19 @@ function _tambahKeValid(nama, slug, confStr) {
       <button class="btn-hapus-bahan" title="Hapus" onclick="hapusBahanHasil('${slug}','valid')">x</button>
     </div>`);
 
+  _aktifkanBahanDiAccordion(nama);
+
   _updateCounter();
+}
+
+function _aktifkanBahanDiAccordion(nama) {
+  const namaNormal = normalizeName(nama);
+  document.querySelectorAll(".bahan-card").forEach(card => {
+    const namaCard = normalizeName(card.querySelector(".nama")?.textContent || "");
+    if (namaCard === namaNormal) {
+      card.classList.add("aktif");
+    }
+  });
 }
 
 function _tampilNotifAutoAdd() {

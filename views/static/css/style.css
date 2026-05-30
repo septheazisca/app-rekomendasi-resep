@@ -115,11 +115,14 @@ body {
   display: none !important;
 }
 
-.rk-accordion-button {
-  background-color: var(--hijau);
-  color: var(--teks);
-  box-shadow: none;
-  padding: 12px 16px;
+.rk-accordion-button,
+.rk-accordion-button:not(.collapsed),
+.rk-accordion-button:focus,
+.rk-accordion-button:active {
+  background-color: var(--hijau) !important;
+  color: var(--teks) !important;
+  box-shadow: none !important;
+  padding: 12px 16px !important;
 }
 
 .icon-panah {
