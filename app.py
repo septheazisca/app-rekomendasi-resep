@@ -52,35 +52,32 @@ def jelajahi():
 
 @app.route("/resep/<int:id_resep>")
 def detail_resep(id_resep):
-    df_resep = pd.read_csv("data/resep.csv", sep=";")
+    df       = pd.read_csv("data/resep.csv", sep=";")
     df_bahan = pd.read_csv("data/resep_bahan.csv")
 
-    resep = df_resep[df_resep["id_resep"] == id_resep]
+    resep = df[df["id_resep"] == id_resep]
     if resep.empty:
         return "Resep tidak ditemukan", 404
-
     resep = resep.iloc[0]
-    langkah_list = [langkah.strip() for langkah in resep["langkah"].split("|")]
+
+    langkah_list = [l.strip() for l in resep["langkah"].split("|")]
 
     bahan_baris = df_bahan[df_bahan["id_resep"] == id_resep]
-    bahan_list = []
     if not bahan_baris.empty:
-        bahan_list = [
-            bahan.strip()
-            for bahan in bahan_baris.iloc[0]["bahan_utama"].split(",")
-        ]
+        # ← Pakai bahan_lengkap (dengan takaran) untuk tampil di halaman detail
+        bahan_list = [b.strip() for b in bahan_baris.iloc[0]["bahan_lengkap"].split(",")]
+    else:
+        bahan_list = []
 
-    return render_template(
-        "detail.html",
-        id_resep=int(resep["id_resep"]),
-        nama_resep=resep["nama_resep"],
-        kategori=resep["kategori"],
-        deskripsi=resep["deskripsi"],
-        bahan=bahan_list,
-        langkah=langkah_list,
-        halaman="detail",
+    return render_template("detail.html",
+        id_resep   = int(resep["id_resep"]),
+        nama_resep = resep["nama_resep"],
+        kategori   = resep["kategori"],
+        deskripsi  = resep["deskripsi"],
+        bahan      = bahan_list,
+        langkah    = langkah_list,
+        halaman    = "detail"
     )
-
 
 @app.route("/api/bahan")
 def get_bahan():

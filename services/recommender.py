@@ -14,34 +14,32 @@ vectorizer = TfidfVectorizer(
 tfidf_matrix = vectorizer.fit_transform(df["bahan_utama"])
 
 
-def _hitung_skor_gabungan(
-    cosine: float,
-    persen_cocok: float,
-    bobot_cosine: float = 0.4,
-    bobot_persen: float = 0.6,
-) -> float:
-    return round((cosine * bobot_cosine) + (persen_cocok / 100 * bobot_persen), 4)
+def _hitung_skor_gabungan(cosine, persen_cocok, bobot_cosine=0.4, bobot_persen=0.6):
+    return round(float(cosine * bobot_cosine) + float(persen_cocok / 100 * bobot_persen), 4)
 
 
-def _bangun_hasil(resep, cosine: float, bahan_dipilih: list) -> dict:
-    bahan_dipilih_lower = [bahan.lower() for bahan in bahan_dipilih]
-    bahan_list = [bahan.strip() for bahan in resep["bahan_utama"].split(",")]
+def _bangun_hasil(resep, cosine, bahan_dipilih):
+    bahan_dipilih_lower = [b.lower() for b in bahan_dipilih]
 
-    bahan_cocok = [bahan for bahan in bahan_list if bahan.lower() in bahan_dipilih_lower]
-    bahan_kurang = [bahan for bahan in bahan_list if bahan.lower() not in bahan_dipilih_lower]
+    bahan_list   = [b.strip() for b in resep["bahan_utama"].split(",")]
+    bahan_cocok  = [b for b in bahan_list if b.lower() in bahan_dipilih_lower]
+    bahan_kurang = [b for b in bahan_list if b.lower() not in bahan_dipilih_lower]
     persen_cocok = round(len(bahan_cocok) / len(bahan_list) * 100)
 
+    bahan_lengkap_list = [b.strip() for b in str(resep["bahan_lengkap"]).split(",")]
+
     return {
-        "id_resep": int(resep["id_resep"]),
-        "nama_resep": resep["nama_resep"],
-        "kategori": resep["kategori"],
-        "deskripsi": resep["deskripsi"],
-        "skor_cosine": round(float(cosine), 4),
-        "persen_cocok": persen_cocok,
-        "skor_gabungan": _hitung_skor_gabungan(cosine, persen_cocok),
-        "bahan_cocok": bahan_cocok,
-        "bahan_kurang": bahan_kurang,
-        "total_bahan": len(bahan_list),
+        "id_resep"      : int(resep["id_resep"]),
+        "nama_resep"    : str(resep["nama_resep"]),
+        "kategori"      : str(resep["kategori"]),
+        "deskripsi"     : str(resep["deskripsi"]),
+        "skor_cosine"   : round(float(cosine), 4),
+        "persen_cocok"  : int(persen_cocok),
+        "skor_gabungan" : _hitung_skor_gabungan(cosine, persen_cocok),
+        "bahan_cocok"   : bahan_cocok,
+        "bahan_kurang"  : bahan_kurang,
+        "bahan_lengkap" : bahan_lengkap_list,
+        "total_bahan"   : len(bahan_list),
     }
 
 
@@ -49,18 +47,29 @@ def rekomendasikan(bahan_dipilih: list, top_n: int = 5) -> list:
     if not bahan_dipilih:
         return []
 
-    query = ", ".join([bahan.lower() for bahan in bahan_dipilih])
+    bahan_lower = [b.lower() for b in bahan_dipilih]
+
+    # Layer 1: TF-IDF cosine similarity 
+    query     = ", ".join(bahan_lower)
     query_vec = vectorizer.transform([query])
-    skor_cosine = cosine_similarity(query_vec, tfidf_matrix).flatten()
+    skor      = cosine_similarity(query_vec, tfidf_matrix).flatten()
 
-    pool_size = min(top_n * 2, len(df))
-    indeks_kandidat = skor_cosine.argsort()[::-1][:pool_size]
-    indeks_valid = [i for i in indeks_kandidat if skor_cosine[i] > 0]
+    # Layer 2: Fallback — exact match minimal 1 bahan 
+    # Cari semua resep yang mengandung setidaknya 1 bahan yang dipilih
+    def ada_bahan_cocok(bahan_utama_str):
+        bahan_resep = [b.strip().lower() for b in bahan_utama_str.split(",")]
+        return any(b in bahan_resep for b in bahan_lower)
 
-    kandidat = [
-        _bangun_hasil(df.iloc[i], skor_cosine[i], bahan_dipilih)
-        for i in indeks_valid
-    ]
+    mask_cocok = df["bahan_utama"].apply(ada_bahan_cocok)
+
+    # Gabungkan: indeks yang lolos TF-IDF (skor > 0) ATAU exact match
+    indeks_tfidf = set(i for i in range(len(skor)) if skor[i] > 0)
+    indeks_exact = set(df[mask_cocok].index.tolist())
+    indeks_valid  = indeks_tfidf | indeks_exact
+
+    if not indeks_valid:
+        return []
+
+    kandidat = [_bangun_hasil(df.iloc[i], skor[i], bahan_dipilih) for i in indeks_valid]
     kandidat.sort(key=lambda x: x["skor_gabungan"], reverse=True)
-
     return kandidat[:top_n]
