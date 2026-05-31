@@ -27,18 +27,18 @@
 
     <div class="detail-langkah">
       <h3>Bahan Pembuatan</h3>
-      <ol class="bahan-list ms-4">
+      <ol class="bahan-list" style="list-style-type: decimal !important; padding-left: 20px !important;">
         {% for bahan in bahan %}
-        <li class="bahan-item">{{ bahan }}</li>
+        <li class="langkah-item" style="display: list-item !important;">{{ bahan }}</li>
         {% endfor %}
       </ol>
     </div>
 
     <div class="detail-langkah">
       <h3>Langkah Pembuatan</h3>
-      <ol class="langkah-list list-unstyled ms-5">
+      <ol class="langkah-list list-unstyled" style="list-style-type: decimal !important; padding-left: 20px !important;">
         {% for langkah in langkah %}
-        <li class="langkah-item">{{ langkah }}</li>
+        <li class="langkah-item" style="display: list-item !important;">{{ langkah }}</li>
         {% endfor %}
       </ol>
     </div>
