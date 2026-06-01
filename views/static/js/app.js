@@ -645,6 +645,7 @@ function _updateCounter() {
   toggleElement("headerValid", jmlValid > 0);
   toggleElement("headerRagu", jmlRagu > 0);
   document.getElementById("btnKonfirmasi")?.classList.toggle("show", jmlValid > 0);
+  document.getElementById("notifKonfirmasi")?.classList.toggle("show", jmlValid > 0);
 }
 
 function konfirmasiDanCariResep() {
@@ -736,6 +737,7 @@ function tampilkanError(pesan) {
     </div>`;
   document.getElementById("listBahanRagu").innerHTML = "";
   document.getElementById("btnKonfirmasi")?.classList.remove("show");
+  document.getElementById("notifKonfirmasi")?.classList.remove("show");
 }
 
 function setCameraPlaceholderError(pesan) {

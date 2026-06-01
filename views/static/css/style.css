@@ -469,6 +469,13 @@ body {
   font-size: 0.9rem;
 }
 
+.catalog-scan-button:hover,
+.btn-cari:hover,
+#btnCari:hover{
+  background-color: var(--hijau-2);
+  color: var(--putih);
+}
+
 .catalog-empty-icon {
   font-size: 3rem;
 }
@@ -685,6 +692,17 @@ body {
 }
 
 #notifAutoAdd.show {
+  display: block;
+}
+
+#notifKonfirmasi {
+  display: none;
+  margin-top: 8px;
+  color: var(--teks-2);
+  font-size: 12px;
+} 
+
+#notifKonfirmasi.show {
   display: block;
 }
 

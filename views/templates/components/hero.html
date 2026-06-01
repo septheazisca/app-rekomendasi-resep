@@ -10,11 +10,25 @@
 
     <div class="row align-items-center g-0">
       <div class="col-12 col-sm-5 order-1 order-sm-2 d-flex align-items-end justify-content-center justify-content-sm-end position-relative pt-3 pt-sm-0 rk-hero-media">
-        <img
-          src="{{ url_for('static', filename='images/group.png') }}"
-          class="rk-group"
-          alt="Ilustrasi resep"
-        />
+        {% if halaman == "jelajah" %}
+          <img
+            src="{{ url_for('static', filename='images/img_3.svg') }}"
+            class="rk-group"
+            alt="Ilustrasi resep"
+          />
+        {% elif halaman == "detail" %}
+          <img
+            src="{{ url_for('static', filename='images/img_2.svg') }}"
+            class="rk-group"
+            alt="Ilustrasi resep"
+          />
+        {% else %}
+          <img
+            src="{{ url_for('static', filename='images/img_1.svg') }}"
+            class="rk-group"
+            alt="Ilustrasi resep"
+          />
+        {% endif %}
       </div>
 
       <div class="col-12 col-sm-7 order-2 order-sm-1 pb-4 text-center text-sm-start position-relative rk-hero-copy">
