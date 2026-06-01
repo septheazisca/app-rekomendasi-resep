@@ -408,6 +408,17 @@ body {
   margin: 0;
 }
 
+.sumber-resep {
+  color: #ff6b35;
+  text-decoration: none;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.sumber-resep:hover {
+  text-decoration: underline;
+}
+
 .langkah-item,
 .bahan-list .bahan-item {
   margin-bottom: 10px;

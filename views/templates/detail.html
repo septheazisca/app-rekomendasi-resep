@@ -42,6 +42,18 @@
         {% endfor %}
       </ol>
     </div>
+
+    <div class="detail-langkah">
+      <h3>Sumber Resep</h3>
+
+      {% if sumber and sumber != "-" %}
+        <a href="{{ sumber }}" target="_blank" class="sumber-resep">
+          Lihat Sumber Resep
+        </a>
+      {% else %}
+        <p class="sumber-resep">Sumber tidak tersedia</p>
+      {% endif %}
+    </div>
   </main>
 
   {% include 'components/footer.html' %}

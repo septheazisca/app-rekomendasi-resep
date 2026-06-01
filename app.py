@@ -52,8 +52,9 @@ def jelajahi():
 
 @app.route("/resep/<int:id_resep>")
 def detail_resep(id_resep):
-    df       = pd.read_csv("data/resep.csv", sep=";")
-    df_bahan = pd.read_csv("data/resep_bahan.csv")
+    df        = pd.read_csv("data/resep.csv", sep=";")
+    df_bahan  = pd.read_csv("data/resep_bahan.csv")
+    df_sumber = pd.read_csv("data/sumber.csv")
 
     resep = df[df["id_resep"] == id_resep]
     if resep.empty:
@@ -64,20 +65,31 @@ def detail_resep(id_resep):
 
     bahan_baris = df_bahan[df_bahan["id_resep"] == id_resep]
     if not bahan_baris.empty:
-        # ← Pakai bahan_lengkap (dengan takaran) untuk tampil di halaman detail
-        bahan_list = [b.strip() for b in bahan_baris.iloc[0]["bahan_lengkap"].split(",")]
+        bahan_list = [
+            b.strip()
+            for b in bahan_baris.iloc[0]["bahan_lengkap"].split(",")
+        ]
     else:
         bahan_list = []
 
-    return render_template("detail.html",
-        id_resep   = int(resep["id_resep"]),
-        nama_resep = resep["nama_resep"],
-        kategori   = resep["kategori"],
-        deskripsi  = resep["deskripsi"],
-        bahan      = bahan_list,
-        langkah    = langkah_list,
-        halaman    = "detail"
+    sumber_baris = df_sumber[df_sumber["id_resep"] == id_resep]
+    if not sumber_baris.empty:
+        sumber = sumber_baris.iloc[0]["url"]
+    else:
+        sumber = "-"
+
+    return render_template(
+        "detail.html",
+        id_resep=int(resep["id_resep"]),
+        nama_resep=resep["nama_resep"],
+        kategori=resep["kategori"],
+        deskripsi=resep["deskripsi"],
+        bahan=bahan_list,
+        langkah=langkah_list,
+        sumber=sumber,
+        halaman="detail"
     )
+
 
 @app.route("/api/bahan")
 def get_bahan():

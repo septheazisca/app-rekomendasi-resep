@@ -5,44 +5,48 @@ id;nama;kategori
 4;Cabai Hijau;Bumbu
 5;Cabai Merah;Bumbu
 6;Daun Bawang;Bumbu
-7;Daun Ketumbar;Bumbu
-8;Daun Salam;Bumbu
-9;Garam;Bumbu
-10;Gula;Bumbu
-11;Lada Hitam;Bumbu
-12;Mentega;Bumbu
-13;Minyak;Bumbu
-14;Tomat;Bumbu
-15;Mie;Karbohidrat
-16;Nasi;Karbohidrat
-17;Spaghetti;Karbohidrat
-18;Keju;Lainnya
-19;Lemon;Lainnya
-20;Ati Ampela;Protein Hewan
-21;Ayam;Protein Hewan
-22;Cumi Cumi;Protein Hewan
-23;Daging Sapi;Protein Hewan
-24;Kikil;Protein Hewan
-25;Salmon;Protein Hewan
-26;Telur Ayam;Protein Hewan
-27;Telur Bebek;Protein Hewan
-28;Udang;Protein Hewan
-29;Usus;Protein Hewan
-30;Kacang Polong;Protein Nabati
-31;Tahu;Protein Nabati
-32;Tempe;Protein Nabati
-33;Jahe;Rempah
-34;Jinten;Rempah
-35;Kencur;Rempah
-36;Lengkuas;Rempah
-37;Bayam;Sayur
-38;Brokoli;Sayur
-39;Jagung;Sayur
-40;Jamur;Sayur
-41;Kembang Kol;Sayur
-42;Kentang;Sayur
-43;Labu Siam;Sayur
-44;Sawi;Sayur
-45;Terong;Sayur
-46;Timun;Sayur
-47;Wortel;Sayur
+7;Daun Salam;Bumbu
+8;Garam;Bumbu
+9;Gula;Bumbu
+10;Kaldu Bubuk;Bumbu
+11;Kecap Asin;Bumbu
+12;Kecap Manis;Bumbu
+13;Lada Hitam;Bumbu
+14;Mentega;Bumbu
+15;Minyak;Bumbu
+16;Saus Tiram;Bumbu
+17;Tomat;Bumbu
+18;Mie;Karbohidrat
+19;Nasi;Karbohidrat
+20;Spaghetti;Karbohidrat
+21;Lemon;Lainnya
+22;Santan;Lainnya
+23;Ati Ampela;Protein Hewan
+24;Ayam;Protein Hewan
+25;Cumi Cumi;Protein Hewan
+26;Daging Sapi;Protein Hewan
+27;Kikil;Protein Hewan
+28;Salmon;Protein Hewan
+29;Telur;Protein Hewan
+30;Udang;Protein Hewan
+31;Usus;Protein Hewan
+32;Kacang Polong;Protein Nabati
+33;Tahu;Protein Nabati
+34;Tempe;Protein Nabati
+35;Jahe;Rempah
+36;Kemiri;Rempah
+37;Kencur;Rempah
+38;Kunyit;Rempah
+39;Lengkuas;Rempah
+40;Serai;Rempah
+41;Bayam;Sayur
+42;Brokoli;Sayur
+43;Jagung;Sayur
+44;Jamur;Sayur
+45;Kembang Kol;Sayur
+46;Kentang;Sayur
+47;Labu Siam;Sayur
+48;Sawi;Sayur
+49;Terong;Sayur
+50;Timun;Sayur
+51;Wortel;Sayur
