@@ -7,8 +7,8 @@ let modeKamera = false;
 let lastAutoAdd = 0;
 let realtimeTimer = null;
 
-const TM_URL = "https://teachablemachine.withgoogle.com/models/CLV_1ruvN/";
-const AUTO_ADD_THRESH = 50;
+const TM_URL = "https://teachablemachine.withgoogle.com/models/VVzVTxGAF/";
+const AUTO_ADD_THRESH = 98;
 const SCAN_INTERVAL = 1000;
 const COOLDOWN_MS = 3000;
 
