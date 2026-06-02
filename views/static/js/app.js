@@ -6,11 +6,15 @@ let tmModel = null;
 let modeKamera = false;
 let lastAutoAdd = 0;
 let realtimeTimer = null;
+let lastPrediction = "";
+let stableCount = 0;
 
 const TM_URL = "https://teachablemachine.withgoogle.com/models/VVzVTxGAF/";
 const AUTO_ADD_THRESH = 98;
 const SCAN_INTERVAL = 1000;
-const COOLDOWN_MS = 3000;
+const COOLDOWN_MS = 7000;
+const MIN_GAP_THRESH = 20;
+const MIN_STABLE_COUNT = 3;
 
 document.addEventListener("DOMContentLoaded", () => {
   initRekomendasiPage();
@@ -365,38 +369,72 @@ function scanRealtime() {
     if (!tmModel || !video?.videoWidth || !modeKamera) return;
 
     const prediction = await tmModel.predict(video);
-    const best = prediction.reduce(
-      (winner, item) => item.probability > winner.probability ? item : winner,
-      prediction[0],
-    );
+
+    prediction.sort((a, b) => b.probability - a.probability);
+
+    const best = prediction[0];
+    const second = prediction[1] || { probability: 0 };
 
     const nama = best.className;
     const conf = best.probability * 100;
+    const gap = (best.probability - second.probability) * 100;
+
+    if (nama === lastPrediction) {
+      stableCount++;
+    } else {
+      lastPrediction = nama;
+      stableCount = 1;
+    }
+
     const isUnknown = isUnknownLabel(nama);
 
-    // ── Update live bar ──
-    setText("livePredLabel", isUnknown ? "Objek tidak dikenali" : nama);
+    setText(
+      "livePredLabel",
+      isUnknown ? "Objek tidak dikenali" : nama.replace(/_/g, " ")
+    );
+
     const fill = document.getElementById("livePredFill");
+
     if (fill) {
       fill.style.width = `${conf.toFixed(0)}%`;
-      fill.style.background = isUnknown
-        ? "#bbb"
-        : conf >= AUTO_ADD_THRESH ? "#00c53b" : "#ffa726";
+
+      fill.style.background =
+        isUnknown
+          ? "#bbb"
+          : conf >= AUTO_ADD_THRESH &&
+            gap >= MIN_GAP_THRESH &&
+            stableCount >= MIN_STABLE_COUNT
+          ? "#00c53b"
+          : "#ffa726";
     }
+
     setText("livePredConf", `${conf.toFixed(0)}%`);
 
-    // ── Auto-add hanya kalau bukan unknown dan conf cukup ──
-    if (isUnknown || conf < AUTO_ADD_THRESH) return;
+    if (
+      isUnknown ||
+      conf < AUTO_ADD_THRESH ||
+      gap < MIN_GAP_THRESH ||
+      stableCount < MIN_STABLE_COUNT
+    ) {
+      return;
+    }
 
     const now = Date.now();
     if (now - lastAutoAdd < COOLDOWN_MS) return;
 
     const namaBersih = nama.replace(/_/g, " ");
     const slug = _slugify(nama);
+
     if (document.getElementById(`valid-${slug}`)) return;
 
     lastAutoAdd = now;
-    _tambahKeValid(namaBersih, slug, `${conf.toFixed(1)}%`);
+
+    _tambahKeValid(
+      namaBersih,
+      slug,
+      `${conf.toFixed(1)}%`
+    );
+
     _tampilNotifAutoAdd();
   }, SCAN_INTERVAL);
 }
@@ -428,32 +466,53 @@ async function prediksiTeachableMachine() {
 
   try {
     showOverlay();
+
     await loadTMModel();
+
     const prediction = await tmModel.predict(canvas);
-    const best = prediction.reduce(
-      (winner, item) => item.probability > winner.probability ? item : winner,
-      prediction[0],
-    );
+
+    prediction.sort((a, b) => b.probability - a.probability);
+
+    const best = prediction[0];
+    const second = prediction[1] || { probability: 0 };
+
     hideOverlay();
 
     const conf = best.probability * 100;
-    if (isUnknownLabel(best.className) || conf < 80) {
+    const gap = (best.probability - second.probability) * 100;
+
+    if (
+      isUnknownLabel(best.className) ||
+      conf < 80 ||
+      gap < MIN_GAP_THRESH
+    ) {
       showScanContent();
+
       document.getElementById("listBahanValid").innerHTML = `
         <div class="tidak-dikenali">
           <i class="bi bi-question-circle scan-empty-icon"></i>
           Objek tidak dikenali
-        </div>`;
+        </div>
+      `;
+
       document.getElementById("listBahanRagu").innerHTML = "";
+
       _updateCounter();
+
       return;
     }
 
     tampilkanHasilScan({
-      bahan_valid: [{ nama: best.className.replace(/_/g, " "), confidence: conf.toFixed(1) }],
+      bahan_valid: [
+        {
+          nama: best.className.replace(/_/g, " "),
+          confidence: conf.toFixed(1)
+        }
+      ],
       bahan_ragu: [],
-      bbox_data: [],
+      bbox_data: []
     });
+
   } catch (err) {
     hideOverlay();
     console.error(err);
@@ -701,9 +760,14 @@ function gambarBoundingBox(bboxData) {
 }
 
 function ulangi() {
-  hasilScan  = null;
+  hasilScan = null;
   modeKamera = false;
+
+  lastPrediction = "";
+  stableCount = 0;
+
   stopCameraStream();
+
   if (realtimeTimer) {
     clearInterval(realtimeTimer);
     realtimeTimer = null;
@@ -716,14 +780,20 @@ function ulangi() {
   showElement("btnUpload");
   showElement("hasilPlaceholder");
   hideElement("hasilKonten");
+
   document.getElementById("statusDot")?.classList.remove("aktif");
   setText("statusTeks", "Kamera belum aktif");
+
   document.getElementById("livePredBar")?.classList.remove("show");
+
   setTipsUpload();
 
   const canvas = document.getElementById("canvasBbox");
   const ctx = canvas?.getContext("2d");
-  if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
 }
 
 function tampilkanError(pesan) {
