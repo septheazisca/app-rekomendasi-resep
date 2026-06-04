@@ -6,14 +6,17 @@ import uuid
 import pandas as pd
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request
+from werkzeug.utils import secure_filename
 
 load_dotenv()
 
 BASE_DIR = os.path.dirname(__file__)
 sys.path.insert(0, os.path.join(BASE_DIR, "services"))
+sys.path.insert(0, os.path.join(BASE_DIR, "model"))
 
 from recommender import rekomendasikan  # noqa: E402
 from vision_service import proses_foto  # noqa: E402
+from fitur_klasifikasi import predict_ingredient  # noqa: E402
 
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "views", "static", "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -24,6 +27,10 @@ app = Flask(
     static_folder="views/static",
 )
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route("/")
@@ -34,6 +41,11 @@ def index():
 @app.route("/scan")
 def scan():
     return render_template("scan.html")
+
+
+@app.route("/klasifikasi_bahan")
+def scan_kalsifikasi():
+    return render_template("klasifikasi_bahan.html")
 
 
 @app.route("/jelajahi")
@@ -174,6 +186,35 @@ def api_scan_result():
         "scan": hasil_scan,
         "rekomendasi": rekomendasi,
     })
+
+
+# --- FITUR TAMBAHAN BARU: API KLASIFIKASI MODEL H5 ---
+@app.route("/api/klasifikasi", methods=["POST"])
+def api_klasifikasi():
+    if 'file' not in request.files:
+        return jsonify({"status": "error", "pesan": "Tidak ada bagian file dalam request"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"status": "error", "pesan": "Tidak ada file yang dipilih"}), 400
+    
+    if file and allowed_file(file.filename):
+        ext = os.path.splitext(file.filename)[1] or ".jpg"
+        filename = f"h5_{uuid.uuid4().hex}{ext}"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        
+        try:
+            bahan_info = predict_ingredient(filepath)
+            
+            if bahan_info:
+                return jsonify({"status": "ok", "data": bahan_info})
+            else:
+                return jsonify({"status": "error", "pesan": "Gagal mengklasifikasi bahan makanan."}), 500
+        except Exception as e:
+            return jsonify({"status": "error", "pesan": f"Terjadi kesalahan model: {str(e)}"}), 500
+
+    return jsonify({"status": "error", "pesan": "Format file tidak diizinkan."}), 400
 
 
 if __name__ == "__main__":

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reseep - Jelajahi Kuliner</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <style>
+      /* ===== CONFIG STYLE MENGURUT KEPADA GAMBAR TEMPLATE ===== */
+      :root {
+        --hijau-muda-bg: #c1ffd0;
+        --hijau-banner: #5aff96;
+        --hijau-tema: #00c53b;
+        --hijau-tua: #0c3318;
+        --teks-muted: #888888;
+        --bg-app: #f4fbf6;
+        --border-color: #e2e8f0;
+      }
+      
+      body {
+        color: #2d3748;
+        font-family: "Nunito", sans-serif;
+        background-color: var(--bg-app);
+      }
+
+      /* ===== 1. HERO BANNER STYLE (PERSIS GAMBAR) ===== */
+      .hero-banner-rempah {
+        background: linear-gradient(135deg, #74ffad 0%, #46f08b 100%);
+        padding: 30px 0;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+      }
+      .brand-icon-box {
+        width: 64px;
+        height: 64px;
+        background-color: #ffffff;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      }
+      .brand-icon-box i {
+        font-size: 32px;
+        color: #10b981;
+      }
+      .hero-title {
+        font-weight: 800;
+        color: var(--hijau-tua);
+        font-size: 28px;
+        margin-bottom: 2px;
+      }
+      .hero-subtitle {
+        color: #1e293b;
+        font-size: 14px;
+        font-weight: 600;
+        opacity: 0.8;
+      }
+
+      /* ===== CONTAINER UTAMA MODUL SCANNED ===== */
+      .main-scan-container {
+        max-width: 800px;
+        margin: 30px auto 60px auto;
+        padding: 0 16px;
+        position: relative;
+        z-index: 10;
+      }
+
+      /* ===== 2. UPLOAD CARD DESIGN ===== */
+      .custom-card-premium {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+        margin-bottom: 24px;
+      }
+      .custom-card-header {
+        background-color: #a3ffc2;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+      }
+      .custom-card-header h6 {
+        margin: 0;
+        font-weight: 800;
+        color: var(--hijau-tua);
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+      }
+      .status-pill-waiting {
+        background-color: rgba(255,255,255,0.6);
+        color: #475569;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 20px;
+      }
+
+      /* Drop Zone Putus-Putus Sesuai Mockup Gambar */
+      .premium-drop-zone {
+        border: 2px dashed #00d647;
+        border-radius: 14px;
+        background-color: #ffffff;
+        min-height: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+      .premium-drop-zone:hover {
+        background-color: #f0fff4;
+        border-color: #009933;
+      }
+      .zone-center-icon {
+        font-size: 48px;
+        color: #00d647;
+        margin-bottom: 12px;
+      }
+      .zone-main-text {
+        font-weight: 800;
+        color: #1e293b;
+        font-size: 15px;
+        margin-bottom: 4px;
+      }
+      .zone-sub-text {
+        font-size: 12px;
+        color: var(--teks-muted);
+        margin-bottom: 8px;
+      }
+      .zone-divider {
+        font-size: 11px;
+        color: #cbd5e1;
+        margin-bottom: 10px;
+      }
+      .btn-gallery-picker {
+        background-color: #00c53b;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 13px;
+        padding: 8px 24px;
+        border-radius: 50px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 197, 59, 0.2);
+        transition: background 0.2s;
+      }
+      .btn-gallery-picker:hover {
+        background-color: #009b2e;
+        color: #ffffff;
+      }
+
+      /* ===== 3. STATE EMPTY & LOADING DETAIL CARD ===== */
+      .empty-state-detail {
+        padding: 50px 20px;
+        text-align: center;
+      }
+      .empty-state-icon {
+        font-size: 56px;
+        color: #a3ffc2;
+        margin-bottom: 14px;
+        display: inline-block;
+        animation: floatEffect 3s ease-in-out infinite;
+      }
+      .empty-state-text {
+        font-size: 13px;
+        color: #64748b;
+        max-width: 320px;
+        margin: 0 auto;
+        line-height: 1.6;
+        font-weight: 600;
+      }
+
+      /* ===== ATRIBUT GRID TAMPILAN JIKA BERHASIL ===== */
+      .badge-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+      }
+      .badge-info-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .badge-info-label {
+        font-size: 11px;
+        font-weight: 800;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 2px;
+      }
+      .badge-info-value {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1e293b;
+      }
+      
+      /* Kondisi Alergi Berbahaya */
+      .badge-alergi-ya {
+        background: #fef2f2 !important;
+        border-color: #fca5a5 !important;
+      }
+      .badge-alergi-ya .badge-info-label { color: #ef4444 !important; }
+      .badge-alergi-ya .badge-info-value { color: #991b1b !important; }
+
+      .detail-narrative-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-top: 6px;
+      }
+      .border-green-side { border-left: 4px solid #00c53b; }
+      .border-orange-side { border-left: 4px solid #f59e0b; background-color: #fffbeb; }
+
+      .tidak-dikenali-container {
+        padding: 24px;
+        background: #fef2f2;
+        border: 1px dashed #fca5a5;
+        border-radius: 12px;
+        text-align: center;
+        color: #dc2626;
+        font-weight: 700;
+      }
+
+      @keyframes floatEffect {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+    </style>
+  </head>
+
+  <body>
+    {% include 'components/navbar.html' %} 
+
+    <div class="hero-banner-rempah">
+      <div class="container d-flex align-items-center gap-3 ps-4 ps-md-5">
+        <div class="brand-icon-box">
+          <i class="bi bi-flower1"></i>
+        </div>
+        <div>
+          <div class="hero-title">Klasifikasi Rempah</div>
+          <div class="hero-subtitle">Upload foto rempah, kenali jenisnya dalam sekejap</div>
+        </div>
+      </div>
+    </div>
+
+    <main class="main-scan-container">
+      
+      <div class="custom-card-premium">
+        <div class="custom-card-header">
+          <h6><i class="bi bi-camera-fill me-2"></i>Upload Foto Rempah</h6>
+          <span id="statusBadge" class="status-pill-waiting">Menunggu foto</span>
+        </div>
+        <div class="custom-card-body p-4">
+          <form id="formKlasifikasi">
+            
+            <div class="premium-drop-zone" id="dropZoneArea" onclick="document.getElementById('fileBahan').click()">
+              <div class="zone-center-icon"><i class="bi bi-image"></i></div>
+              <div class="zone-main-text" id="dropZoneTitle">Seret foto ke sini</div>
+              <div class="zone-sub-text">Format JPG, PNG, WEBP — maks. 10 MB</div>
+              <div class="zone-divider">— atau —</div>
+              <button type="button" class="btn-gallery-picker">
+                <i class="bi bi-folder-symlink-fill me-2"></i>Pilih dari Galeri
+              </button>
+              
+              <input 
+                type="file" 
+                id="fileBahan" 
+                name="file" 
+                accept="image/*" 
+                required 
+                class="d-none" 
+                onchange="tampilkanNamaFile(this)"
+              />
+            </div>
+
+            <div class="text-center mt-3">
+              <button type="submit" class="btn btn-success fw-bold px-5 rounded-pill w-100 py-2.5" id="btnSubmit" style="background-color: #00c53b; border: none;">
+                <span id="btnText"><i class="bi bi-stars me-2"></i>Klasifikasikan</span>
+                <span id="btnLoading" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="custom-card-premium">
+        <div class="custom-card-header">
+          <h6><i class="bi bi-info-circle-fill me-2"></i>Detail Rempah</h6>
+        </div>
+        <div class="custom-card-body p-4">
+          
+          <div class="empty-state-detail" id="emptyStateDetail">
+            <div class="empty-state-icon">🌱</div>
+            <div class="empty-state-text">
+              Upload foto rempah terlebih dahulu, lalu klik <strong>Klasifikasikan</strong> untuk melihat detailnya.
+            </div>
+          </div>
+
+          <div class="d-none" id="containerHasil">
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div style="font-size: 32px; background: #e8f5e9; padding: 8px 14px; border-radius: 12px;">✨</div>
+              <div>
+                <h3 class="fw-bolder mb-0 text-success" id="resNama">-</h3>
+                <small class="text-muted">Komponen pangan alami berhasil divalidasi</small>
+              </div>
+            </div>
+
+            <div class="badge-info-grid">
+              <div class="badge-info-card">
+                <span class="badge-info-label">Kategori</span>
+                <span class="badge-info-value" id="resKategori">-</span>
+              </div>
+              <div class="badge-info-card">
+                <span class="badge-info-label">Asal Bahan</span>
+                <span class="badge-info-value" id="resAsal">-</span>
+              </div>
+              <div class="badge-info-card">
+                <span class="badge-info-label">Masa Simpan</span>
+                <span class="badge-info-value" id="resMasaSimpan">-</span>
+              </div>
+              <div class="badge-info-card">
+                <span class="badge-info-label">Tingkat Pembusukan</span>
+                <span class="badge-info-value" id="resKemudahanBusuk">-</span>
+              </div>
+              <div class="badge-info-card">
+                <span class="badge-info-label">Kandungan Gizi</span>
+                <span class="badge-info-value" id="resGizi">-</span>
+              </div>
+              <div class="badge-info-card" id="boxAlergi">
+                <span class="badge-info-label">Pemicu Alergi</span>
+                <span class="badge-info-value" id="resAlergi">-</span>
+              </div>
+            </div>
+
+            <div class="fw-bold text-secondary mt-4 mb-1 small uppercase-tracking">DESKRIPSI BAHAN</div>
+            <div class="detail-narrative-box" id="resDeskripsi">-</div>
+
+            <div class="fw-bold text-secondary mt-3 mb-1 small uppercase-tracking">💡 CARA MENYIMPAN YANG BAIK</div>
+            <div class="detail-narrative-box border-green-side" id="resCaraMenyimpan">-</div>
+
+            <div class="fw-bold text-secondary mt-3 mb-1 small uppercase-tracking">🍳 MASAKAN PALING POPULER</div>
+            <div class="detail-narrative-box border-green-side" id="resMasakanPopuler">-</div>
+
+            <div class="fw-bold text-secondary mt-3 mb-1 small uppercase-tracking">📝 TIPS TAMBAHAN</div>
+            <div class="detail-narrative-box border-orange-side" id="resTips">-</div>
+
+            <div class="text-center mt-4">
+              <button onclick="resetScan()" class="btn btn-sm btn-outline-secondary px-4 rounded-pill">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset & Deteksi Lagi
+              </button>
+            </div>
+          </div>
+
+          <div class="d-none mt-2" id="containerError">
+            <div class="tidak-dikenali-container">
+              <span style="font-size: 24px; display:block;" class="mb-1">⚠️</span>
+              <p id="pesanError" class="mb-0">Gagal mengenali objek bahan masakan.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+    {% include 'components/footer.html' %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}?v=refactor"></script>
+
+    <script>
+      // Drag & Drop visual handling
+      const zone = document.getElementById('dropZoneArea');
+      window.addEventListener("dragover", e => e.preventDefault(), false);
+      window.addEventListener("drop", e => e.preventDefault(), false);
+      
+      zone.addEventListener('dragover', () => zone.style.backgroundColor = "#f0fff4");
+      zone.addEventListener('dragleave', () => zone.style.backgroundColor = "#ffffff");
+      zone.addEventListener('drop', (e) => {
+        zone.style.backgroundColor = "#ffffff";
+        const files = e.dataTransfer.files;
+        if(files.length) {
+          document.getElementById('fileBahan').files = files;
+          tampilkanNamaFile(document.getElementById('fileBahan'));
+        }
+      });
+
+      function tampilkanNamaFile(input) {
+        if(input.files.length) {
+          document.getElementById('dropZoneTitle').innerText = "File Dimuat: " + input.files[0].name;
+          document.getElementById('statusBadge').innerText = "Foto siap";
+          document.getElementById('statusBadge').style.backgroundColor = "#fff3cd";
+          document.getElementById('statusBadge').style.color = "#856404";
+        }
+      }
+
+      // INTEGRASI FETCH API BACKEND FLASK KAU
+      document.getElementById('formKlasifikasi').addEventListener('submit', function(e) {
+        e.preventDefault(); 
+
+        const fileInput = document.getElementById('fileBahan');
+        if (fileInput.files.length === 0) return;
+
+        document.getElementById('btnText').innerText = 'Sedang Mengklasifikasi...';
+        document.getElementById('btnLoading').classList.remove('d-none');
+        document.getElementById('btnSubmit').disabled = true;
+
+        // Tutup semua container state agar fokus ke loading
+        document.getElementById('emptyStateDetail').classList.add('d-none');
+        document.getElementById('containerHasil').classList.add('d-none');
+        document.getElementById('containerError').classList.add('d-none');
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        fetch('/api/klasifikasi', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(res => {
+          resetTombol();
+
+          if (res.status === 'ok') {
+            const bahan = res.data;
+
+            document.getElementById('resNama').innerText = bahan.nama;
+            document.getElementById('resKategori').innerText = bahan.kategori;
+            document.getElementById('resAsal').innerText = bahan.asal_bahan;
+            document.getElementById('resMasaSimpan').innerText = bahan.masa_simpan;
+            document.getElementById('resKemudahanBusuk').innerText = bahan.kemudahan_busuk;
+            document.getElementById('resGizi').innerText = bahan.gizi;
+            document.getElementById('resAlergi').innerText = bahan.alergi;
+            document.getElementById('resDeskripsi').innerText = bahan.deskripsi;
+            document.getElementById('resCaraMenyimpan').innerText = bahan.cara_menyimpan;
+            document.getElementById('resMasakanPopuler').innerText = bahan.masakan_populer;
+            document.getElementById('resTips').innerText = bahan.tips;
+
+            // Logika pengelolaan CSS alergi
+            const boxAlergi = document.getElementById('boxAlergi');
+            if (bahan.alergi.toLowerCase() !== 'tidak' && bahan.alergi !== '-') {
+              boxAlergi.classList.add('badge-alergi-ya');
+            } else {
+              boxAlergi.classList.remove('badge-alergi-ya');
+            }
+
+            document.getElementById('statusBadge').innerText = "Selesai";
+            document.getElementById('statusBadge').style.backgroundColor = "#d4edda";
+            document.getElementById('statusBadge').style.color = "#155724";
+
+            document.getElementById('containerHasil').classList.remove('d-none');
+            document.getElementById('containerHasil').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+          } else {
+            document.getElementById('pesanError').innerText = res.pesan || 'Gagal mengenali bahan.';
+            document.getElementById('containerError').classList.remove('d-none');
+            document.getElementById('statusBadge').innerText = "Gagal";
+            document.getElementById('statusBadge').style.backgroundColor = "#f8d7da";
+            document.getElementById('statusBadge').style.color = "#721c24";
+          }
+        })
+        .catch(err => {
+          resetTombol();
+          document.getElementById('pesanError').innerText = 'Terjadi kesalahan sistem/jaringan server.';
+          document.getElementById('containerError').classList.remove('d-none');
+          console.error(err);
+        });
+      });
+
+      function resetTombol() {
+        document.getElementById('btnText').innerText = 'Klasifikasikan';
+        document.getElementById('btnLoading').classList.add('d-none');
+        document.getElementById('btnSubmit').disabled = false;
+      }
+
+      function resetScan() {
+        document.getElementById('formKlasifikasi').reset();
+        document.getElementById('dropZoneTitle').innerText = "Seret foto ke sini";
+        document.getElementById('statusBadge').innerText = "Menunggu foto";
+        document.getElementById('statusBadge').style.backgroundColor = "rgba(255,255,255,0.6)";
+        document.getElementById('statusBadge').style.color = "#475569";
+        
+        document.getElementById('containerHasil').classList.add('d-none');
+        document.getElementById('containerError').classList.add('d-none');
+        document.getElementById('emptyStateDetail').classList.remove('d-none');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    </script>
+  </body>
+</html>
