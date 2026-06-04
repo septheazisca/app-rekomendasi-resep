@@ -60,9 +60,6 @@
               <button id="btnAmbil" class="btn-ambil d-none" onclick="ambilFoto()">
                 <i class="bi bi-camera-fill me-2"></i>Ambil Foto
               </button>
-              <button id="btnUpload" class="btn-upload" onclick="document.getElementById('inputFile').click()">
-                <i class="bi bi-upload me-2"></i>Upload Foto
-              </button>
               <input type="file" id="inputFile" class="d-none" accept="image/*" onchange="handleUpload(event)" />
               <button id="btnUlang" class="btn-ulang d-none" onclick="ulangi()">
                 <i class="bi bi-arrow-clockwise me-2"></i>Foto Ulang
@@ -73,7 +70,7 @@
           <div class="tips-box mt-3" id="tipsBox">
             <i class="bi bi-lightbulb-fill"></i>
             <strong>Tips foto yang baik:</strong>
-            Letakkan semua bahan di permukaan datar, pastikan pencahayaan cukup, dan ambil foto lurus dari atas.
+              Arahkan kamera satu persatu ke bahan, pastikan pencahayaan cukup, dan tunggu beberapa saat untuk mebaca bahan.
           </div>
         </div>
 
@@ -112,7 +109,7 @@
                 </div>
 
                 <span id="notifKonfirmasi" class="text-muted small">
-                  <i class="bi bi-info-circle"></i> Bahan kurang? Klik tombol "Konfirmasi & Cari Resep" untuk menambahkan secara manual.
+                  <i class="bi bi-info-circle"></i> Bahan kurang atau tidak sesuai? Klik tombol "Konfirmasi & Cari Resep" untuk menambahkan secara manual.
                 </span>
 
                 <button class="btn-konfirmasi" id="btnKonfirmasi" onclick="konfirmasiDanCariResep()">
