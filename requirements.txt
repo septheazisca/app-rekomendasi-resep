@@ -5,5 +5,5 @@ pillow
 python-dotenv
 numpy
 requests
-tensorflow==2.16.1
+tensorflow
 gunicorn
