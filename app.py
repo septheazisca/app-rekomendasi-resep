@@ -15,7 +15,6 @@ sys.path.insert(0, os.path.join(BASE_DIR, "services"))
 sys.path.insert(0, os.path.join(BASE_DIR, "model"))
 
 from recommender import rekomendasikan  # noqa: E402
-from vision_service import proses_foto  # noqa: E402
 from fitur_klasifikasi import predict_ingredient  # noqa: E402
 
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "views", "static", "uploads")
@@ -165,7 +164,6 @@ def api_scan():
     with open(path_file, "wb") as output:
         output.write(image_bytes)
 
-    hasil = proses_foto(image_bytes)
     hasil["foto_url"] = f"/static/uploads/{nama_file}"
 
     return jsonify({"status": "ok", **hasil})
@@ -177,7 +175,6 @@ def api_scan_result():
         return jsonify({"status": "error", "pesan": "Tidak ada file foto"}), 400
 
     image_bytes = request.files["foto"].read()
-    hasil_scan = proses_foto(image_bytes)
     bahan_valid = [bahan["nama"] for bahan in hasil_scan.get("bahan_valid", [])]
     rekomendasi = rekomendasikan(bahan_valid, top_n=6) if bahan_valid else []
 

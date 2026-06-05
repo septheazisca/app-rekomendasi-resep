@@ -26,17 +26,6 @@
     </div>
 
     <div class="detail-langkah">
-      <div class="mx-auto" style="width: fit-content;">
-        <img
-          src="{{ url_for('static', filename='foto/' ~ id_resep ~ '.png') }}"
-          alt="Foto {{ nama_resep }}"
-          class="img-fluid rounded-4"
-          style="max-height: 300px; margin: 0 auto;"
-        />
-      </div>
-    </div>
-
-    <div class="detail-langkah">
       <h3>Bahan Pembuatan</h3>
       <ol class="bahan-list" style="list-style-type: decimal !important; padding-left: 20px !important;">
         {% for bahan in bahan %}

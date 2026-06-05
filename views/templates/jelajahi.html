@@ -74,18 +74,7 @@
         data-deskripsi="{{ resep.deskripsi | lower }}"
         data-kategori="{{ resep.kategori | lower }}"
       >
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden w-100 recipe-card">
-          <div class="position-relative overflow-hidden img-container">
-            <img
-              src="{{ url_for('static', filename='foto/' ~ resep.id_resep ~ '.png') }}"
-              class="card-img-top img-fluid recipe-img"
-              alt="{{ resep.nama_resep }}"
-            />
-            <span class="badge bg-blur text-dark position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill shadow-sm small fw-semibold">
-              {{ resep.kategori }}
-            </span>
-          </div>
-
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden w-100 recipe-card"> 
           <div class="card-body d-flex flex-column p-4">
             <p class="card-title fw-bold text-dark mb-2 text-truncate-2" title="{{ resep.nama_resep }}">
               {{ resep.nama_resep }}
